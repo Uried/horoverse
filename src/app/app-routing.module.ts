@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { HomePage } from './home/home.page';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 const routes: Routes = [
   {
     path: 'home',
@@ -21,6 +22,9 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [
+    {provide: LocationStrategy, useClass: HashLocationStrategy}
+  ]
 })
 export class AppRoutingModule { }
