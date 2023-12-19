@@ -20,7 +20,7 @@
   <div class="flex items-center justify-center gap-10 mt-2">
     <div class="font-bold rounded-full w-28 text-blue-700 hover:bg-blue-700 hover:text-white h-8 py-1 text-center bg-none border 1px border-blue-600">{{today}}</div>
     <div>
-      <i class="fa fa-headphones text-3xl text-white" [ngClass]="{'text-[#ca9631]': isSpeaking}" (click)="speak()"></i>
+      <i class="fa fa-headphones text-3xl text-white" [ngClass]="{'text-[#ca9631]': isSpeaking,'text-white': !isSpeaking}" (click)="speak()"></i>
     </div>
     <div
       class="font-bold rounded-full w-28 text-blue-700 hover:bg-blue-700 hover:text-white h-8 py-1 text-center bg-none border 1px border-blue-600">{{currentMonth}}</div>
