@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
+import { HomePage } from './home/home.page';
 const routes: Routes = [
   {
     path: 'home',
@@ -10,6 +10,10 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },
+  {
+    path: 'astrosign',
+    loadChildren: () => import('./astrosign/astrosign.module').then( m => m.AstrosignPageModule)
   },
 ];
 

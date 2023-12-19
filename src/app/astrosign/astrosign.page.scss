@@ -3,3 +3,10 @@ ion-content {
   // --background: url("../../assets/wave-frequency.gif") center/cover no-repeat fixed;
   background-size: 100% 100%;
 }
+
+.calendar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

@@ -1,20 +1,36 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="fixed">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="flex">
+    <div class="w-24 ml-2 mt-2">
+      <img src="../../assets/logos/output-onlinepngtools.png" alt="" class="">
+    </div>
+    <i class="fas"
+      [ngClass]="{'fa-tools': !isOpenMenu, 'fa-times': isOpenMenu, 'text-2xl md:hidden text-[#ca9631] mt-5 ml-auto mr-5': true}"
+      (click)="openMenu()"></i>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
   </div>
+
+  <div class="ml-auto mr-auto">
+    <!-- image horoscope -->
+
+    <img src={{choosedImage}} alt="" class="w-40 ml-auto mr-auto">
+    <p class="mt-1 font-bold text-center text-2xl">{{sign}}</p>
+  </div>
+
+  <div class="flex items-center justify-center gap-10 mt-2">
+    <div class="font-bold rounded-full w-28 text-blue-700 hover:bg-blue-700 hover:text-white h-8 py-1 text-center bg-none border 1px border-blue-600">{{today}}</div>
+    <div>
+      <i class="fa fa-headphones text-3xl" [ngClass]="{'text-[#ca9631]': isSpeaking}" (click)="speak()"></i>
+    </div>
+    <div
+      class="font-bold rounded-full w-28 text-blue-700 hover:bg-blue-700 hover:text-white h-8 py-1 text-center bg-none border 1px border-blue-600">{{currentMonth}}</div>
+  </div>
+
+  <div class="w-full mt-3 shadow-inner shadow-blue-700 h-auto rounded-md ">
+    <div class="custom-scroll-item">
+    <p class="ml-2 mr-2 py-3">{{horoscope}}</p>
+    </div>
+  </div>
+
+
 </ion-content>
