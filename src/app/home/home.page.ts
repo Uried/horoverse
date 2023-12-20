@@ -136,7 +136,7 @@ export class HomePage implements OnInit {
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
-        this.translateHoroscope(); // Appeler translateHoroscope() ici
+        this.translateHoroscope(); 
       });
     } catch (error) {
       console.error(error);
