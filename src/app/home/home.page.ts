@@ -24,6 +24,7 @@ export class HomePage implements OnInit {
   isSpeaking: boolean = false;
   selectedVoice!: string;
   choosedImage!: string;
+  isRegistered: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,12 +35,11 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
-      this.pseudo = params['pseudo'];
       this.phone = params['phone'];
-      this.jId = params['jId'];
+      this.jId = params['jId'] || localStorage.getItem('jId');
     });
 
-    this.getUserByjId()
+    this.getUserByjId();
     this.today = this.getCurrentDay();
     this.currentMonth = this.getCurrentMonth();
     this.translateService.setDefaultLang('en');
@@ -58,15 +58,22 @@ export class HomePage implements OnInit {
         .get(`https://apihoroverse.vercel.app/users/${this.jId}`)
         .subscribe(
           (user: any) => {
+            this.pseudo = user.pseudo;
             console.log(user);
-
             this.sign = user.sign;
-
             this.getDailyHoroscope();
             this.onImageChange();
+            localStorage.setItem('sign', this.sign);
+            localStorage.setItem('pseudo', this.pseudo);
+            localStorage.setItem('jId', this.jId);
           },
           (error) => {
             console.log(error);
+            if (error.status === 404) {
+              localStorage.setItem('jId', this.jId);
+              localStorage.setItem('phone', this.phone);
+              this.router.navigateByUrl('/astrosign');
+            }
           }
         );
     } catch (error) {
@@ -209,7 +216,7 @@ export class HomePage implements OnInit {
         this.choosedImage = '../../assets/signes/taureau.png';
         break;
       case 'gemini':
-        this.choosedImage = '../../assets/signes/gemeau.png';
+        this.choosedImage = '../../assets/signes/gemeaux.png';
         break;
       case 'cancer':
         this.choosedImage = '../../assets/signes/cancer.png';
@@ -238,7 +245,7 @@ export class HomePage implements OnInit {
     }
   }
 
-  openMenu() {
-    this.isOpenMenu = !this.isOpenMenu;
+  goToSettings() {
+    this.router.navigateByUrl('/settings');
   }
 }

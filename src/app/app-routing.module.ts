@@ -16,6 +16,10 @@ const routes: Routes = [
     path: 'astrosign',
     loadChildren: () => import('./astrosign/astrosign.module').then( m => m.AstrosignPageModule)
   },
+  {
+    path: 'settings',
+    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
+  },
 ];
 
 @NgModule({

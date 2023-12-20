@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-astrosign',
@@ -6,48 +8,90 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./astrosign.page.scss'],
 })
 export class AstrosignPage implements OnInit {
-  constructor() {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.jId = localStorage.getItem('jId') || '';
+    this.phone = parseInt(localStorage.getItem('phone') || '0');
+  }
 
   selectedDate!: string;
   astrologicalSign!: string;
+  jId!: string;
+  pseudo!: string;
+  phone!: Number;
+  showModal = false;
 
   getAstrologicalSign() {
     const date = new Date(this.selectedDate);
     this.astrologicalSign = this.calculateAstrologicalSign(date);
   }
 
-  calculateAstrologicalSign(date: Date): string {
-   const month = date.getMonth() + 1; // Les mois sont indexés à partir de 0, donc on ajoute 1
-  const day = date.getDate();
+  calculateAstrologicalSign(date:any) {
+    const month = date.getMonth() + 1; // Les mois sont indexés à partir de 0, donc on ajoute 1
+    const day = date.getDate();
 
-  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
-    return "Verseau";
-  } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
-    return "Poissons";
-  } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
-    return "Bélier";
-  } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
-    return "Taureau";
-  } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
-    return "Gémeaux";
-  } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
-    return "Cancer";
-  } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
-    return "Lion";
-  } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
-    return "Vierge";
-  } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
-    return "Balance";
-  } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
-    return "Scorpion";
-  } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
-    return "Sagittaire";
-  } else {
-    return "Capricorne";
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
+      return 'aquarius';
+    } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
+      return 'pisces';
+    } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
+      return 'aries';
+    } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
+      return 'taurus';
+    } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
+      return 'gemini';
+    } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
+      return 'cancer';
+    } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
+      return 'leo';
+    } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
+      return 'virgo';
+    } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
+      return 'libra';
+    } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
+      return 'scorpio';
+    } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
+      return 'sagittarius';
+    } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
+      return 'capricorn';
+    } else {
+      return "Entrez votre date d'anniversaire";
+    }
   }
-}
 
+  showAlertModal() {
+    this.showModal = true;
+    setTimeout(() => {
+      this.hideInformationModal();
+    }, 3000); // Temps en millisecondes avant de masquer la fenêtre modale
+  }
+
+  hideInformationModal() {
+    this.showModal = false;
+  }
+
+  createNewUser() {
+    if (!this.selectedDate) {
+      this.showAlertModal();
+    } else {
+      const credentials = {
+        jId: this.jId,
+        pseudo: this.pseudo,
+        phone: this.phone,
+        sign: this.astrologicalSign,
+      };
+      try {
+        this.http
+          .post('http://localhost:5900/users/', credentials)
+          .subscribe((res) => {
+            console.log('user Created');
+            this.router.navigateByUrl('/home');
+          });
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    }
+  }
 }
 

@@ -1,0 +1,33 @@
+<ion-content [fullscreen]="true">
+
+
+  <div class="flex text-white mt-3 text-xl font-bold">
+    <i class="fas fa-arrow-left ml-3 text-[#ca9631]" (click)="goToHome()"></i>
+    <div class="ml-[30%]">Parametres</div>
+  </div>
+
+  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-16 h-16 rounded-md">
+    <div class="w-16 ml-3">
+      <img src={{choosedImage}} alt="">
+    </div>
+    <div class="py-4 px-12 font-bold text-2xl">{{astrologicalSign}}</div>
+  </div>
+
+  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
+
+    <i class="fas fa-user py-2 px-4 text-3xl rounded-full w-[17%] h-[84%] text-white bg-[#ca9631] mt-1 ml-3"></i>
+
+    <div class="py-4 px-16 font-bold text-xl">{{pseudo}}</div>
+  </div>
+
+  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
+    <i class="fas fa-calendar py-3 px-4 text-3xl rounded-full w-[17%] h-[84%] text-white bg-[#ca9631] mt-2 ml-3"></i>
+    <div class="py-3 px-10">
+      <input id="date-input" type="date" [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()"
+        class="rounded-lg focus:outline-none mb-4 bg-transparent h-10  text-center font-bold" />
+    </div>
+
+  </div>
+  <button class="bg-[#ca9631] hover:bg-[#ca8431] text-white ml-[10%] rounded-lg font-bold w-80 px-4 py-2 mt-10" (click)="changeAstrologicalSign()">Modifier</button>
+
+</ion-content>
