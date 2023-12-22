@@ -55,7 +55,6 @@ export class HomePage implements OnInit {
     }
   }
 
-
   getUserByjId() {
     try {
       this.http
@@ -88,24 +87,33 @@ export class HomePage implements OnInit {
   async translateHoroscope() {
     const url = `https://api.mymemory.translated.net/get`;
 
-    const horoscopeSegments = this.segmentText(this.horoscope, 500);
+    const horoscopePhrases = this.segmentText(this.horoscope, '.'); // Segmenter par phrases
 
-    const translatedSegments = [];
+    const translatedPhrases = [];
 
     try {
-      for (const segment of horoscopeSegments) {
+      for (const phrase of horoscopePhrases) {
         const response = await axios.get(url, {
           params: {
-            q: segment,
+            q: phrase.trim(), // Supprimer les espaces en début et fin de phrase
             langpair: `en|fr`,
           },
         });
 
-        const translatedSegment = response.data.responseData.translatedText;
-        translatedSegments.push(translatedSegment);
+        const translatedPhrase = response.data.responseData.translatedText;
+
+        // Vérifier si la traduction est valide avant de l'ajouter
+        if (
+          translatedPhrase &&
+          translatedPhrase !==
+            'NO QUERY SPECIFIED. EXAMPLE REQUEST: GET?Q=HELLO&LANGPAIR=EN|IT'
+        ) {
+          translatedPhrases.push(translatedPhrase);
+        }
       }
 
-      const translatedHoroscope = translatedSegments.join(' '); // Concaténer les segments traduits
+      let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
+      translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.horoscope = translatedHoroscope;
       console.log(this.horoscope); // Afficher le résultat en console
     } catch (error) {
@@ -113,26 +121,9 @@ export class HomePage implements OnInit {
     }
   }
 
-  segmentText(text: any, maxLength: any) {
-    const segments = [];
-    let currentSegment = '';
-
-    const words = text.split(' ');
-
-    for (const word of words) {
-      if (currentSegment.length + word.length + 1 <= maxLength) {
-        currentSegment += (currentSegment === '' ? '' : ' ') + word;
-      } else {
-        segments.push(currentSegment);
-        currentSegment = word;
-      }
-    }
-
-    if (currentSegment !== '') {
-      segments.push(currentSegment);
-    }
-
-    return segments;
+  segmentText(text: any, delimiter: any) {
+    const segments = text.split(delimiter);
+    return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
   }
 
   async getDailyHoroscope() {
