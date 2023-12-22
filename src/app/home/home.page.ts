@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { HoroscopeService } from '../sevices/horoscope/horoscope-api.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { franc } from 'franc-min';
 import axios from 'axios';
+import { LOCALE_ID } from '@angular/core';
+
 
 declare var responsiveVoice : any
 @Component({
@@ -30,7 +32,8 @@ export class HomePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    @Inject(LOCALE_ID) public locale: string
   ) {}
 
   ngOnInit() {
@@ -42,15 +45,16 @@ export class HomePage implements OnInit {
     this.getUserByjId();
     this.today = this.getCurrentDay();
     this.currentMonth = this.getCurrentMonth();
-    this.translateService.setDefaultLang('en');
+    this.translateService.setDefaultLang('fr');
 
     const browserLang = this.translateService.getBrowserLang();
     if (browserLang) {
       this.translateService.use(browserLang);
     } else {
-      this.translateService.use('en');
+      this.translateService.use('fr');
     }
   }
+
 
   getUserByjId() {
     try {
@@ -136,7 +140,7 @@ export class HomePage implements OnInit {
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
-        this.translateHoroscope(); 
+        //this.translateHoroscope(); // Appeler translateHoroscope() ici
       });
     } catch (error) {
       console.error(error);

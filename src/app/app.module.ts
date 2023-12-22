@@ -1,4 +1,6 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode, LOCALE_ID } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { initializeApp } from 'firebase/app';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -8,28 +10,50 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HoroscopeService } from './sevices/horoscope/horoscope-api.service';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import 'firebase/messaging';
+import 'firebase/compat/firestore';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+initializeApp(environment.firebase)
+
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    AngularFireModule.initializeApp(environment.firebase),
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
+    AngularFireMessagingModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'en',
+      defaultLanguage: 'fr',
       loader: {
         provide: TranslateLoader,
-        useFactory: createTranslateLoader,
+        useFactory: (http: HttpClient) => {
+          return new TranslateHttpLoader(http);
+        },
         deps: [HttpClient],
       },
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: LOCALE_ID, useValue: navigator.language },
     HoroscopeService,
   ],
   bootstrap: [AppComponent],

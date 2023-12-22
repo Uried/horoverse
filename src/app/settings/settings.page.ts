@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, throwError } from 'rxjs';
 import { Location } from '@angular/common';
+import { LOCALE_ID } from '@angular/core';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
@@ -20,7 +21,8 @@ export class SettingsPage implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private location: Location
+    private location: Location,
+    @Inject(LOCALE_ID) public locale: string
   ) {}
 
   ngOnInit() {
@@ -142,9 +144,6 @@ export class SettingsPage implements OnInit {
         })
       )
       .subscribe();
-     this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/home');
   }
-
-
-
 }

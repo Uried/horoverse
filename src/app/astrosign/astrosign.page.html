@@ -16,15 +16,16 @@
   </div>
 
   <h2 class="text-2xl text-white font-bold text-center">Bonjour, entrez votre prénom et votre date d'anniversaire</h2>
+
   <div class="mt-10 text-white flex flex-col justify-center items-center">
-    <input type="text" [(ngModel)]="pseudo"
+    <input type="text" placeholder="Prénom" [(ngModel)]="pseudo"
       class="border border-[#ca9631] focus:outline-none rounded-lg bg-transparent h-10 w-80 text-center font-bold"><br>
     <input id="date-input" type="date"
       class="border border-[#ca9631] rounded-lg focus:outline-none mb-4 bg-transparent h-10 w-80 text-center font-bold"
       [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()" />
     <p *ngIf="astrologicalSign" id="sign-output" class="font-bold text-2xl mb-4 text-[#ca9631]">{{ astrologicalSign }}</p>
       <button
-        class="bg-[#ca9631] hover:bg-blue-600 text-white rounded-lg ml- px-4 py-2 mt-6" (click)="createNewUser()">Voir mon horoscope</button>
+        class="bg-[#ca9631] hover:bg-[#ca8631] text-white rounded-lg ml- px-4 py-2 mt-6" (click)="createNewUser()">Voir mon horoscope</button>
   </div>
 
 

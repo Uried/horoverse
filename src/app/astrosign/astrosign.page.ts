@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AngularFireMessaging } from '@angular/fire/compat/messaging';
+import { LOCALE_ID } from '@angular/core';
+
 
 @Component({
   selector: 'app-astrosign',
@@ -8,11 +11,17 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./astrosign.page.scss'],
 })
 export class AstrosignPage implements OnInit {
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private afMessaging: AngularFireMessaging,
+    @Inject(LOCALE_ID) public locale: string
+  ) {}
 
   ngOnInit() {
     this.jId = localStorage.getItem('jId') || '';
     this.phone = parseInt(localStorage.getItem('phone') || '0');
+    this.requestFirebaseToken();
   }
 
   selectedDate!: string;
@@ -21,13 +30,14 @@ export class AstrosignPage implements OnInit {
   pseudo!: string;
   phone!: Number;
   showModal = false;
+  tokenFCM!: string;
 
   getAstrologicalSign() {
     const date = new Date(this.selectedDate);
     this.astrologicalSign = this.calculateAstrologicalSign(date);
   }
 
-  calculateAstrologicalSign(date:any) {
+  calculateAstrologicalSign(date: any) {
     const month = date.getMonth() + 1; // Les mois sont indexés à partir de 0, donc on ajoute 1
     const day = date.getDate();
 
@@ -71,6 +81,19 @@ export class AstrosignPage implements OnInit {
     this.showModal = false;
   }
 
+  requestFirebaseToken() {
+    this.afMessaging.requestToken.subscribe(
+      (token: any) => {
+        console.log(token);
+        this.tokenFCM = token;
+        localStorage.setItem('tokenFCM', this.tokenFCM);
+      },
+      (error) => {
+        console.error('Impossible de récupérer le token FCM', error);
+      }
+    );
+  }
+
   createNewUser() {
     if (!this.selectedDate) {
       this.showAlertModal();
@@ -80,7 +103,9 @@ export class AstrosignPage implements OnInit {
         pseudo: this.pseudo,
         phone: this.phone,
         sign: this.astrologicalSign,
+        tokenFCM: this.tokenFCM,
       };
+
       try {
         this.http
           .post('http://localhost:5900/users/', credentials)
