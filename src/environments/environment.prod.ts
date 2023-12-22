@@ -1,12 +1,13 @@
 export const environment = {
   production: true,
   firebase: {
-  apiKey: "AIzaSyCcI8hZH1HuIk7KCgq1_wrcZSQs63Yg0dY",
-  authDomain: "horoverse-15fe0.firebaseapp.com",
-  projectId: "horoverse-15fe0",
-  storageBucket: "horoverse-15fe0.appspot.com",
-  messagingSenderId: "388347383481",
-  appId: "1:388347383481:web:1a7566fd701861ff49d568",
-  measurementId: "G-RG504RKNKP"
-}
-}
+    apiKey: 'AIzaSyBa11Ceiq4rt3vegjuu3tPzRxPeOZShLeU',
+    authDomain: 'horoverse-7c7d2.firebaseapp.com',
+    projectId: 'horoverse-7c7d2',
+    storageBucket: 'horoverse-7c7d2.appspot.com',
+    messagingSenderId: '654013131905',
+    appId: '1:654013131905:web:a72b50b5a007e94ebaf180',
+    measurementId: 'G-STTWXEC1MN',
+    vpaidKey: 'BH-66GTKiXjazaOiIQ2HoWJH0v3FNa2XhrZ-Hzn73Ykw4HENudTeP8Kv9n8Ihe9dRracGvcmS3ArLDIu49GdljA',
+  },
+};
