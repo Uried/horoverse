@@ -108,7 +108,7 @@ export class AstrosignPage implements OnInit {
 
       try {
         this.http
-          .post('http://localhost:5900/users/', credentials)
+          .post('https://apihoroverse.vercel.app/users/', credentials)
           .subscribe((res) => {
             console.log('user Created');
             this.router.navigateByUrl('/home');
