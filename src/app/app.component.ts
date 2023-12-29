@@ -1,42 +1,48 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { getMessaging, getToken } from 'firebase/messaging';
-import { environment } from 'src/environments/environment';
+import { environment } from '../environments/environment';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { SwUpdate } from '@angular/service-worker';
+import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
+
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  ngOnInit(): void {
-    this.requestPermission();
+  title = 'af-notification';
+  message: any = null;
+  constructor(private swUpdate: SwUpdate) {
+     checkServiceWorkerConflicts();
   }
-  title = 'Horoverse';
-  locale!: string;
+  ngOnInit(): void {
 
+    this.requestPermission();
+    this.listen();
+  }
   requestPermission() {
     const messaging = getMessaging();
-    getToken(messaging, { vapidKey: environment.firebase.vpaidKey }).then(
-      (currentToken) => {
+    getToken(messaging, { vapidKey: environment.firebase.vapidKey })
+      .then((currentToken) => {
         if (currentToken) {
-          console.log('yeah we have the token');
+          console.log('Hurraaa!!! we got the token.....');
           console.log(currentToken);
         } else {
-          console.log('we have a problem');
+          console.log(
+            'No registration token available. Request permission to generate one.'
+          );
         }
-      }
-    );
+      })
+      .catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+      });
   }
-
-  constructor(private translate: TranslateService) {
-    this.initializeApp();
-
-  }
-
-  initializeApp() {
-    const userLang = navigator.language.split('-')[0];
-    this.translate.setDefaultLang('fr');
-    this.translate.use(userLang);
+  listen() {
+    const messaging = getMessaging();
+    onMessage(messaging, (payload) => {
+      console.log('Message received. ', payload);
+      this.message = payload;
+    });
   }
 }

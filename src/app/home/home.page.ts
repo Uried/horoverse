@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { HoroscopeService } from '../sevices/horoscope/horoscope-api.service';
+//import { HoroscopeService } from '../sevices/horoscope/horoscope-api.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,8 +7,7 @@ import { franc } from 'franc-min';
 import axios from 'axios';
 import { LOCALE_ID } from '@angular/core';
 
-
-declare var responsiveVoice : any
+declare var responsiveVoice: any;
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -34,7 +33,9 @@ export class HomePage implements OnInit {
     private http: HttpClient,
     private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
-  ) {}
+  ) {
+    this.getUserByjId();
+  }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -62,7 +63,6 @@ export class HomePage implements OnInit {
         .subscribe(
           (user: any) => {
             this.pseudo = user.pseudo;
-            console.log(user);
             this.sign = user.sign;
             this.getDailyHoroscope();
             this.onImageChange();
@@ -131,7 +131,7 @@ export class HomePage implements OnInit {
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
-        this.translateHoroscope(); // Appeler translateHoroscope() ici
+        //this.translateHoroscope(); // Appeler translateHoroscope() ici
       });
     } catch (error) {
       console.error(error);

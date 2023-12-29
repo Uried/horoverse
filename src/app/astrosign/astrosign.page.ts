@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { LOCALE_ID } from '@angular/core';
-
+import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
 
 @Component({
   selector: 'app-astrosign',
@@ -16,7 +16,9 @@ export class AstrosignPage implements OnInit {
     private router: Router,
     private afMessaging: AngularFireMessaging,
     @Inject(LOCALE_ID) public locale: string
-  ) {}
+  ) {
+     checkServiceWorkerConflicts();
+  }
 
   ngOnInit() {
     this.jId = localStorage.getItem('jId') || '';
@@ -111,7 +113,8 @@ export class AstrosignPage implements OnInit {
           .post('https://apihoroverse.vercel.app/users/', credentials)
           .subscribe((res) => {
             console.log('user Created');
-            this.router.navigateByUrl('/home');
+            this.router.navigateByUrl('/home', { skipLocationChange: true });
+            //this.router.navigate(['home'])
           });
       } catch (error: any) {
         console.log(error.message);

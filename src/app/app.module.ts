@@ -24,6 +24,9 @@ initializeApp(environment.firebase)
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
+    ServiceWorkerModule.register('../firebase-messaging-sw.js', {
+      enabled: environment.production,
+    }),
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
@@ -37,18 +40,6 @@ initializeApp(environment.firebase)
         },
         deps: [HttpClient],
       },
-    }),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
   providers: [
