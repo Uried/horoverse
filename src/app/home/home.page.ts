@@ -138,7 +138,7 @@ export class HomePage implements OnInit {
           const text = obj.text.replace(/<[^>]+>/g, '');
           this.horoscope = text
         });
-        //this.translateHoroscope(); // Appeler translateHoroscope() ici
+        this.translateHoroscope(); // Appeler translateHoroscope() ici
       });
     } catch (error) {
       console.error(error);
