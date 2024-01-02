@@ -34,14 +34,14 @@ export class HomePage implements OnInit {
     private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
   ) {
-    this.getUserByjId();
+    this.route.queryParams.subscribe((params) => {
+      this.phone = params['phone'];
+      this.jId = params['jId'];
+    });
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params) => {
-      this.phone = params['phone'];
-      this.jId = params['jId'] || localStorage.getItem('jId');
-    });
+
 
     this.getUserByjId();
     this.today = this.getCurrentDay();
@@ -57,6 +57,7 @@ export class HomePage implements OnInit {
   }
 
   getUserByjId() {
+    console.log(this.jId);
     try {
       this.http
         .get(`https://apihoroverse.vercel.app/users/${this.jId}`)
@@ -131,6 +132,12 @@ export class HomePage implements OnInit {
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
+        console.log(result);
+        result.forEach((obj: any) => {
+          console.log(obj.text)
+          const text = obj.text.replace(/<[^>]+>/g, '');
+          this.horoscope = text
+        });
         //this.translateHoroscope(); // Appeler translateHoroscope() ici
       });
     } catch (error) {

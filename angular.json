@@ -32,8 +32,9 @@
               },
               "src/favicon.ico",
               "src/assets",
+              "src/combined-sw.js",
               "src/firebase-messaging-sw.js",
-              "src/manifest.json",
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest",
               "src/manifest.webmanifest",
               "src/manifest.webmanifest"
@@ -126,7 +127,8 @@
               "src/firebase-messaging-sw.js",
               "src/manifest.json",
               "src/manifest.webmanifest",
-              "src/assets"
+              "src/assets",
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/theme/variables.scss",
