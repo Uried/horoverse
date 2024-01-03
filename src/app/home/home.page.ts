@@ -26,6 +26,7 @@ export class HomePage implements OnInit {
   selectedVoice!: string;
   choosedImage!: string;
   isRegistered: boolean = true;
+  browserLanguage!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,23 +35,32 @@ export class HomePage implements OnInit {
     private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
   ) {
+
     this.route.queryParams.subscribe((params) => {
       this.phone = params['phone'];
-      this.jId = params['jId'];
+      this.jId = params['jId'] || localStorage.getItem('jId');
     });
+
+
   }
 
   ngOnInit() {
-
 
     this.getUserByjId();
     this.today = this.getCurrentDay();
     this.currentMonth = this.getCurrentMonth();
     this.translateService.setDefaultLang('fr');
 
-    const browserLang = this.translateService.getBrowserLang();
+    const browserLang = navigator.language;
+
+    this.browserLanguage = browserLang!
     if (browserLang) {
+    console.log(this.browserLanguage);
       this.translateService.use(browserLang);
+      this.translateService.get(this.sign).subscribe((translation: string) => {
+        this.sign = translation; // Assigner la valeur traduite à la variable sign
+      });
+
     } else {
       this.translateService.use('fr');
     }
@@ -134,11 +144,14 @@ export class HomePage implements OnInit {
         this.horoscope = result.horoscope;
         console.log(result);
         result.forEach((obj: any) => {
-          console.log(obj.text)
-          const text = obj.text.replace(/<[^>]+>/g, '');
-          this.horoscope = text
+          console.log(obj.text);
+          const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
+          this.horoscope = text;
         });
-        this.translateHoroscope(); // Appeler translateHoroscope() ici
+        if(this.browserLanguage == 'fr-FR'){
+          this.translateHoroscope(); // Appeler translateHoroscope() ici
+        }
+
       });
     } catch (error) {
       console.error(error);
@@ -250,4 +263,5 @@ export class HomePage implements OnInit {
   goToSettings() {
     this.router.navigateByUrl('/settings');
   }
+
 }

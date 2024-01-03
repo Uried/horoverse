@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { LOCALE_ID } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
 
 @Component({
@@ -14,16 +15,11 @@ export class AstrosignPage implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private translateService: TranslateService,
     private afMessaging: AngularFireMessaging,
     @Inject(LOCALE_ID) public locale: string
   ) {
-     checkServiceWorkerConflicts();
-  }
-
-  ngOnInit() {
-    this.jId = localStorage.getItem('jId') || '';
-    this.phone = parseInt(localStorage.getItem('phone') || '0');
-    this.requestFirebaseToken();
+    checkServiceWorkerConflicts();
   }
 
   selectedDate!: string;
@@ -33,6 +29,25 @@ export class AstrosignPage implements OnInit {
   phone!: Number;
   showModal = false;
   tokenFCM!: string;
+  browserLanguage!: string;
+
+  ngOnInit() {
+    this.jId = localStorage.getItem('jId') || '';
+    this.phone = parseInt(localStorage.getItem('phone') || '0');
+    this.requestFirebaseToken();
+
+    this.translateService.setDefaultLang('fr');
+
+    const browserLang = navigator.language;
+
+    this.browserLanguage = browserLang!;
+    if (browserLang) {
+      console.log(this.browserLanguage);
+      this.translateService.use(browserLang);
+    } else {
+      this.translateService.use('fr');
+    }
+  }
 
   getAstrologicalSign() {
     const date = new Date(this.selectedDate);

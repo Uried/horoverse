@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, map, throwError } from 'rxjs';
 import { Location } from '@angular/common';
 import { LOCALE_ID } from '@angular/core';
+import { HomePage } from '../home/home.page';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
@@ -123,7 +124,7 @@ export class SettingsPage implements OnInit {
     console.log(this.astrologicalSign);
 
     const requestBody = {
-      sign: this.astrologicalSign, // Utilisez la clé 'sign' pour le nouveau signe astrologique
+      sign: this.astrologicalSign,
     };
 
     this.http
@@ -143,7 +144,8 @@ export class SettingsPage implements OnInit {
           return throwError(error);
         })
       )
-      .subscribe();
-    this.router.navigateByUrl('/home');
+      .subscribe(() => {
+        this.router.navigateByUrl('/home', { skipLocationChange: true });
+      });
   }
 }
