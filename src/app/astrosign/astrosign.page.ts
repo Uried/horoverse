@@ -24,6 +24,7 @@ export class AstrosignPage implements OnInit {
 
   selectedDate!: string;
   astrologicalSign!: string;
+  symbolSign!: string
   jId!: string;
   pseudo!: string;
   phone!: Number;
@@ -36,22 +37,19 @@ export class AstrosignPage implements OnInit {
     this.phone = parseInt(localStorage.getItem('phone') || '0');
     this.requestFirebaseToken();
 
-    this.translateService.setDefaultLang('fr');
+    const browserLang = navigator.language ;
+    this.browserLanguage = browserLang;
+    this.translateService.use(browserLang);
 
-    const browserLang = navigator.language;
-
-    this.browserLanguage = browserLang!;
-    if (browserLang) {
-      console.log(this.browserLanguage);
-      this.translateService.use(browserLang);
-    } else {
-      this.translateService.use('fr');
-    }
   }
 
   getAstrologicalSign() {
     const date = new Date(this.selectedDate);
     this.astrologicalSign = this.calculateAstrologicalSign(date);
+
+    if (this.browserLanguage == 'fr-FR') {
+      this.onTranslate();
+    }
   }
 
   calculateAstrologicalSign(date: any) {
@@ -85,6 +83,7 @@ export class AstrosignPage implements OnInit {
     } else {
       return "Entrez votre date d'anniversaire";
     }
+
   }
 
   showAlertModal() {
@@ -128,12 +127,55 @@ export class AstrosignPage implements OnInit {
           .post('https://apihoroverse.vercel.app/users/', credentials)
           .subscribe((res) => {
             console.log('user Created');
-            this.router.navigateByUrl('/home', { skipLocationChange: true });
+            this.router.navigateByUrl('/home');
             //this.router.navigate(['home'])
           });
       } catch (error: any) {
         console.log(error.message);
       }
+    }
+  }
+
+  onTranslate() {
+    switch (this.astrologicalSign) {
+      case 'aquarius':
+        this.symbolSign = 'Verseau';
+        break;
+      case 'pisces':
+        this.symbolSign = 'Poissons';
+        break;
+      case 'aries':
+        this.symbolSign = 'Bélier';
+        break;
+      case 'taurus':
+        this.symbolSign = 'Taureau';
+        break;
+      case 'gemini':
+        this.symbolSign = 'Gémeaux';
+        break;
+      case 'cancer':
+        this.symbolSign = 'Cancer';
+        break;
+      case 'leo':
+        this.symbolSign = 'Lion';
+        break;
+      case 'virgo':
+        this.symbolSign = 'Vierge';
+        break;
+      case 'libra':
+        this.symbolSign = 'Balance';
+        break;
+      case 'scorpio':
+        this.symbolSign = 'Scorpion';
+        break;
+      case 'sagittarius':
+        this.symbolSign = 'Sagittaire';
+        break;
+      case 'capricorn':
+        this.symbolSign = 'Capricorne';
+        break;
+      default:
+        break;
     }
   }
 }

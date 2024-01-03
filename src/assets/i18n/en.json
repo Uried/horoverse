@@ -1,3 +1,6 @@
 {
-  "greeting": "Hello!"
+  "greeting": "Hello, enter your first name and birthday",
+  "firstNamePlaceholder": "First Name",
+  "seeHoroscopeButton": "See my horoscope",
+  "birthdayReminder": "Enter your birthday"
 }

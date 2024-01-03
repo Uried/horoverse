@@ -18,13 +18,19 @@ import 'firebase/compat/firestore';
 
 initializeApp(environment.firebase)
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
-   ServiceWorkerModule.register('../combined-sw.js', {enabled : environment.production}),
+    ServiceWorkerModule.register('../combined-sw.js', {
+      enabled: environment.production,
+    }),
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
@@ -33,9 +39,7 @@ initializeApp(environment.firebase)
       defaultLanguage: 'fr',
       loader: {
         provide: TranslateLoader,
-        useFactory: (http: HttpClient) => {
-          return new TranslateHttpLoader(http);
-        },
+        useFactory: HttpLoaderFactory,
         deps: [HttpClient],
       },
     }),
@@ -43,7 +47,7 @@ initializeApp(environment.firebase)
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
   providers: [

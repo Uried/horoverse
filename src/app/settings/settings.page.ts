@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, throwError } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 import { LOCALE_ID } from '@angular/core';
 import { HomePage } from '../home/home.page';
@@ -18,11 +19,13 @@ export class SettingsPage implements OnInit {
   jId!: string;
   horoscope!: string;
   sign!: string;
+  browserLanguage!: string;
 
   constructor(
     private router: Router,
     private http: HttpClient,
     private location: Location,
+    private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
   ) {}
 
@@ -31,6 +34,17 @@ export class SettingsPage implements OnInit {
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.jId = localStorage.getItem('jId') || '';
     this.onImageChange();
+
+    this.translateService.setDefaultLang('fr');
+
+    const browserLang = navigator.language;
+    this.browserLanguage = browserLang!;
+
+    if (this.browserLanguage == 'fr-FR') {
+          this.onTranslate()
+
+        }
+
   }
 
   goToHome() {
@@ -116,6 +130,49 @@ export class SettingsPage implements OnInit {
         break;
       default:
         this.choosedImage = '../../assets/signes/horo.png';
+        break;
+    }
+  }
+
+  onTranslate() {
+    switch (this.astrologicalSign) {
+      case 'aquarius':
+        this.astrologicalSign = 'Verseau';
+        break;
+      case 'pisces':
+        this.astrologicalSign = 'Poissons';
+        break;
+      case 'aries':
+        this.astrologicalSign = 'Bélier';
+        break;
+      case 'taurus':
+        this.astrologicalSign = 'Taureau';
+        break;
+      case 'gemini':
+        this.astrologicalSign = 'Gémeaux';
+        break;
+      case 'cancer':
+        this.astrologicalSign = 'Cancer';
+        break;
+      case 'leo':
+        this.astrologicalSign = 'Lion';
+        break;
+      case 'virgo':
+        this.astrologicalSign = 'Vierge';
+        break;
+      case 'libra':
+        this.astrologicalSign = 'Balance';
+        break;
+      case 'scorpio':
+        this.astrologicalSign = 'Scorpion';
+        break;
+      case 'sagittarius':
+        this.sign = 'Sagittaire';
+        break;
+      case 'capricorn':
+        this.astrologicalSign = 'Capricorne';
+        break;
+      default:
         break;
     }
   }

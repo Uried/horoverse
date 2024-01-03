@@ -23,7 +23,7 @@
     <input id="date-input" type="date"
       class="border border-[#ca9631] rounded-lg focus:outline-none mb-4 bg-transparent h-10 w-80 text-center font-bold"
       [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()" />
-    <p *ngIf="astrologicalSign" id="sign-output" class="font-bold text-2xl mb-4 text-[#ca9631]">{{ astrologicalSign }}</p>
+    <p *ngIf="astrologicalSign" id="sign-output" class="font-bold text-2xl mb-4 text-[#ca9631]">{{ symbolSign }}</p>
       <button
         class="bg-[#ca9631] hover:bg-[#ca8631] text-white rounded-lg ml- px-4 py-2 mt-6" (click)="createNewUser()">Voir mon horoscope</button>
   </div>

@@ -10,5 +10,9 @@
   "sagittarius": "Sagittaire",
   "capricorn": "Capricorne",
   "aquarius": "Verseau",
-  "pisces": "Poissons"
+  "pisces": "Poissons",
+  "greeting": "Bonjour, entrez votre prénom et votre date d'anniversaire",
+  "firstNamePlaceholder": "Prénom",
+  "seeHoroscopeButton": "Voir mon horoscope",
+  "birthdayReminder": "Entrez votre date d'anniversaire"
 }

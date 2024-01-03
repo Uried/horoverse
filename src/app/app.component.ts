@@ -3,6 +3,7 @@ import { environment } from '../environments/environment';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { SwUpdate } from '@angular/service-worker';
 import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -13,10 +14,19 @@ import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
 export class AppComponent implements OnInit {
   title = 'af-notification';
   message: any = null;
-  constructor(private swUpdate: SwUpdate) {
-     checkServiceWorkerConflicts();
+  constructor(
+    private swUpdate: SwUpdate,
+    private translateService: TranslateService
+  ) {
+    checkServiceWorkerConflicts();
+     this.translateService.setDefaultLang('fr');
   }
   ngOnInit(): void {
+
+    const browserLang = navigator.language;
+    console.log(browserLang);
+
+    this.translateService.use(browserLang.match(/fr|en/) ? browserLang : 'fr');
 
     this.requestPermission();
     this.listen();
