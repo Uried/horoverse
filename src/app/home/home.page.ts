@@ -1,7 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, DoCheck } from '@angular/core';
 //import { HoroscopeService } from '../sevices/horoscope/horoscope-api.service';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Route, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { franc } from 'franc-min';
 import axios from 'axios';
@@ -39,6 +40,12 @@ export class HomePage implements OnInit {
       this.phone = params['phone'];
       this.jId = params['jId'] || localStorage.getItem('jId');
     });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.getUserByjId();
+      });
   }
 
   ngOnInit() {
@@ -50,7 +57,15 @@ export class HomePage implements OnInit {
     const browserLang = navigator.language;
 
     this.browserLanguage = browserLang!;
+
+      if (this.browserLanguage == 'fr-FR') {
+         this.onDayTranslate();
+         this.onMonthTranslate();
+      }
+
   }
+
+
 
   getUserByjId() {
     console.log(this.jId);
@@ -137,9 +152,7 @@ export class HomePage implements OnInit {
         });
         if (this.browserLanguage == 'fr-FR') {
           this.translateHoroscope(); // Appeler translateHoroscope() ici
-          this.onTranslate();
-          this.onDayTranslate();
-          this.onMonthTranslate()
+          this.onTranslate()
         }
       });
     } catch (error) {
@@ -366,6 +379,6 @@ export class HomePage implements OnInit {
   }
 
   goToSettings() {
-    this.router.navigateByUrl('/settings', { skipLocationChange: true });
+    this.router.navigateByUrl('/settings', { skipLocationChange: false });
   }
 }

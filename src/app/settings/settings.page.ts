@@ -202,7 +202,7 @@ export class SettingsPage implements OnInit {
         })
       )
       .subscribe(() => {
-        this.router.navigateByUrl('/home', { skipLocationChange: true });
+        this.router.navigateByUrl('/home', { skipLocationChange: false });
       });
   }
 }
