@@ -6,14 +6,15 @@ importScripts(
 );
 
 firebase.initializeApp({
-  apiKey: "AIzaSyCcI8hZH1HuIk7KCgq1_wrcZSQs63Yg0dY",
-  authDomain: "horoverse-15fe0.firebaseapp.com",
-  projectId: "horoverse-15fe0",
-  storageBucket: "horoverse-15fe0.appspot.com",
-  messagingSenderId: "388347383481",
-  appId: "1:388347383481:web:1a7566fd701861ff49d568",
-  measurementId: "G-RG504RKNKP",
+  apiKey: "AIzaSyB-S65qbk6T29gOA6N4y2EFm26iMwD2I1M",
+  authDomain: "horoverse-b0fc1.firebaseapp.com",
+  projectId: "horoverse-b0fc1",
+  storageBucket: "horoverse-b0fc1.appspot.com",
+  messagingSenderId: "294054403432",
+  appId: "1:294054403432:web:101ac087726d586f6b4add",
+  measurementId: "G-HCW34FKR83",
 });
 
 var messaging = firebase.messaging();
+
 

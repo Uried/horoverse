@@ -32,7 +32,7 @@
               },
               "src/favicon.ico",
               "src/assets",
-              "src/combined-sw.js",
+              "src/manifest.json",
               "src/firebase-messaging-sw.js",
               "src/manifest.webmanifest",
               "src/manifest.webmanifest",

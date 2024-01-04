@@ -6,14 +6,14 @@ export const environment = {
   production: false,
 
   firebase: {
-    apiKey: 'AIzaSyBa11Ceiq4rt3vegjuu3tPzRxPeOZShLeU',
-    authDomain: 'horoverse-7c7d2.firebaseapp.com',
-    projectId: 'horoverse-7c7d2',
-    storageBucket: 'horoverse-7c7d2.appspot.com',
-    messagingSenderId: '654013131905',
-    appId: '1:654013131905:web:a72b50b5a007e94ebaf180',
-    measurementId: 'G-STTWXEC1MN',
-    vapidKey:'BH-66GTKiXjazaOiIQ2HoWJH0v3FNa2XhrZ-Hzn73Ykw4HENudTeP8Kv9n8Ihe9dRracGvcmS3ArLDIu49GdljA'
+    apiKey: 'AIzaSyB-S65qbk6T29gOA6N4y2EFm26iMwD2I1M',
+    authDomain: 'horoverse-b0fc1.firebaseapp.com',
+    projectId: 'horoverse-b0fc1',
+    storageBucket: 'horoverse-b0fc1.appspot.com',
+    messagingSenderId: '294054403432',
+    appId: '1:294054403432:web:101ac087726d586f6b4add',
+    measurementId: 'G-HCW34FKR83',
+    vapidKey: 'BFwBafeAzLnr2UUfCtfTWQVFocLkId8yMgX0HGy0KIRFjDsFBev9WGij2AbE86bil9xTf5X1biluInr3alUGmnw',
   },
 };
 

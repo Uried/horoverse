@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../environments/environment';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-import { SwUpdate } from '@angular/service-worker';
-import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
 import { TranslateService } from '@ngx-translate/core';
-
+import { AngularFireMessaging } from '@angular/fire/compat/messaging';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +12,15 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  title = 'af-notification';
-  message: any = null;
+
   constructor(
-    private swUpdate: SwUpdate,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private afMessaging: AngularFireMessaging,
+    private http: HttpClient
   ) {
-    checkServiceWorkerConflicts();
-     this.translateService.setDefaultLang('fr');
+    this.translateService.setDefaultLang('fr');
   }
+
   ngOnInit(): void {
 
     const browserLang = navigator.language;
@@ -28,9 +28,24 @@ export class AppComponent implements OnInit {
 
     this.translateService.use(browserLang.match(/fr|en/) ? browserLang : 'fr');
 
+    navigator.serviceWorker
+      .register('src/firebase-messaging-sw.js')
+      .then((registration) => {
+        console.log(
+          'Firebase Messaging Service Worker registered: ',
+          registration
+        );
+      })
+      .catch((err) => {
+        console.error(
+          'Error registering Firebase Messaging Service Worker: ',
+          err
+        );
+      });
+
     this.requestPermission();
-    this.listen();
   }
+
   requestPermission() {
     const messaging = getMessaging();
     getToken(messaging, { vapidKey: environment.firebase.vapidKey })
@@ -47,12 +62,35 @@ export class AppComponent implements OnInit {
       .catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
       });
+
+    this.afMessaging.requestToken.subscribe(
+      (token: any) => {
+        // Stockez le nouveau token FCM localement
+
+        this.updateFcmToken(token).subscribe(
+          () => {
+            console.log('Token FCM mis à jour dans la base de données.');
+          },
+          (error: any) => {
+            console.error('Erreur lors de la mise à jour du token FCM:', error);
+          }
+        );
+      },
+      (error) => {
+        console.error(
+          "Impossible de demander l'autorisation de notification:",
+          error
+        );
+      }
+    );
   }
-  listen() {
-    const messaging = getMessaging();
-    onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      this.message = payload;
-    });
+
+  updateFcmToken(token: string): Observable<any> {
+    // Effectuez une requête HTTP vers votre backend pour mettre à jour le token FCM dans la base de données
+    const jId = localStorage.getItem("jId")
+    const url = `https://apihoroverse.vercel.app/update-fcm-token/${jId}`;
+    const body = { token };
+
+    return this.http.put(url, body);
   }
 }

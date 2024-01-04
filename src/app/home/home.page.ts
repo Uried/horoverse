@@ -146,12 +146,12 @@ export class HomePage implements OnInit {
         this.horoscope = result.horoscope;
         console.log(result);
         result.forEach((obj: any) => {
-          console.log(obj.text);
+
           const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-          this.translateHoroscope(); // Appeler translateHoroscope() ici
+         //this.translateHoroscope(); // Appeler translateHoroscope() ici
           this.onTranslate()
         }
       });
