@@ -24,7 +24,7 @@ export class HoroscopesPage implements OnInit {
     this.browserLanguage = browserLang!;
     if (this.browserLanguage == 'fr-FR') {
       this.translateToFrench();
-      this.translateHoroscope(); // Appeler translateHoroscope() ici
+      
     }
     this.getHoroscopeBySunSign();
     this.onImageChange();
@@ -80,7 +80,7 @@ export class HoroscopesPage implements OnInit {
           this.onImageChange();
           this.onTranslate();
           if(this.browserLanguage == "fr-FR"){
-            //this.translateHoroscope();
+            this.translateHoroscope();
           }
         });
       });
