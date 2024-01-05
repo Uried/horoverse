@@ -16,10 +16,11 @@ declare var responsiveVoice: any;
 })
 export class HomePage implements OnInit {
   isOpenMenu = false;
+  home: string = 'Home';
+  news: string = 'News';
+  others: string = 'Others';
   sign!: string;
   horoscope!: string;
-  today!: string;
-  currentMonth!: string;
   pseudo!: string;
   phone!: string;
   jId!: string;
@@ -28,6 +29,7 @@ export class HomePage implements OnInit {
   choosedImage!: string;
   isRegistered: boolean = true;
   browserLanguage!: string;
+  horoTitle: string = 'My daily horoscope';
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +41,7 @@ export class HomePage implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.phone = params['phone'];
       this.jId = params['jId'] || localStorage.getItem('jId');
+      this.pseudo = params['pseudo'] || localStorage.getItem('pseudo');
     });
 
     this.router.events
@@ -50,22 +53,13 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.getUserByjId();
-    this.today = this.getCurrentDay();
-    this.currentMonth = this.getCurrentMonth();
+
     this.translateService.setDefaultLang('fr');
 
     const browserLang = navigator.language;
 
     this.browserLanguage = browserLang!;
-
-      if (this.browserLanguage == 'fr-FR') {
-         this.onDayTranslate();
-         this.onMonthTranslate();
-      }
-
   }
-
-
 
   getUserByjId() {
     console.log(this.jId);
@@ -88,6 +82,7 @@ export class HomePage implements OnInit {
             if (error.status === 404) {
               localStorage.setItem('jId', this.jId);
               localStorage.setItem('phone', this.phone);
+              localStorage.setItem('pseudo', this.pseudo);
               this.router.navigateByUrl('/astrosign');
             }
           }
@@ -146,30 +141,18 @@ export class HomePage implements OnInit {
         this.horoscope = result.horoscope;
         console.log(result);
         result.forEach((obj: any) => {
-
           const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-         this.translateHoroscope(); // Appeler translateHoroscope() ici
-          this.onTranslate()
+          this.translateHoroscope(); // Appeler translateHoroscope() ici
+          this.onTranslate();
+          this.horoTitle = 'Mon horoscope du jour';
         }
       });
     } catch (error) {
       console.error(error);
     }
-  }
-
-  getCurrentDay(): string {
-    const date = new Date();
-    const options = { weekday: 'long' } as const;
-    return date.toLocaleDateString('en-US', options);
-  }
-
-  getCurrentMonth(): string {
-    const date = new Date();
-    const options = { month: 'long' } as const;
-    return date.toLocaleDateString('en-US', options);
   }
 
   getLanguageForResponsiveVoice(text: string): string {
@@ -305,79 +288,11 @@ export class HomePage implements OnInit {
     }
   }
 
-  onDayTranslate() {
-    switch (this.today) {
-      case 'Monday':
-        this.today = 'Lundi';
-        break;
-      case 'Tuesday':
-        this.today = 'Mardi';
-        break;
-      case 'Wednesday':
-        this.today = 'Mercredi';
-        break;
-      case 'Thursday':
-        this.today = 'Jeudi';
-        break;
-      case 'Friday':
-        this.today = 'Vendredi';
-        break;
-      case 'Saturday':
-        this.today = 'Samedi';
-        break;
-      case 'Sunday':
-        this.today = 'Dimanche';
-        break;
-      default:
-        this.today = 'Unknown';
-        break;
-    }
+  translateToFrench() {
+    this.home = 'Acceuil';
+    this.news = 'Infos';
+    this.others = 'Others';
   }
-
-  onMonthTranslate() {
-    switch (this.currentMonth) {
-      case 'January':
-        this.currentMonth = 'Janvier';
-        break;
-      case 'February':
-        this.currentMonth = 'Février';
-        break;
-      case 'March':
-        this.currentMonth = 'Mars';
-        break;
-      case 'April':
-        this.currentMonth = 'Avril';
-        break;
-      case 'May':
-        this.currentMonth = 'Mai';
-        break;
-      case 'June':
-        this.currentMonth = 'Juin';
-        break;
-      case 'July':
-        this.currentMonth = 'Juillet';
-        break;
-      case 'August':
-        this.currentMonth = 'Août';
-        break;
-      case 'September':
-        this.currentMonth = 'Septembre';
-        break;
-      case 'October':
-        this.currentMonth = 'Octobre';
-        break;
-      case 'November':
-        this.currentMonth = 'Novembre';
-        break;
-      case 'December':
-        this.currentMonth = 'Décembre';
-        break;
-      default:
-        this.currentMonth = 'Unknown';
-        break;
-    }
-  }
-
   goToSettings() {
     this.router.navigateByUrl('/settings', { skipLocationChange: false });
   }

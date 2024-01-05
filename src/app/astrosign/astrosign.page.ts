@@ -34,6 +34,7 @@ export class AstrosignPage implements OnInit {
 
   ngOnInit() {
     this.jId = localStorage.getItem('jId') || '';
+    this.pseudo = localStorage.getItem('pseudo') || '';
     this.phone = parseInt(localStorage.getItem('phone') || '0');
     this.requestFirebaseToken();
 

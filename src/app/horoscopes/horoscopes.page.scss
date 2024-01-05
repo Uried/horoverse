@@ -1,0 +1,10 @@
+ion-content {
+  --ion-background-color: linear-gradient(#1a2d7d, #09154a);
+  // --background: url("../../assets/wave-frequency.gif") center/cover no-repeat fixed;
+  background-size: 100% 100%;
+}
+ion-item {
+  --border-style: none;
+  --border-width: 1px;
+  --border-color: var(--ion-color-medium);
+}
