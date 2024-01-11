@@ -25,8 +25,20 @@ const routes: Routes = [
     loadChildren: () => import('./horoscopes/horoscopes.module').then( m => m.HoroscopesPageModule)
   },
   {
-    path: 'news',
-    loadChildren: () => import('./news/news.module').then( m => m.NewsPageModule)
+    path: 'blogs',
+    loadChildren: () => import('./blogs/blogs.module').then( m => m.BlogsPageModule)
+  },
+  {
+    path: 'viewblog',
+    loadChildren: () => import('./viewblog/viewblog.module').then( m => m.ViewblogPageModule)
+  },
+  {
+    path: 'comment',
+    loadChildren: () => import('./comment/comment.module').then( m => m.CommentPageModule)
+  },
+  {
+    path: 'archives',
+    loadChildren: () => import('./archives/archives.module').then( m => m.ArchivesPageModule)
   },
 ];
 

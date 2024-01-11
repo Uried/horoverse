@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>archives</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="h-96 bg-[#1a2d7d] mt-6 rounded-md">
+    <div class="h-auto bg-slate-50 text-black">
+      <div class="h-10  bg-[#1a2d7d] ">
+        <h2 class="text-center font-bold py-2 text-white">Horoscope du Lundi</h2>
+      </div>
+      <p class="mr-2 ml-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius autem possimus quia sequi
+        deserunt officia atque ab rem,
+        hic ipsam at beatae vel magnam cum? Quaerat quis in odio quam laboriosam alias! Error, at ratione, doloremque
+        ducimus
+        iste maxime ab modi architecto nam nihil laborum? Voluptatem odit quaerat illum est eveniet omnis. Doloremque
+        magni
+        consectetur quo deserunt sapiente repellendus quisquam non, porro ipsa molestias. Quod, quasi odit. Tempora
+        porro atque
+        vel ad omnis ab architecto animi dolores iusto, corporis voluptatibus.</p>
+    </div>
+    <div class="h-10 border-t border-stone-200">
+      <div class="flex mt-1.5">
+        <div class="flex bg-slate-100 ml-2 rounded-full w-72">
+          <textarea placeholder="Ecrivez un commentaire..." class="h-10 rounded-full outline-none w-[85%] pl-3 resize-none text-black bg-slate-100"></textarea>
+          <div><i class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
+        </div>
+
+        <i class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-8" (click)="showComments()"></i>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -14,13 +14,23 @@
       <p class="mt-1 font-bold text-center text-2xl text-white">{{sunsign}}</p>
     </div>
 
+    <div class="ml-auto mr-auto text-gray-400">
+      <em class="text-[80%]">{{signInterval}}</em>
+    </div>
+
     <div *ngIf="horoscope" class="w-full mt-3 shadow-inner shadow-blue-700 h-auto rounded-md ">
-      <ion-item color="primary-shade" class="border-b">
-        <p class="font-bold text-[84%]">{{guidePhrase}}</p>
-        <ion-select [(ngModel)]="selectedSign" class="text-white left-12" (ionChange)="getHoroscopeBySunSign()">
-          <ion-select-option *ngFor="let sign of signs" [value]="sign" class="text-white">{{ sign }}</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div color="primary-shade" class="border-b h-16">
+        <h4 class="font-bold mt-2 ml-1">{{guidePhrase}}</h4>
+        <div class="flex">
+          <input id="date-input" type="date" [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()"
+            class="border border-[#ca9631] rounded-lg focus:outline-none mb-4 bg-transparent h-6 w-96 ml-6 mt-3 text-center font-bold" />
+          <ion-select [(ngModel)]="selectedSign" class="text-white left-16" (ionChange)="getHoroscopeBySunSign()">
+            <ion-select-option *ngFor="let sign of signs" [value]="sign" class="text-white">{{ sign
+              }}</ion-select-option>
+          </ion-select>
+        </div>
+
+      </div>
       <div class="">
         <p class=" ml-2 max-h-80 overflow-y-scroll">{{ horoscope }}</p>
       </div>
@@ -38,7 +48,7 @@
         <ion-icon name="sunny"></ion-icon>
         Horoscopes
       </ion-tab-button>
-      <ion-tab-button tab="newspaper" class="hover: text-[#ca9631]" routerLink="/news">
+      <ion-tab-button tab="newspaper" class="hover: text-[#ca9631]" routerLink="/blogs">
         <ion-icon name="newspaper"></ion-icon>
         {{news}}
       </ion-tab-button>

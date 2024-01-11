@@ -24,7 +24,6 @@ export class HoroscopesPage implements OnInit {
     this.browserLanguage = browserLang!;
     if (this.browserLanguage == 'fr-FR') {
       this.translateToFrench();
-      
     }
     this.getHoroscopeBySunSign();
     this.onImageChange();
@@ -33,9 +32,11 @@ export class HoroscopesPage implements OnInit {
   home: string = 'Home';
   news: string = 'News';
   others: string = 'Others';
-  guidePhrase: string = 'Select an astrological sign';
+  guidePhrase: string = 'Choose a date or astrological sign';
+  selectedDate!: string;
   public horoscope: string = '';
   public selectedSign: string = 'aries';
+  signInterval: string = this.getZodiacDateRange(this.selectedSign);
   public choosedImage: string = '';
   public sunsign: string = '';
   public signs: string[] = [
@@ -79,8 +80,12 @@ export class HoroscopesPage implements OnInit {
           this.horoscope = text;
           this.onImageChange();
           this.onTranslate();
-          if(this.browserLanguage == "fr-FR"){
-            this.translateHoroscope();
+          this.signInterval = this.getZodiacDateRange(this.selectedSign);
+          if (this.browserLanguage == 'fr-FR') {
+            // this.translateHoroscope();
+            this.signInterval = this.getZodiacDateRange(this.selectedSign);
+          }else{
+            this.signInterval = this.getTranslatedZodiacDateRange(this.selectedSign);
           }
         });
       });
@@ -218,11 +223,182 @@ export class HoroscopesPage implements OnInit {
     }
   }
 
+  getAstrologicalSign() {
+    const date = new Date(this.selectedDate);
+    this.selectedSign = this.calculateAstrologicalSign(date);
+    this.getHoroscopeBySunSign();
+  }
+
+  calculateAstrologicalSign(date: any) {
+    const month = date.getMonth() + 1; // Les mois sont indexés à partir de 0, donc on ajoute 1
+    const day = date.getDate();
+
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
+      return 'aquarius';
+    } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
+      return 'pisces';
+    } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
+      return 'aries';
+    } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
+      return 'taurus';
+    } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
+      return 'gemini';
+    } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
+      return 'cancer';
+    } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
+      return 'leo';
+    } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
+      return 'virgo';
+    } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
+      return 'libra';
+    } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
+      return 'scorpio';
+    } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
+      return 'sagittarius';
+    } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
+      return 'capricorn';
+    } else {
+      return "Entrez votre date d'anniversaire";
+    }
+  }
+
+  getZodiacDateRange(sign: string): string {
+    const dateRanges: Record<
+      string,
+      {
+        start: { day: number; month: string };
+        end: { day: number; month: string };
+      }
+    > = {
+      aries: {
+        start: { day: 21, month: 'mars' },
+        end: { day: 19, month: 'avril' },
+      },
+      taurus: {
+        start: { day: 20, month: 'avril' },
+        end: { day: 20, month: 'mai' },
+      },
+      gemini: {
+        start: { day: 21, month: 'mai' },
+        end: { day: 20, month: 'juin' },
+      },
+      cancer: {
+        start: { day: 21, month: 'juin' },
+        end: { day: 22, month: 'juillet' },
+      },
+      leo: {
+        start: { day: 23, month: 'juillet' },
+        end: { day: 22, month: 'août' },
+      },
+      virgo: {
+        start: { day: 23, month: 'août' },
+        end: { day: 22, month: 'septembre' },
+      },
+      libra: {
+        start: { day: 23, month: 'septembre' },
+        end: { day: 22, month: 'octobre' },
+      },
+      scorpio: {
+        start: { day: 23, month: 'octobre' },
+        end: { day: 21, month: 'novembre' },
+      },
+      sagittarius: {
+        start: { day: 22, month: 'novembre' },
+        end: { day: 21, month: 'décembre' },
+      },
+      capricorn: {
+        start: { day: 22, month: 'décembre' },
+        end: { day: 19, month: 'janvier' },
+      },
+      aquarius: {
+        start: { day: 20, month: 'janvier' },
+        end: { day: 18, month: 'février' },
+      },
+      pisces: {
+        start: { day: 19, month: 'février' },
+        end: { day: 20, month: 'mars' },
+      },
+    };
+
+    const dateRange = dateRanges[sign.toLowerCase()];
+    if (dateRange) {
+      return `${dateRange.start.day} ${dateRange.start.month} - ${dateRange.end.day} ${dateRange.end.month}`;
+    } else {
+      return 'Invalid sign';
+    }
+  }
+
+  getTranslatedZodiacDateRange(sign: string): string {
+    const dateRanges: Record<
+      string,
+      {
+        start: { day: number; month: string };
+        end: { day: number; month: string };
+      }
+    > = {
+      aries: {
+        start: { day: 21, month: 'march' },
+        end: { day: 19, month: 'april' },
+      },
+      taurus: {
+        start: { day: 20, month: 'april' },
+        end: { day: 20, month: 'may' },
+      },
+      gemini: {
+        start: { day: 21, month: 'may' },
+        end: { day: 20, month: 'june' },
+      },
+      cancer: {
+        start: { day: 21, month: 'june' },
+        end: { day: 22, month: 'july' },
+      },
+      leo: {
+        start: { day: 23, month: 'july' },
+        end: { day: 22, month: 'august' },
+      },
+      virgo: {
+        start: { day: 23, month: 'august' },
+        end: { day: 22, month: 'september' },
+      },
+      libra: {
+        start: { day: 23, month: 'september' },
+        end: { day: 22, month: 'october' },
+      },
+      scorpio: {
+        start: { day: 23, month: 'october' },
+        end: { day: 21, month: 'november' },
+      },
+      sagittarius: {
+        start: { day: 22, month: 'november' },
+        end: { day: 21, month: 'décember' },
+      },
+      capricorn: {
+        start: { day: 22, month: 'décember' },
+        end: { day: 19, month: 'january' },
+      },
+      aquarius: {
+        start: { day: 20, month: 'janvier' },
+        end: { day: 18, month: 'février' },
+      },
+      pisces: {
+        start: { day: 19, month: 'febuary' },
+        end: { day: 20, month: 'march' },
+      },
+    };
+
+    const dateRange = dateRanges[sign.toLowerCase()];
+    if (dateRange) {
+      return `${dateRange.start.day} ${dateRange.start.month} - ${dateRange.end.day} ${dateRange.end.month}`;
+    } else {
+      return 'Invalid sign';
+    }
+  }
+
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
     this.others = 'Others';
-    this.guidePhrase = 'Sélectionnez un signe astrologique';
+    this.guidePhrase = 'Choisissez une date ou un signe astrologique';
     this.onTranslate();
   }
 }

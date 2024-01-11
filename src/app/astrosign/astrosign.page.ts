@@ -19,7 +19,6 @@ export class AstrosignPage implements OnInit {
     private afMessaging: AngularFireMessaging,
     @Inject(LOCALE_ID) public locale: string
   ) {
-    checkServiceWorkerConflicts();
   }
 
   selectedDate!: string;

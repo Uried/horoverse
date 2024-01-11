@@ -15,6 +15,8 @@ import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import 'firebase/messaging';
 import 'firebase/compat/firestore';
+import { ViewblogPageModule } from './viewblog/viewblog.module';
+import { BlogsPageModule } from './blogs/blogs.module';
 
 initializeApp(environment.firebase)
 
@@ -27,6 +29,8 @@ export function HttpLoaderFactory(http: HttpClient) {
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    BlogsPageModule,
+    ViewblogPageModule,
     AngularFireModule.initializeApp(environment.firebase),
     ServiceWorkerModule.register('../combined-sw.js', {
       enabled: environment.production,
