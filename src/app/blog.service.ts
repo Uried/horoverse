@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class BlogService {
   constructor(private http: HttpClient) {}
 
-  apiUrl = 'http://localhost:5900/blogs/';
+  apiUrl = 'https://apihoroverse.vercel.app/blogs/';
 
   getBlogById(id: string): Observable<any> {
     const _id = id;

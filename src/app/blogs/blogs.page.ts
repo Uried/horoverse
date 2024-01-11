@@ -134,10 +134,12 @@ export class BlogsPage implements OnInit {
 
   getBlogs() {
     try {
-      this.http.get(`http://localhost:5900/blogs/`).subscribe((blogs: any) => {
-        console.log(blogs.data);
-        this.blogs = blogs.data;
-      });
+      this.http
+        .get(`https://apihoroverse.vercel.app/blogs/`)
+        .subscribe((blogs: any) => {
+          console.log(blogs.data);
+          this.blogs = blogs.data;
+        });
     } catch (error) {
       console.log(error);
     }
