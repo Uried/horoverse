@@ -39,8 +39,8 @@
         </div>
       </div>
 
-      <i class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-4"
-        (click)="showComments(publication._id, publication.date)"></i>
+      <i [routerLink]="['/comment', publication._id, publication.date]" class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-4"
+        ></i>
     </div>
   </div>
 </div>

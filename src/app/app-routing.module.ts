@@ -29,11 +29,11 @@ const routes: Routes = [
     loadChildren: () => import('./blogs/blogs.module').then( m => m.BlogsPageModule)
   },
   {
-    path: 'viewblog',
+    path: 'viewblog/:id',
     loadChildren: () => import('./viewblog/viewblog.module').then( m => m.ViewblogPageModule)
   },
   {
-    path: 'comment',
+    path: 'comment/:id/:date',
     loadChildren: () => import('./comment/comment.module').then( m => m.CommentPageModule)
   },
   {

@@ -151,7 +151,7 @@ export class HomePage implements OnInit {
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-         this.translateHoroscope(); // Appeler translateHoroscope() ici
+         //this.translateHoroscope(); // Appeler translateHoroscope() ici
           this.onTranslate();
           this.horoTitle = 'Mon horoscope du jour';
           this.translateToFrench()
@@ -191,7 +191,6 @@ export class HomePage implements OnInit {
   }
 
   getVoiceForLanguage(languageCode: string): string {
-    // Correspondance entre les codes de langue et les voix disponibles
     const voiceMap: { [key: string]: string } = {
       eng: 'US English Female',
       fra: 'French Female',

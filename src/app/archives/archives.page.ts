@@ -46,8 +46,8 @@ export class ArchivesPage implements OnInit {
   getAllPublications() {
     try {
       this.publicationService
-        .getAllPublications()
-        .subscribe((publications: any) => {
+        .getAllPublications().subscribe(
+          (publications: any) => {
           this.publications = publications;
         });
     } catch (error) {

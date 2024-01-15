@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { BlogService } from '../blog.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 
 @Component({
@@ -21,12 +21,14 @@ export class ViewblogPage implements OnInit {
   constructor(private translateService: TranslateService,
     private router : Router,
     private blogService: BlogService,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private route: ActivatedRoute
+    ) {
 
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe(() => {
-          this.getBlog(this.idBlog);
+          this.getBlog();
         });
     }
 
@@ -40,17 +42,15 @@ export class ViewblogPage implements OnInit {
 
     }
 
-    this.getBlog(this.idBlog)
+    this.getBlog()
   }
 
-  getBlog(id: string){
-    this.idBlog = localStorage.getItem('idBlog')!
-    console.log(this.idBlog);
-
-    this.blogService.getBlogById(this.idBlog).subscribe(
+  getBlog(){
+     const idBlog = this.route.snapshot.paramMap.get('id')!;
+     this.idBlog = idBlog
+    this.blogService.getBlogById(idBlog).subscribe(
       (blog: any) => {
         // Utilisez les données du blog ici
-        console.log(blog);
         this.title = blog.title
         this.image = blog.image
         this.content = blog.content
@@ -62,5 +62,5 @@ export class ViewblogPage implements OnInit {
   }
 
 
- 
+
 }

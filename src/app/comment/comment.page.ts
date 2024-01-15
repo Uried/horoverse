@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { PublicationService } from '../sevices/publication/publication.service';
 import { TranslateService } from '@ngx-translate/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
-
-
+import axios from 'axios';
 
 @Component({
   selector: 'app-comment',
@@ -12,8 +11,8 @@ import { filter } from 'rxjs';
   styleUrls: ['./comment.page.scss'],
 })
 export class CommentPage implements OnInit {
-  idPub: string = localStorage.getItem('idPub') || '';
-  datePub: string = localStorage.getItem('datePub') || '';
+  idPub!: string
+  datePub!: string
   pseudo: string = localStorage.getItem('pseudo') || '';
   publication!: any;
   publicationContent!: string;
@@ -29,24 +28,59 @@ export class CommentPage implements OnInit {
   constructor(
     private publicationService: PublicationService,
     private translateService: TranslateService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.getPublicationComments();
-      });
+    
   }
 
   ngOnInit() {
     this.translateService.setDefaultLang('fr');
-
     const browserLang = navigator.language;
-
+    this.getPublicationComments();
     this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
+  }
+
+  async translateHoroscope() {
+    const url = `https://api.mymemory.translated.net/get`;
+
+    const horoscopePhrases = this.segmentText(this.publicationContent, '.'); // Segmenter par phrases
+
+    const translatedPhrases = [];
+
+    try {
+      for (const phrase of horoscopePhrases) {
+        const response = await axios.get(url, {
+          params: {
+            q: phrase.trim(), // Supprimer les espaces en début et fin de phrase
+            langpair: `en|fr`,
+          },
+        });
+
+        const translatedPhrase = response.data.responseData.translatedText;
+
+        // Vérifier si la traduction est valide avant de l'ajouter
+        if (
+          translatedPhrase &&
+          translatedPhrase !==
+            'NO QUERY SPECIFIED. EXAMPLE REQUEST: GET?Q=HELLO&LANGPAIR=EN|IT'
+        ) {
+          translatedPhrases.push(translatedPhrase);
+        }
+      }
+
+      let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
+      translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
+      this.publicationContent = translatedHoroscope;
+      console.log(this.publicationContent); // Afficher le résultat en console
+    } catch (error) {
+      console.error(error);
     }
+  }
+
+  segmentText(text: any, delimiter: any) {
+    const segments = text.split(delimiter);
+    return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
   }
 
   showResponseZone() {
@@ -65,17 +99,25 @@ export class CommentPage implements OnInit {
   }
 
   getPublicationComments() {
+    const idPub = this.route.snapshot.paramMap.get('id')!;
+    const datePub = this.route.snapshot.paramMap.get('date')
+    this.datePub = datePub!
+    this.idPub = idPub
     this.publicationService
-      .getPublicationById(this.idPub)
+      .getPublicationById(idPub)
       .subscribe((publication: any) => {
         this.publicationContent = publication[this.sign];
+        if (this.browserLanguage == 'fr-FR') {
+          //this.translateHoroscope();
+
+          localStorage.setItem('frenchHoroscope', this.publicationContent);
+        }
       });
 
     this.publicationService
-      .getComments(this.idPub)
+      .getComments(idPub)
       .subscribe((comments: any) => {
         this.comments = comments;
-
         comments.forEach((element: any) => {
           console.log(element.responses);
         });
@@ -96,7 +138,7 @@ export class CommentPage implements OnInit {
           .subscribe(() => {
             console.log('comment added');
             this.getPublicationComments();
-            this.commentContent = ""
+            this.commentContent = '';
           });
       } catch (error) {
         console.log(error);
@@ -124,7 +166,7 @@ export class CommentPage implements OnInit {
         .addResponse(this.idPub, commentId, response)
         .subscribe(() => {
           this.getPublicationComments();
-          this.responseContent = ""
+          this.responseContent = '';
         });
     }
   }
@@ -208,8 +250,9 @@ export class CommentPage implements OnInit {
     return `${day}-${month}-${year}`;
   }
 
-  removeIdPub(){
-    localStorage.removeItem('idPub')
-    localStorage.removeItem("datePub")
+  backToAvis() {
+    localStorage.removeItem('idPub');
+    localStorage.removeItem('datePub');
+    this.router.navigateByUrl("/archives")
   }
 }
