@@ -7,7 +7,7 @@
 
     <div slot="top" class="mt-4 bg-[#f5f5f5] h-full overflow-y-scroll">
       <div *ngFor="let blog of blogs"
-        class="flex mt-3 bg-white text-black w-[95%] h-[15%] ml-auto mr-auto rounded-md shadow-md"
+        class="flex mt-3 bg-white text-black w-[95%] h-[16%] ml-auto mr-auto rounded-md shadow-md"
         (click)="getBlog(blog._id)">
         <div><img src="{{blog.image}}" alt="" class="h-full w-48 rounded-tl-md rounded-bl-md"></div>
         <div class="block py-4 ml-2 mt-[-4%]">

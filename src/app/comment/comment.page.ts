@@ -47,7 +47,6 @@ export class CommentPage implements OnInit {
     this.browserLanguage = browserLang!;
     if (this.browserLanguage == 'fr-FR') {
     }
-    this.getPublicationComments();
   }
 
   showResponseZone() {
