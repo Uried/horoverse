@@ -4,7 +4,7 @@
   <ion-tabs>
     <div class="flex text-white mt-3 text-xl font-bold" slot="top">
       <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/home"></i>
-      <div class="ml-[32%]">Horoscopes</div>
+      <div class="ml-[28%]">Horoscopes</div>
     </div>
 
     <div class="ml-auto mr-auto">
@@ -18,7 +18,7 @@
       <em class="text-[80%]">{{signInterval}}</em>
     </div>
 
-    <div *ngIf="horoscope" class="w-full mt-3 shadow-inner shadow-blue-700 h-auto rounded-md ">
+    <div *ngIf="horoscope" class="w-full mt-3 shadow-inner pb-1 shadow-blue-700 h-auto rounded-md ">
       <div color="primary-shade" class="border-b h-16">
         <h4 class="font-bold mt-2 ml-1">{{guidePhrase}}</h4>
         <div class="flex">

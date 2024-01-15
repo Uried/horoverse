@@ -151,7 +151,7 @@ export class HomePage implements OnInit {
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-         this.translateHoroscope(); // Appeler translateHoroscope() ici
+         //this.translateHoroscope(); // Appeler translateHoroscope() ici
           this.onTranslate();
           this.horoTitle = 'Mon horoscope du jour';
           this.translateToFrench()

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PublicationService } from '../sevices/publication/publication.service';
 import { TranslateService } from '@ngx-translate/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 
 
@@ -26,8 +28,16 @@ export class CommentPage implements OnInit {
 
   constructor(
     private publicationService: PublicationService,
-    private translateService: TranslateService
-  ) {}
+    private translateService: TranslateService,
+    private router: Router
+  ) {
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.getPublicationComments();
+      });
+  }
 
   ngOnInit() {
     this.translateService.setDefaultLang('fr');
