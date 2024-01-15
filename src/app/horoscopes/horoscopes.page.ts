@@ -82,7 +82,7 @@ export class HoroscopesPage implements OnInit {
           this.onTranslate();
           this.signInterval = this.getZodiacDateRange(this.selectedSign);
           if (this.browserLanguage == 'fr-FR') {
-           // this.translateHoroscope();
+            this.translateHoroscope();
             this.signInterval = this.getZodiacDateRange(this.selectedSign);
           }else{
             this.signInterval = this.getTranslatedZodiacDateRange(this.selectedSign);

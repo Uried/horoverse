@@ -31,7 +31,7 @@ export class CommentPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    
+
   }
 
   ngOnInit() {
@@ -108,7 +108,7 @@ export class CommentPage implements OnInit {
       .subscribe((publication: any) => {
         this.publicationContent = publication[this.sign];
         if (this.browserLanguage == 'fr-FR') {
-          //this.translateHoroscope();
+          this.translateHoroscope();
 
           localStorage.setItem('frenchHoroscope', this.publicationContent);
         }
