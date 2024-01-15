@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { franc } from 'franc-min';
 import axios from 'axios';
 import { LOCALE_ID } from '@angular/core';
+import { PublicationService } from '../sevices/publication/publication.service';
 
 declare var responsiveVoice: any;
 @Component({
@@ -18,7 +19,7 @@ export class HomePage implements OnInit {
   isOpenMenu = false;
   home: string = 'Home';
   news: string = 'News';
-  others: string = 'Others';
+  opinion: string = 'Opinions';
   sign!: string;
   horoscope!: string;
   pseudo!: string;
@@ -36,6 +37,7 @@ export class HomePage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private translateService: TranslateService,
+    private publicationService: PublicationService,
     @Inject(LOCALE_ID) public locale: string
   ) {
     this.route.queryParams.subscribe((params) => {
@@ -55,11 +57,15 @@ export class HomePage implements OnInit {
     this.getUserByjId();
 
     this.translateService.setDefaultLang('fr');
-
+    if (this.browserLanguage == 'fr-FR') {
+      this.translateToFrench();
+    }
     const browserLang = navigator.language;
 
     this.browserLanguage = browserLang!;
   }
+
+
 
   getUserByjId() {
     console.log(this.jId);
@@ -145,9 +151,10 @@ export class HomePage implements OnInit {
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-          //this.translateHoroscope(); // Appeler translateHoroscope() ici
+         this.translateHoroscope(); // Appeler translateHoroscope() ici
           this.onTranslate();
           this.horoTitle = 'Mon horoscope du jour';
+          this.translateToFrench()
         }
       });
     } catch (error) {
@@ -291,7 +298,7 @@ export class HomePage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.others = 'Others';
+    this.opinion = 'Avis';
   }
   goToSettings() {
     this.router.navigateByUrl('/settings', { skipLocationChange: false });

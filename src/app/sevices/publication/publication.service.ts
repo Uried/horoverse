@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PublicationService {
-  private apiUrl = 'http://localhost:5900/publications/';
+  private apiUrl = 'https://apihoroverse.vercel.app/publications/';
 
   constructor(private http: HttpClient) {}
 

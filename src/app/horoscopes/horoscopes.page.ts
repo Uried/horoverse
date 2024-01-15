@@ -31,7 +31,7 @@ export class HoroscopesPage implements OnInit {
   browserLanguage!: string;
   home: string = 'Home';
   news: string = 'News';
-  others: string = 'Others';
+  opinion: string = 'Opinions';
   guidePhrase: string = 'Choose a date or astrological sign';
   selectedDate!: string;
   public horoscope: string = '';
@@ -82,7 +82,7 @@ export class HoroscopesPage implements OnInit {
           this.onTranslate();
           this.signInterval = this.getZodiacDateRange(this.selectedSign);
           if (this.browserLanguage == 'fr-FR') {
-            // this.translateHoroscope();
+            this.translateHoroscope();
             this.signInterval = this.getZodiacDateRange(this.selectedSign);
           }else{
             this.signInterval = this.getTranslatedZodiacDateRange(this.selectedSign);
@@ -397,7 +397,7 @@ export class HoroscopesPage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.others = 'Others';
+    this.opinion = 'Avis';
     this.guidePhrase = 'Choisissez une date ou un signe astrologique';
     this.onTranslate();
   }

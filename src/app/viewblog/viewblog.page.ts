@@ -17,9 +17,7 @@ export class ViewblogPage implements OnInit {
   image!: string
   idBlog: string = localStorage.getItem("idBlog") || ""
   blog!: any[];
-  home: string = 'Home';
-  news: string = 'News';
-  others: string = 'Others';
+
   constructor(private translateService: TranslateService,
     private router : Router,
     private blogService: BlogService,
@@ -39,7 +37,7 @@ export class ViewblogPage implements OnInit {
 
     this.browserLanguage = browserLang!;
     if (this.browserLanguage == 'fr-FR') {
-      this.translateToFrench();
+
     }
 
     this.getBlog(this.idBlog)
@@ -64,9 +62,5 @@ export class ViewblogPage implements OnInit {
   }
 
 
-  translateToFrench() {
-    this.home = 'Acceuil';
-    this.news = 'Infos';
-    this.others = 'Others';
-  }
+ 
 }

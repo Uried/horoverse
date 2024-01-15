@@ -1,35 +1,49 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>archives</ion-title>
-  </ion-toolbar>
+<ion-header>
+  <div class="flex text-white h-10 py-2 text-xl font-bold bg-[#1a2d7d]">
+    <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/home"></i>
+    <div class="ml-[32%]">Avis</div>
+  </div>
 </ion-header>
-
 <ion-content [fullscreen]="true">
 
-  <div class="h-96 bg-[#1a2d7d] mt-6 rounded-md">
-    <div class="h-auto bg-slate-50 text-black">
-      <div class="h-10  bg-[#1a2d7d] ">
-        <h2 class="text-center font-bold py-2 text-white">Horoscope du Lundi</h2>
-      </div>
-      <p class="mr-2 ml-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius autem possimus quia sequi
-        deserunt officia atque ab rem,
-        hic ipsam at beatae vel magnam cum? Quaerat quis in odio quam laboriosam alias! Error, at ratione, doloremque
-        ducimus
-        iste maxime ab modi architecto nam nihil laborum? Voluptatem odit quaerat illum est eveniet omnis. Doloremque
-        magni
-        consectetur quo deserunt sapiente repellendus quisquam non, porro ipsa molestias. Quod, quasi odit. Tempora
-        porro atque
-        vel ad omnis ab architecto animi dolores iusto, corporis voluptatibus.</p>
-    </div>
-    <div class="h-10 border-t border-stone-200">
-      <div class="flex mt-1.5">
-        <div class="flex bg-slate-100 ml-2 rounded-full w-72">
-          <textarea placeholder="Ecrivez un commentaire..." class="h-10 rounded-full outline-none w-[85%] pl-3 resize-none text-black bg-slate-100"></textarea>
-          <div><i class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
-        </div>
+<div class="mb-6">
+<div *ngIf="doneIcon" class="z-20 relative">
+  <img src="../../assets/icon/done.png" alt="" class="w-44 mt-48 absolute  left-1/2 transform -translate-x-1/2">
+</div>
 
-        <i class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-8" (click)="showComments()"></i>
+<div *ngFor="let publication of publications" class="h-auto bg-[#1a2d7d] w-[97%] ml-auto mr-auto mt-4 rounded-md">
+
+  <div class="h-10  bg-[#1a2d7d] rounded-md ">
+    <h2 class="text-center font-bold py-2 text-white">Horoscope {{formatDate(publication.date)}}</h2>
+
+  </div>
+
+  <div class="w-full bg-white">
+    <p class="mr-2 ml-2 text-black py-3">{{publication[sign]}}</p>
+  </div>
+
+  <div class="fixed inset-0 z-20 flex items-center justify-center mb-96 text-white" *ngIf="showModal">
+    <div class="bg-[#1a2d7d] bg-opacity-50 border border-[#ca9631] rounded">
+      <div class="bg-[#1a2d7d] p-4 rounded">
+        <p>Ecrivez quelque chose</p>
       </div>
     </div>
   </div>
+
+  <div class="h-14 border-t border-stone-200">
+    <div class="flex mt-1.5 py-0.5">
+      <div class="flex bg-slate-100 ml-2 rounded-full w-[75%]">
+        <textarea placeholder="Ecrivez un commentaire..." [(ngModel)]="commentContent" name="commentContent"
+          class="h-10 rounded-full outline-none w-[85%] pl-3 resize-none text-black bg-slate-100"></textarea>
+        <div (click)="addComment(publication._id)"><i class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i>
+        </div>
+      </div>
+
+      <i class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-4"
+        (click)="showComments(publication._id, publication.date)"></i>
+    </div>
+  </div>
+</div>
+</div>
+
 </ion-content>

@@ -17,7 +17,7 @@ export class BlogsPage implements OnInit {
   idBlog!: string;
   home: string = 'Home';
   news: string = 'News';
-  others: string = 'Others';
+  opinion: string = 'Opinions';
   blogs: any[] = [];
   blogDate!: string;
 
@@ -50,7 +50,7 @@ export class BlogsPage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.others = 'Others';
+    this.opinion = 'Avis';
   }
 
   truncateText(text: string, maxLength: number): string {
@@ -150,7 +150,5 @@ export class BlogsPage implements OnInit {
     this.router.navigateByUrl('/viewblog');
   }
 
-  clearStorage(){
-    //localStorage.removeItem('idBlog')
-  }
+ 
 }

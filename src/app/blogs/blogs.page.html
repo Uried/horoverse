@@ -1,23 +1,24 @@
 <ion-content [fullscreen]="true">
   <ion-tabs>
     <div class="flex text-white mt-3 text-xl font-bold bg-[#1a2d7d]" slot="top">
-      <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/home" (click)="clearStorage()"></i>
+      <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/home"></i>
       <div class="ml-[32%]">Blogs</div>
     </div>
 
-  <div slot="top" class="mt-4 bg-[#f5f5f5] h-full overflow-y-scroll">
-    <div *ngFor="let blog of blogs"
-      class="flex mt-3 bg-white text-black w-[95%] h-[15%] ml-auto mr-auto rounded-md shadow-md" (click)="getBlog(blog._id)">
-      <div><img src="{{blog.image}}" alt="" class="h-full w-48 rounded-tl-md rounded-bl-md"></div>
-      <div class="block py-4 ml-2 mt-[-4%]">
-        <div>
-          <p class="text-right text-[70%] text-gray-400 mr-3">{{formatDate(blog.date)}}</p>
-          <h5 class="font-bold">{{ truncateText(blog.title, 22) }}</h5>
+    <div slot="top" class="mt-4 bg-[#f5f5f5] h-full overflow-y-scroll">
+      <div *ngFor="let blog of blogs"
+        class="flex mt-3 bg-white text-black w-[95%] h-[15%] ml-auto mr-auto rounded-md shadow-md"
+        (click)="getBlog(blog._id)">
+        <div><img src="{{blog.image}}" alt="" class="h-full w-48 rounded-tl-md rounded-bl-md"></div>
+        <div class="block py-4 ml-2 mt-[-4%]">
+          <div>
+            <p class="text-right text-[70%] text-gray-400 mr-3">{{formatDate(blog.date)}}</p>
+            <h5 class="font-bold">{{ truncateText(blog.title, 22) }}</h5>
+          </div>
+          <p class="mr-2">{{ truncateText(blog.content, 54) }}</p>
         </div>
-        <p class="mr-2">{{ truncateText(blog.content, 54) }}</p>
       </div>
     </div>
-  </div>
 
 
 
@@ -34,9 +35,9 @@
         <ion-icon name="newspaper"></ion-icon>
         {{news}}
       </ion-tab-button>
-      <ion-tab-button tab="list" class="hover: text-[#ca9631]">
-        <ion-icon name="list"></ion-icon>
-        {{others}}
+      <ion-tab-button tab="chatbubbles" class="hover: text-[#ca9631]" routerLink="/archives">
+        <ion-icon name="chatbubbles"></ion-icon>
+        {{opinion}}
       </ion-tab-button>
     </ion-tab-bar>
   </ion-tabs>

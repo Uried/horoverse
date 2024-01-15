@@ -11,7 +11,7 @@
 
     </div>
 
-    <div class="ml-auto mr-auto">
+    <div class="ml-auto max-h-44 mr-auto">
       <!-- image horoscope -->
 
       <img src={{choosedImage}} alt="" class="w-36 ml-auto mr-auto">
@@ -44,13 +44,9 @@
         <ion-icon name="newspaper"></ion-icon>
         {{news}}
       </ion-tab-button>
-      <ion-tab-button tab="archive" class="hover: text-[#ca9631]" routerLink="/archives">
-        <ion-icon name="archive"></ion-icon>
-        comment
-      </ion-tab-button>
-      <ion-tab-button tab="list" class="hover: text-[#ca9631]">
-        <ion-icon name="list"></ion-icon>
-        {{others}}
+      <ion-tab-button tab="chatbubbles" class="hover: text-[#ca9631]" routerLink="/archives">
+        <ion-icon name="chatbubbles"></ion-icon>
+        {{opinion}}
       </ion-tab-button>
     </ion-tab-bar>
     </ion-tabs>

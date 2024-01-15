@@ -1,73 +1,74 @@
 <ion-header class="bg-[#1a2d7d] h-12">
   <div class="flex text-white w-full mt-3 text-xl font-bold" slot="top">
-    <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/archives"></i>
-    <div class="ml-auto mr-auto">Horoscope du Lundi</div>
+    <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/archives" (click)="removeIdPub()"></i>
+    <div class="ml-auto mr-auto">Horoscope {{formatDate(datePub)}}</div>
   </div>
 </ion-header>
 <ion-content>
   <div class="container mx-auto px-4 text-black max-h-[90%] overflow-y-scroll">
 
     <div class="mb-6 mt-6 bg-slate-100 rounded-md">
-      <p class="ml-2">
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum error quidem iste beatae perferendis amet maxime
-        nemo dolorem possimus, obcaecati magni. Consequuntur, sed quaerat? Neque, sapiente odio. Fuga reprehenderit
-        numquam neque tempora. Commodi voluptatem dignissimos architecto magnam consequatur cupiditate dicta soluta
-        quibusdam accusantium est illo voluptas nostrum dolore repellat laboriosam incidunt aut enim voluptates fugit
-        similique, blanditiis quo modi perspiciatis amet! Suscipit sapiente natus ex sed? Veritatis sint nihil, natus
-        dignissimos eaque eveniet aliquid impedit. Nesciunt necessitatibus iusto impedit voluptas?
-      </p>
-
+      <p class="ml-2">{{publicationContent}}</p>
     </div>
 
     <div *ngFor="let comment of comments" class="mb-8 mt-3">
-      <div class="bg-gray-100 p-4 rounded-md">
-        <div class="flex items-center justify-between mb-2">
-          <div class="font-bold">{{ comment.author }}</div>
-          <div class="text-sm text-gray-500">{{ comment.date }}</div>
+      <div class="bg-slate-300 rounded-md">
+        <div class="bg-transparent p-4 rounded-md">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-bold">{{comment.name}}</div>
+            <div class="text-sm text-gray-500">{{comment.date}}</div>
+          </div>
+          <div class="mb-2">{{comment.content}}</div>
+          <div class="flex items-center">
+            <!-- <button class="mr-2 text-blue-500">Modifier</button>
+            <button class="text-red-500" (click)="delelteComment(comment._id)">Supprimer</button> -->
+          </div>
         </div>
-        <div class="mb-2">{{ comment.content }}</div>
-        <div class="flex items-center">
-          <button class="mr-2 text-blue-500" (click)="editComment(comment)">Modifier</button>
-          <button class="text-red-500" (click)="deleteComment(comment.id)">Supprimer</button>
-        </div>
+        <button class="text-blue-500 ml-3 mb-2" (click)="showResponseZone()">Répondre</button>
       </div>
-      <div *ngFor="let reply of comment.replies" class="ml-8 mt-2">
+
+      <div *ngFor="let response of comment.responses" class="ml-8 mt-2">
         <div class="bg-gray-200 p-2 rounded-md">
           <div class="flex items-center justify-between mb-2">
-            <div class="font-bold">{{ reply.author }}</div>
-            <div class="text-sm text-gray-500">{{ reply.date }}</div>
+            <div class="font-bold">{{response.name}}</div>
+            <div class="text-sm text-gray-500"></div>
           </div>
-          <div class="mb-2">{{ reply.content }}</div>
+          <div class="mb-2">{{response.content}}</div>
           <div class="flex items-center">
-            <button class="mr-2 text-blue-500" (click)="editReply(reply)">Modifier</button>
-            <button class="text-red-500" (click)="deleteReply(comment.id, reply.id)">Supprimer</button>
+            <!-- <button class="mr-2 text-blue-500">Modifier</button>
+            <button class="text-red-500" (click)="deleResponse(comment._id, response._id)" >Supprimer</button> -->
           </div>
         </div>
       </div>
       <div class="mt-4">
-        <form (ngSubmit)="addReply(comment.id)" *ngIf="showReplyForm[comment.id]">
-          <textarea
-            class="w-full h-16 text-white rounded-md resize-y border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Répondre au commentaire..." [(ngModel)]="newReplyContent[comment.id]" name="replyContent"
-            required></textarea>
+
+        <div class="fixed inset-0 flex items-center justify-center mb-96 text-white" *ngIf="showModal">
+          <div class="bg-[#1a2d7d] bg-opacity-50 border border-[#ca9631] rounded">
+            <div class="bg-[#1a2d7d] p-4 rounded">
+              <p>Veuillez remplir vos informations</p>
+            </div>
+          </div>
+        </div>
+
+        <form *ngIf="responseZoneShow">
+          <textarea [(ngModel)]="responseContent" name="responseContent"
+            class="w-full h-12 text-white resize-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Répondre au commentaire..." required></textarea>
           <div class="mt-2">
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Envoyer</button>
-            <button type="button" class="ml-2 text-gray-500" (click)="cancelReply(comment.id)">Annuler</button>
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md" (click)="addResponse(comment._id)">Envoyer</button>
+            <button type="button" class="ml-2 text-gray-500" (click)="hideResponseZone()">Annuler</button>
           </div>
         </form>
-        <button class="text-blue-500" *ngIf="!showReplyForm[comment.id]"
-          (click)="toggleReplyForm(comment.id)">Répondre</button>
+
       </div>
     </div>
-
-
-
   </div>
-  <form (ngSubmit)="addComment()" class="flex ml-3">
-    <textarea
+
+  <form class="flex ml-3">
+    <textarea [(ngModel)]="commentContent" name="commentContent"
       class="w-[85%] h-12 rounded-md resize-none text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="Ajouter un commentaire..." [(ngModel)]="newCommentContent" name="commentContent" required></textarea>
-    <div><i type="submit" class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
+      placeholder="Ajouter un commentaire..."></textarea>
+    <div (click)="addcomment()"><i type="submit" class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
   </form>
 
 </ion-content>
