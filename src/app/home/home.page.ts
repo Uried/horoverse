@@ -31,6 +31,7 @@ export class HomePage implements OnInit {
   isRegistered: boolean = true;
   browserLanguage!: string;
   horoTitle: string = 'My daily horoscope';
+  ipAddress!: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,7 +54,14 @@ export class HomePage implements OnInit {
       });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.getUserByjId();
 
     this.translateService.setDefaultLang('fr');
@@ -64,8 +72,6 @@ export class HomePage implements OnInit {
 
     this.browserLanguage = browserLang!;
   }
-
-
 
   getUserByjId() {
     console.log(this.jId);
@@ -78,10 +84,28 @@ export class HomePage implements OnInit {
             this.sign = user.sign;
             this.getDailyHoroscope();
             this.onImageChange();
+            localStorage.setItem('idUser', user._id);
             localStorage.setItem('sign', this.sign);
 
             localStorage.setItem('pseudo', this.pseudo);
             localStorage.setItem('jId', this.jId);
+            const log = {
+              level: 'debug',
+              message: 'Affiche la liste des blogs',
+              userId: localStorage.getItem('jId'),
+              ipAddress: this.ipAddress,
+            };
+            this.http
+              .post('https://apihoroverse.vercel.app/logs', log)
+              .subscribe(
+                (response) => {
+                  console.log('Réponse:', response);
+                },
+                (error) => {
+                  console.error('Erreur lors de la requête POST logs:', error);
+                }
+              );
+
           },
           (error) => {
             console.log(error);
@@ -95,6 +119,20 @@ export class HomePage implements OnInit {
         );
     } catch (error) {
       console.log(error);
+      const log = {
+        level: 'error',
+        message: 'Erreur de recuperation de la liste des blogs'+ error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
   }
 
@@ -129,6 +167,7 @@ export class HomePage implements OnInit {
       let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
       translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.horoscope = translatedHoroscope;
+      localStorage.setItem("myHoroscope", translatedHoroscope)
       console.log(this.horoscope); // Afficher le résultat en console
     } catch (error) {
       console.error(error);
@@ -151,14 +190,28 @@ export class HomePage implements OnInit {
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-         this.translateHoroscope(); // Appeler translateHoroscope() ici
+          this.translateHoroscope(); // Appeler translateHoroscope() ici
           this.onTranslate();
           this.horoTitle = 'Mon horoscope du jour';
-          this.translateToFrench()
+          this.translateToFrench();
         }
       });
     } catch (error) {
       console.error(error);
+      const log = {
+        level: 'error',
+        message: 'Erreur de recuperation de lhoroscope' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
   }
 
@@ -301,5 +354,20 @@ export class HomePage implements OnInit {
   }
   goToSettings() {
     this.router.navigateByUrl('/settings', { skipLocationChange: false });
+  }
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }

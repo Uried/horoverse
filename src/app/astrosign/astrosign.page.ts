@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { LOCALE_ID } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { checkServiceWorkerConflicts } from 'src/service-worker-utils';
+import { ModalController } from '@ionic/angular';
+import { PickerController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-astrosign',
@@ -17,44 +19,146 @@ export class AstrosignPage implements OnInit {
     private router: Router,
     private translateService: TranslateService,
     private afMessaging: AngularFireMessaging,
+    public modalCtrl: ModalController,
+    private pickerCtrl: PickerController,
     @Inject(LOCALE_ID) public locale: string
-  ) {
-  }
+  ) {}
 
   selectedDate!: string;
   astrologicalSign!: string;
-  symbolSign!: string
+  symbolSign!: string;
   jId!: string;
   pseudo!: string;
   phone!: Number;
   showModal = false;
   tokenFCM!: string;
   browserLanguage!: string;
+  ipAddress!: string;
+  welcomeMessage: string = 'Hello, what is your first name and your birthday?';
+  firstname: string = 'Firstname';
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.jId = localStorage.getItem('jId') || '';
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.phone = parseInt(localStorage.getItem('phone') || '0');
     this.requestFirebaseToken();
 
-    const browserLang = navigator.language ;
+    const browserLang = navigator.language;
     this.browserLanguage = browserLang;
     this.translateService.use(browserLang);
+  }
 
+  async openDatePicker() {
+    const picker = await this.pickerCtrl.create({
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+        },
+        {
+          text: 'OK',
+          handler: (value: any) => {
+            this.selectedDate = `${value.day.text}-${value.month.text}`;
+            this.getAstrologicalSign()
+
+            // Ajoutez votre logique ici
+          },
+        },
+      ],
+      columns: [
+        {
+          name: 'day',
+          options: this.generateDayOptions(),
+        },
+        {
+          name: 'month',
+          options: this.generateMonthOptions(),
+        },
+      ],
+    });
+
+    await picker.present();
+  }
+
+  generateDayOptions() {
+    const dayOptions = [];
+    for (let i = 1; i <= 31; i++) {
+      dayOptions.push({
+        text: i.toString().padStart(2, '0'),
+        value: i.toString().padStart(2, '0'),
+      });
+    }
+    return dayOptions;
+  }
+
+  generateMonthOptions() {
+    const monthOptions = [
+      { text: 'Jan', value: '01' },
+      { text: 'Feb', value: '02' },
+      { text: 'Mar', value: '03' },
+      { text: 'Apr', value: '04' },
+      { text: 'May', value: '05' },
+      { text: 'Jun', value: '06' },
+      { text: 'Jul', value: '07' },
+      { text: 'Aug', value: '08' },
+      { text: 'Sep', value: '09' },
+      { text: 'Oct', value: '10' },
+      { text: 'Nov', value: '11' },
+      { text: 'Dec', value: '12' },
+    ];
+    return monthOptions;
   }
 
   getAstrologicalSign() {
-    const date = new Date(this.selectedDate);
-    this.astrologicalSign = this.calculateAstrologicalSign(date);
+    this.astrologicalSign = this.calculateAstrologicalSign(this.selectedDate);
+    console.log(this.astrologicalSign);
 
     if (this.browserLanguage == 'fr-FR') {
+      this.translateWelcomeMessage();
       this.onTranslate();
     }
   }
 
-  calculateAstrologicalSign(date: any) {
-    const month = date.getMonth() + 1; // Les mois sont indexés à partir de 0, donc on ajoute 1
-    const day = date.getDate();
+  calculateAstrologicalSign(selectedDate: string): string {
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    const selectedDateParts = selectedDate.split('-');
+    const day = parseInt(selectedDateParts[0], 10);
+    const monthAbbreviation = selectedDateParts[1];
+
+    const month =
+      monthNames.findIndex((name) => name === monthAbbreviation) + 1;
+
+    if (
+      isNaN(day) ||
+      isNaN(month) ||
+      day < 1 ||
+      day > 31 ||
+      month < 1 ||
+      month > 12
+    ) {
+      return 'Entrez une date valide';
+    }
 
     if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
       return 'aquarius';
@@ -83,7 +187,6 @@ export class AstrosignPage implements OnInit {
     } else {
       return "Entrez votre date d'anniversaire";
     }
-
   }
 
   showAlertModal() {
@@ -91,6 +194,21 @@ export class AstrosignPage implements OnInit {
     setTimeout(() => {
       this.hideInformationModal();
     }, 3000); // Temps en millisecondes avant de masquer la fenêtre modale
+    const log = {
+      level: 'error',
+      message: 'Erreur, pas de selection du jour daniverssaire',
+      userId: localStorage.getItem('jId'),
+      ipAddress: this.ipAddress,
+    };
+
+    this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+      (response) => {
+        console.log('Réponse:', response);
+      },
+      (error) => {
+        console.error('Erreur lors de la requête POST logs:', error);
+      }
+    );
   }
 
   hideInformationModal() {
@@ -130,8 +248,37 @@ export class AstrosignPage implements OnInit {
             this.router.navigateByUrl('/home');
             //this.router.navigate(['home'])
           });
+        const log = {
+          level: 'logging',
+          message: 'Nouvel utilisateur cree',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
       } catch (error: any) {
         console.log(error.message);
+        const log = {
+          level: 'error',
+          message: 'Erreur lors de la creation dun nouvel utilisateur' + error,
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
       }
     }
   }
@@ -177,6 +324,28 @@ export class AstrosignPage implements OnInit {
       default:
         break;
     }
+  }
+
+  translateWelcomeMessage() {
+    this.welcomeMessage =
+      "Bonjour, quel est votre prénom et votre date d'anniversaire ?";
+    this.firstname = 'Prénom';
+  }
+
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }
 

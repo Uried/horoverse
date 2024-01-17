@@ -20,12 +20,13 @@ export class BlogsPage implements OnInit {
   opinion: string = 'Opinions';
   blogs: any[] = [];
   blogDate!: string;
+  ipAddress!: string;
 
   constructor(
     private translateService: TranslateService,
     private http: HttpClient,
     private router: Router,
-    private blogServive: BlogService // public viewblog: ViewblogPage
+    private blogServive: BlogService
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -34,9 +35,17 @@ export class BlogsPage implements OnInit {
       });
   }
 
-  ngOnInit() {
-    this.translateService.setDefaultLang('fr');
+  async ngOnInit() {
+    console.log(localStorage);
 
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
+    this.translateService.setDefaultLang('fr');
     const browserLang = navigator.language;
 
     this.browserLanguage = browserLang!;
@@ -137,18 +146,55 @@ export class BlogsPage implements OnInit {
       this.http
         .get(`https://apihoroverse.vercel.app/blogs/`)
         .subscribe((blogs: any) => {
-          console.log(blogs.data);
           this.blogs = blogs.data;
+
+          const log = {
+            level: 'debug',
+            message: "Affiche la liste des blogs",
+            userId: localStorage.getItem('jId'),
+            ipAddress: this.ipAddress,
+          };
+
+          this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+            (response) => {
+              console.log('Réponse:', response);
+            },
+            (error) => {
+              console.error('Erreur lors de la requête POST logs:', error);
+            }
+          );
         });
     } catch (error) {
-      console.log(error);
+      const log = {
+        level: 'error',
+        message: 'Erreur de recuperation de la liste des blogs'+ error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
   }
 
-  getBlog(id: string) {
-    localStorage.setItem('idBlog', id);
-    this.router.navigateByUrl('/viewblog');
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
-
- 
 }

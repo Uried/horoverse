@@ -11,12 +11,19 @@ import axios from 'axios';
 export class HoroscopesPage implements OnInit {
   constructor(
     private http: HttpClient,
-    private translateService: TranslateService
+    private translateService: TranslateService,
   ) {
     this.onImageChange();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.translateService.setDefaultLang('fr');
 
     const browserLang = navigator.language;
@@ -29,6 +36,7 @@ export class HoroscopesPage implements OnInit {
     this.onImageChange();
   }
   browserLanguage!: string;
+  ipAddress!: string;
   home: string = 'Home';
   news: string = 'News';
   opinion: string = 'Opinions';
@@ -75,6 +83,7 @@ export class HoroscopesPage implements OnInit {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
         console.log(result);
+
         result.forEach((obj: any) => {
           const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
           this.horoscope = text;
@@ -84,12 +93,44 @@ export class HoroscopesPage implements OnInit {
           if (this.browserLanguage == 'fr-FR') {
             this.translateHoroscope();
             this.signInterval = this.getZodiacDateRange(this.selectedSign);
-          }else{
-            this.signInterval = this.getTranslatedZodiacDateRange(this.selectedSign);
+          } else {
+            this.signInterval = this.getTranslatedZodiacDateRange(
+              this.selectedSign
+            );
           }
         });
+        const log = {
+          level: 'debug',
+          message: 'Affiche la lhoroscope en fonction du signe astrologique choisi',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
       });
     } catch (error) {
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la recuperation de lhoroscope' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
       console.error(error);
     }
   }
@@ -126,7 +167,38 @@ export class HoroscopesPage implements OnInit {
       translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.horoscope = translatedHoroscope;
       console.log(this.horoscope); // Afficher le résultat en console
+
+       const log = {
+         level: 'debug',
+         message: 'Horoscope traduit',
+         userId: localStorage.getItem('jId'),
+         ipAddress: this.ipAddress,
+       };
+       this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+         (response) => {
+           console.log('Réponse:', response);
+         },
+         (error) => {
+           console.error('Erreur lors de la requête POST logs:', error);
+         }
+       );
     } catch (error) {
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la traduction du texte' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
+
       console.error(error);
     }
   }
@@ -400,5 +472,21 @@ export class HoroscopesPage implements OnInit {
     this.opinion = 'Avis';
     this.guidePhrase = 'Choisissez une date ou un signe astrologique';
     this.onTranslate();
+  }
+
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }

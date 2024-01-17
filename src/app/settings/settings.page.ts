@@ -20,6 +20,7 @@ export class SettingsPage implements OnInit {
   horoscope!: string;
   sign!: string;
   browserLanguage!: string;
+  ipAddress!: string;
 
   constructor(
     private router: Router,
@@ -29,7 +30,14 @@ export class SettingsPage implements OnInit {
     @Inject(LOCALE_ID) public locale: string
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.astrologicalSign = localStorage.getItem('sign') || '';
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.jId = localStorage.getItem('jId') || '';
@@ -41,10 +49,8 @@ export class SettingsPage implements OnInit {
     this.browserLanguage = browserLang!;
 
     if (this.browserLanguage == 'fr-FR') {
-          this.onTranslate()
-
-        }
-
+      this.onTranslate();
+    }
   }
 
   goToHome() {
@@ -183,26 +189,74 @@ export class SettingsPage implements OnInit {
     const requestBody = {
       sign: this.astrologicalSign,
     };
+    try {
+      this.http
+        .put(`https://apihoroverse.vercel.app/users/${this.jId}`, requestBody)
+        .pipe(
+          map((response) => {
+            console.log(response);
+            // Traitez la réponse si nécessaire
+            return response;
+          }),
+          catchError((error) => {
+            console.error(
+              'Erreur lors de la mise à jour du signe astrologique',
+              error
+            );
+            // Gérez l'erreur si nécessaire
+            return throwError(error);
+          })
+        )
+        .subscribe(() => {
+          this.router.navigateByUrl('/home', { skipLocationChange: false });
+        });
+        const log = {
+          level: 'debug',
+          message: 'Modification de son signe astrologique',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
 
-    this.http
-      .put(`https://apihoroverse.vercel.app/users/${this.jId}`, requestBody)
-      .pipe(
-        map((response) => {
-          console.log(response);
-          // Traitez la réponse si nécessaire
-          return response;
-        }),
-        catchError((error) => {
-          console.error(
-            'Erreur lors de la mise à jour du signe astrologique',
-            error
-          );
-          // Gérez l'erreur si nécessaire
-          return throwError(error);
-        })
-      )
-      .subscribe(() => {
-        this.router.navigateByUrl('/home', { skipLocationChange: false });
-      });
+    } catch (error) {
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la modification du signe astrologique' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
+    }
+
+  }
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }

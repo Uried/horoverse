@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import axios from 'axios';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-comment',
@@ -11,8 +12,8 @@ import axios from 'axios';
   styleUrls: ['./comment.page.scss'],
 })
 export class CommentPage implements OnInit {
-  idPub!: string
-  datePub!: string
+  idPub!: string;
+  datePub!: string;
   pseudo: string = localStorage.getItem('pseudo') || '';
   publication!: any;
   publicationContent!: string;
@@ -24,17 +25,25 @@ export class CommentPage implements OnInit {
   showModal: boolean = false;
   comments: any[] = [];
   browserLanguage!: string;
+  ipAddress!: string;
 
   constructor(
     private publicationService: PublicationService,
     private translateService: TranslateService,
     private router: Router,
-    private route: ActivatedRoute
-  ) {
+    private route: ActivatedRoute,
 
-  }
+    private http: HttpClient
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.translateService.setDefaultLang('fr');
     const browserLang = navigator.language;
     this.getPublicationComments();
@@ -73,8 +82,37 @@ export class CommentPage implements OnInit {
       translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.publicationContent = translatedHoroscope;
       console.log(this.publicationContent); // Afficher le résultat en console
+      const log = {
+          level: 'debug',
+          message: 'Traduction de lhoroscope',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
     } catch (error) {
       console.error(error);
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la traduction de lhoroscope' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
   }
 
@@ -100,28 +138,62 @@ export class CommentPage implements OnInit {
 
   getPublicationComments() {
     const idPub = this.route.snapshot.paramMap.get('id')!;
-    const datePub = this.route.snapshot.paramMap.get('date')
-    this.datePub = datePub!
-    this.idPub = idPub
-    this.publicationService
-      .getPublicationById(idPub)
-      .subscribe((publication: any) => {
-        this.publicationContent = publication[this.sign];
-        if (this.browserLanguage == 'fr-FR') {
-          this.translateHoroscope();
+    const datePub = this.route.snapshot.paramMap.get('date');
+    this.datePub = datePub!;
+    this.idPub = idPub;
+    try {
 
-          localStorage.setItem('frenchHoroscope', this.publicationContent);
+       this.publicationService
+         .getPublicationById(idPub)
+         .subscribe((publication: any) => {
+           this.publicationContent = publication[this.sign];
+           if (this.browserLanguage == 'fr-FR') {
+             this.translateHoroscope();
+
+             localStorage.setItem('frenchHoroscope', this.publicationContent);
+           }
+         });
+
+       this.publicationService.getComments(idPub).subscribe((comments: any) => {
+         this.comments = comments;
+         comments.forEach((element: any) => {
+           console.log(element.responses);
+         });
+          const log = {
+            level: 'debug',
+            message:
+              'Affiche les avis sur lhoroscope',
+            userId: localStorage.getItem('jId'),
+            ipAddress: this.ipAddress,
+          };
+
+          this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+            (response) => {
+              console.log('Réponse:', response);
+            },
+            (error) => {
+              console.error('Erreur lors de la requête POST logs:', error);
+            }
+          );
+       });
+    } catch (error) {
+      console.error(error)
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la recuperation de lhoroscope' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
         }
-      });
+      );
+    }
 
-    this.publicationService
-      .getComments(idPub)
-      .subscribe((comments: any) => {
-        this.comments = comments;
-        comments.forEach((element: any) => {
-          console.log(element.responses);
-        });
-      });
   }
 
   addcomment() {
@@ -142,6 +214,20 @@ export class CommentPage implements OnInit {
           });
       } catch (error) {
         console.log(error);
+        const log = {
+          level: 'error',
+          message: 'Erreur lors de lajout du commentaire' + error,
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
       }
     }
   }
@@ -159,16 +245,35 @@ export class CommentPage implements OnInit {
       name: this.pseudo,
       content: this.responseContent,
     };
-    if (!this.responseContent) {
-      this.showAlertModal;
-    } else {
-      this.publicationService
-        .addResponse(this.idPub, commentId, response)
-        .subscribe(() => {
-          this.getPublicationComments();
-          this.responseContent = '';
-        });
+    try {
+       if (!this.responseContent) {
+         this.showAlertModal;
+       } else {
+         this.publicationService
+           .addResponse(this.idPub, commentId, response)
+           .subscribe(() => {
+             this.getPublicationComments();
+             this.responseContent = '';
+           });
+       }
+
+    } catch (error) {
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la reponse a un commentaire' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
+
   }
 
   deleResponse(commentId: string, responseId: string) {
@@ -250,9 +355,25 @@ export class CommentPage implements OnInit {
     return `${day}-${month}-${year}`;
   }
 
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
+  }
+
   backToAvis() {
     localStorage.removeItem('idPub');
     localStorage.removeItem('datePub');
-    this.router.navigateByUrl("/archives")
+    this.router.navigateByUrl('/archives');
   }
 }

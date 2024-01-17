@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PublicationService } from '../sevices/publication/publication.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { Observable, catchError, filter, from, of, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import axios from 'axios';
 @Component({
@@ -10,6 +11,8 @@ import axios from 'axios';
   styleUrls: ['./archives.page.scss'],
 })
 export class ArchivesPage implements OnInit {
+  translatedText$!: Observable<string>;
+  ipAddress!: string;
   publications: any[] = [];
   sign: string = localStorage.getItem('sign') || '';
   pseudo: string = localStorage.getItem('pseudo') || '';
@@ -20,11 +23,11 @@ export class ArchivesPage implements OnInit {
   home: string = 'Home';
   news: string = 'News';
   opinion: string = 'Opinions';
-
   constructor(
     private publicationService: PublicationService,
     private router: Router,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private http: HttpClient
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -33,29 +36,90 @@ export class ArchivesPage implements OnInit {
       });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+
+
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.translateService.setDefaultLang('fr');
     const browserLang = navigator.language;
 
     this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
-    }
+
     this.getAllPublications();
   }
 
-  getAllPublications() {
+  async getAllPublications() {
     try {
-      this.publicationService
-        .getAllPublications().subscribe(
-          (publications: any) => {
-          this.publications = publications;
-        });
+       this.publicationService
+         .getAllPublications()
+         .subscribe(async (publications: any) => {
+           this.publications = publications;
+           if (this.browserLanguage == 'fr-FR') {
+            for (const publication of this.publications) {
+              if (publication[this.sign]) {
+                try {
+                  const texteTraduit = await this.translateHoroscope(
+                    publication[this.sign]
+                  );
+                  publication[this.sign] = texteTraduit;
+                } catch (error) {
+                  console.error(
+                    `Erreur lors de la traduction pour la publication : ${JSON.stringify(
+                      publication
+                    )}`,
+                    error
+                  );
+                }
+              }
+            }
+           }
+
+         });
+      const log = {
+        level: 'debug',
+        message: 'Afficher lhistorique des horoscopes',
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     } catch (error) {
       console.log(error);
+
+      const log = {
+        level: 'error',
+        message:
+          'Erreur lors de la recuperation de lhistorique des lhoroscopes' +
+          error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     }
   }
 
-  async translateHoroscope(horoscope: string) {
+  async translateHoroscope(horoscope: string){
     const url = `https://api.mymemory.translated.net/get`;
     const horoscopePhrases = this.segmentText(horoscope, '.');
 
@@ -69,25 +133,28 @@ export class ArchivesPage implements OnInit {
         });
 
         const translatedPhrase = response.data.responseData.translatedText;
-
-        if (translatedPhrase) {
-          return translatedPhrase;
-        }
+        return translatedPhrase || ''; // Retourne une chaîne vide si la traduction est vide ou non définie
       } catch (error) {
         console.error(error);
+        return ''; // Retourne une chaîne vide en cas d'erreur de traduction
       }
     });
 
     const translatedPhrases = await Promise.all(translationPromises);
+    const translatedHoroscope = translatedPhrases.join('. ');
 
-    let translatedHoroscope = translatedPhrases.join('. ');
+    // Filtrer la partie indésirable
+    const filteredHoroscope = translatedHoroscope.replace(
+      'NO QUERY SPECIFIED. EXAMPLE REQUEST: GET?Q=HELLO&LANGPAIR=EN|IT',
+      ''
+    );
 
-    return translatedHoroscope;
+    return filteredHoroscope;
   }
 
-  segmentText(text: any, delimiter: any) {
+  segmentText(text: string, delimiter: any) {
     const segments = text.split(delimiter);
-    return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
+    return segments.map((segment: any) => segment.trim());
   }
 
   showAlertModal() {
@@ -95,6 +162,21 @@ export class ArchivesPage implements OnInit {
     setTimeout(() => {
       this.hideInformationModal();
     }, 2000);
+    const log = {
+      level: 'error',
+      message: 'Erreur entree dun commentaire vide',
+      userId: localStorage.getItem('jId'),
+      ipAddress: this.ipAddress,
+    };
+
+    this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+      (response) => {
+        console.log('Réponse:', response);
+      },
+      (error) => {
+        console.error('Erreur lors de la requête POST logs:', error);
+      }
+    );
   }
 
   showDoneIcon() {
@@ -203,5 +285,21 @@ export class ArchivesPage implements OnInit {
     const year = inputDate.getFullYear();
 
     return `${day}-${month}-${year}`;
+  }
+
+  getIPAddress(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.http
+        .get<{ ip: string }>('https://api.ipify.org?format=json')
+        .subscribe(
+          (response) => {
+            this.ipAddress = response.ip;
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }
