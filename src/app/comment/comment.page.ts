@@ -6,6 +6,12 @@ import { filter } from 'rxjs';
 import axios from 'axios';
 import { HttpClient } from '@angular/common/http';
 
+export interface Comment {
+  _id: string;
+  // ... (autres propriétés)
+  isResponseActive: boolean;
+}
+
 @Component({
   selector: 'app-comment',
   templateUrl: './comment.page.html',
@@ -26,6 +32,7 @@ export class CommentPage implements OnInit {
   comments: any[] = [];
   browserLanguage!: string;
   ipAddress!: string;
+  selectedCommentId: string | null = null;
 
   constructor(
     private publicationService: PublicationService,
@@ -78,25 +85,25 @@ export class CommentPage implements OnInit {
         }
       }
 
-      let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
-      translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
+      let translatedHoroscope = translatedPhrases.join('. '); //
+      translatedHoroscope += '.'; //
       this.publicationContent = translatedHoroscope;
       console.log(this.publicationContent); // Afficher le résultat en console
       const log = {
-          level: 'debug',
-          message: 'Traduction de lhoroscope',
-          userId: localStorage.getItem('jId'),
-          ipAddress: this.ipAddress,
-        };
+        level: 'debug',
+        message: 'Traduction de lhoroscope',
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
 
-        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-          (response) => {
-            console.log('Réponse:', response);
-          },
-          (error) => {
-            console.error('Erreur lors de la requête POST logs:', error);
-          }
-        );
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     } catch (error) {
       console.error(error);
       const log = {
@@ -121,19 +128,20 @@ export class CommentPage implements OnInit {
     return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
   }
 
-  showResponseZone() {
+  showResponseZone(commentId: string): void {
     this.responseZoneShow = true;
+    this.selectedCommentId = commentId;
   }
 
-  hideResponseZone() {
+  hideResponseZone(): void {
     this.responseZoneShow = false;
+    this.selectedCommentId = null;
   }
-
   showAlertModal() {
     this.showModal = true;
     setTimeout(() => {
       this.showModal = false;
-    }, 2000); // Temps en millisecondes avant de masquer la fenêtre modale
+    }, 2000);
   }
 
   getPublicationComments() {
@@ -142,42 +150,40 @@ export class CommentPage implements OnInit {
     this.datePub = datePub!;
     this.idPub = idPub;
     try {
+      this.publicationService
+        .getPublicationById(idPub)
+        .subscribe((publication: any) => {
+          this.publicationContent = publication[this.sign];
+          if (this.browserLanguage == 'fr-FR') {
+            this.translateHoroscope();
 
-       this.publicationService
-         .getPublicationById(idPub)
-         .subscribe((publication: any) => {
-           this.publicationContent = publication[this.sign];
-           if (this.browserLanguage == 'fr-FR') {
-             this.translateHoroscope();
+            localStorage.setItem('frenchHoroscope', this.publicationContent);
+          }
+        });
 
-             localStorage.setItem('frenchHoroscope', this.publicationContent);
-           }
-         });
+      this.publicationService.getComments(idPub).subscribe((comments: any) => {
+        this.comments = comments;
+        comments.forEach((element: any) => {
+          console.log(element.responses);
+        });
+        const log = {
+          level: 'debug',
+          message: 'Affiche les avis sur lhoroscope',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
 
-       this.publicationService.getComments(idPub).subscribe((comments: any) => {
-         this.comments = comments;
-         comments.forEach((element: any) => {
-           console.log(element.responses);
-         });
-          const log = {
-            level: 'debug',
-            message:
-              'Affiche les avis sur lhoroscope',
-            userId: localStorage.getItem('jId'),
-            ipAddress: this.ipAddress,
-          };
-
-          this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-            (response) => {
-              console.log('Réponse:', response);
-            },
-            (error) => {
-              console.error('Erreur lors de la requête POST logs:', error);
-            }
-          );
-       });
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
       const log = {
         level: 'error',
         message: 'Erreur lors de la recuperation de lhoroscope' + error,
@@ -193,7 +199,6 @@ export class CommentPage implements OnInit {
         }
       );
     }
-
   }
 
   addcomment() {
@@ -240,40 +245,28 @@ export class CommentPage implements OnInit {
       });
   }
 
-  addResponse(commentId: string) {
-    let response = {
-      name: this.pseudo,
-      content: this.responseContent,
-    };
-    try {
-       if (!this.responseContent) {
-         this.showAlertModal;
-       } else {
-         this.publicationService
-           .addResponse(this.idPub, commentId, response)
-           .subscribe(() => {
-             this.getPublicationComments();
-             this.responseContent = '';
-           });
-       }
-
-    } catch (error) {
-      const log = {
-        level: 'error',
-        message: 'Erreur lors de la reponse a un commentaire' + error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
+  addResponse(): void {
+    if (this.selectedCommentId) {
+      let response = {
+        name: this.pseudo,
+        content: this.responseContent,
       };
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
+      try {
+        if (!this.responseContent) {
+          this.showAlertModal();
+        } else {
+          this.publicationService
+            .addResponse(this.idPub, this.selectedCommentId, response)
+            .subscribe(() => {
+              this.getPublicationComments();
+              this.responseContent = '';
+              this.hideResponseZone(); // Fermer la zone de réponse après l'ajout
+            });
         }
-      );
+      } catch (error) {
+        // Gérer les erreurs
+      }
     }
-
   }
 
   deleResponse(commentId: string, responseId: string) {

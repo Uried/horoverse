@@ -3,7 +3,7 @@ import { environment } from '../environments/environment';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { TranslateService } from '@ngx-translate/core';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -12,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-
+  private apiUrl = 'https://any.ge/horoscope/api/';
   constructor(
     private translateService: TranslateService,
     private afMessaging: AngularFireMessaging,
@@ -21,13 +21,10 @@ export class AppComponent implements OnInit {
     this.translateService.setDefaultLang('fr');
   }
 
-  ngOnInit(): void {
-
+  async ngOnInit() {
+    //await this.getHoroscopes();
     const browserLang = navigator.language;
-    console.log(browserLang);
-
     this.translateService.use(browserLang.match(/fr|en/) ? browserLang : 'fr');
-
     navigator.serviceWorker
       .register('src/firebase-messaging-sw.js')
       .then((registration) => {
@@ -87,7 +84,7 @@ export class AppComponent implements OnInit {
 
   updateFcmToken(token: string): Observable<any> {
     // Effectuez une requête HTTP vers votre backend pour mettre à jour le token FCM dans la base de données
-    const jId = localStorage.getItem("jId")
+    const jId = localStorage.getItem('jId');
     const url = `https://apihoroverse.vercel.app/update-fcm-token/${jId}`;
     const body = { token };
 

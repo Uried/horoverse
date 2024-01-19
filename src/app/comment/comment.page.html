@@ -24,7 +24,8 @@
             <button class="text-red-500" (click)="delelteComment(comment._id)">Supprimer</button> -->
           </div>
         </div>
-        <button class="text-blue-500 ml-3 mb-2" (click)="showResponseZone()">Répondre</button>
+      <button class="text-blue-500 ml-3 mb-2" (click)="showResponseZone(comment._id)">Répondre</button>
+
       </div>
 
       <div *ngFor="let response of comment.responses" class="ml-8 mt-2">
@@ -50,12 +51,12 @@
           </div>
         </div>
 
-        <form *ngIf="responseZoneShow">
+      <form *ngIf="responseZoneShow && selectedCommentId === comment._id">
           <textarea [(ngModel)]="responseContent" name="responseContent"
             class="w-full h-12 text-white resize-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Répondre au commentaire..." required></textarea>
           <div class="mt-2">
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md" (click)="addResponse(comment._id)">Envoyer</button>
+          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md" (click)="addResponse()">Envoyer</button>
             <button type="button" class="ml-2 text-gray-500" (click)="hideResponseZone()">Annuler</button>
           </div>
         </form>

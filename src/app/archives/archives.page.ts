@@ -5,6 +5,8 @@ import { Observable, catchError, filter, from, of, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import axios from 'axios';
+
+
 @Component({
   selector: 'app-archives',
   templateUrl: './archives.page.html',
@@ -37,8 +39,6 @@ export class ArchivesPage implements OnInit {
   }
 
   async ngOnInit() {
-
-
     try {
       await this.getIPAddress();
       console.log('Adresse IP:', this.ipAddress);
@@ -78,9 +78,12 @@ export class ArchivesPage implements OnInit {
                 }
               }
             }
-           }
+          }else{
+          }
+
 
          });
+
       const log = {
         level: 'debug',
         message: 'Afficher lhistorique des horoscopes',

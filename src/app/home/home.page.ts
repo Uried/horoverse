@@ -32,6 +32,8 @@ export class HomePage implements OnInit {
   browserLanguage!: string;
   horoTitle: string = 'My daily horoscope';
   ipAddress!: string;
+  publication: any;
+  dateAujourdhui = new Date().toISOString().split('T')[0];
 
   constructor(
     private route: ActivatedRoute,
@@ -55,6 +57,7 @@ export class HomePage implements OnInit {
   }
 
   async ngOnInit() {
+
     try {
       await this.getIPAddress();
       console.log('Adresse IP:', this.ipAddress);
@@ -62,7 +65,6 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.getUserByjId();
 
     this.translateService.setDefaultLang('fr');
     if (this.browserLanguage == 'fr-FR') {
@@ -82,7 +84,7 @@ export class HomePage implements OnInit {
           (user: any) => {
             this.pseudo = user.pseudo;
             this.sign = user.sign;
-            this.getDailyHoroscope();
+            this.getAllPublications();
             this.onImageChange();
             localStorage.setItem('idUser', user._id);
             localStorage.setItem('sign', this.sign);
@@ -91,7 +93,7 @@ export class HomePage implements OnInit {
             localStorage.setItem('jId', this.jId);
             const log = {
               level: 'debug',
-              message: 'Affiche la liste des blogs',
+              message: 'utilisateur recupere',
               userId: localStorage.getItem('jId'),
               ipAddress: this.ipAddress,
             };
@@ -105,7 +107,6 @@ export class HomePage implements OnInit {
                   console.error('Erreur lors de la requête POST logs:', error);
                 }
               );
-
           },
           (error) => {
             console.log(error);
@@ -121,7 +122,7 @@ export class HomePage implements OnInit {
       console.log(error);
       const log = {
         level: 'error',
-        message: 'Erreur de recuperation de la liste des blogs'+ error,
+        message: 'Erreur de recuperation du user' + error,
         userId: localStorage.getItem('jId'),
         ipAddress: this.ipAddress,
       };
@@ -167,7 +168,7 @@ export class HomePage implements OnInit {
       let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
       translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.horoscope = translatedHoroscope;
-      localStorage.setItem("myHoroscope", translatedHoroscope)
+      localStorage.setItem('myHoroscope', translatedHoroscope);
       console.log(this.horoscope); // Afficher le résultat en console
     } catch (error) {
       console.error(error);
@@ -184,16 +185,12 @@ export class HomePage implements OnInit {
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
         this.horoscope = result.horoscope;
-        console.log(result);
         result.forEach((obj: any) => {
           const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
           this.horoscope = text;
         });
         if (this.browserLanguage == 'fr-FR') {
-          this.translateHoroscope(); // Appeler translateHoroscope() ici
-          this.onTranslate();
-          this.horoTitle = 'Mon horoscope du jour';
-          this.translateToFrench();
+
         }
       });
     } catch (error) {
@@ -213,6 +210,7 @@ export class HomePage implements OnInit {
         }
       );
     }
+    this.getHoroscopes()
   }
 
   getLanguageForResponsiveVoice(text: string): string {
@@ -369,5 +367,104 @@ export class HomePage implements OnInit {
           }
         );
     });
+  }
+
+ async getAllPublications() {
+  try {
+    this.publicationService.getAllPublications().subscribe(
+      async (publications: any) => {
+        let publicationFound = false;
+
+        for (const publication of publications) {
+          const publicationDate = new Date(publication.date)
+            .toISOString()
+            .split('T')[0];
+
+          if (publicationDate === this.dateAujourdhui) {
+            this.horoscope = publication[this.sign];
+            publicationFound = true;
+            break;
+          }
+        }
+
+        if (!publicationFound) {
+          await this.getDailyHoroscope();
+        }
+        if (this.browserLanguage == 'fr-FR') {
+          this.translateHoroscope();
+           this.onTranslate();
+           this.horoTitle = 'Mon horoscope du jour';
+           this.translateToFrench();
+        }
+      }
+    );
+
+  } catch (error) {
+    console.log(error);
+
+    const log = {
+      level: 'error',
+      message:
+        'Erreur lors de la récupération de lhistorique des horoscopes' + error,
+      userId: localStorage.getItem('jId'),
+      ipAddress: this.ipAddress,
+    };
+
+    this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+      (response) => {
+        console.log('Réponse:', response);
+      },
+      (error) => {
+        console.error('Erreur lors de la requête POST logs:', error);
+      }
+    );
+  }
+}
+
+
+  async getHoroscopes() {
+    const horoscopes: { [key: string]: string } = {};
+    const signArray = [
+      'aries',
+      'pisces',
+      'gemini',
+      'taurus',
+      'libra',
+      'scorpio',
+      'cancer',
+      'leo',
+      'virgo',
+      'sagittarius',
+      'capricorn',
+      'aquarius',
+    ];
+
+    let successfulRequests = 0;
+
+    for (const sign of signArray) {
+      const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${sign}`;
+      try {
+        const result: any = await this.http.get(apiUrl).toPromise();
+        result.forEach((obj: any) => {
+          const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
+          horoscopes[sign] = text;
+        });
+
+        successfulRequests++;
+
+        // Vérifier si toutes les requêtes ont réussi
+        if (successfulRequests === signArray.length) {
+          // Effectuer la requête POST une fois que toutes les requêtes sont terminées
+          await this.http
+            .post('http://localhost:5400/savehoroscopes', { horoscopes })
+            .toPromise();
+        }
+      } catch (error) {
+        console.error(`Erreur pour le signe ${sign}:`, error);
+      }
+    }
+
+    console.log(horoscopes);
+    return horoscopes;
   }
 }
