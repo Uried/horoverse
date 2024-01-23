@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { franc } from 'franc-min';
 import axios from 'axios';
+import { LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-horoscopes',
   templateUrl: './horoscopes.page.html',
@@ -11,30 +12,12 @@ import axios from 'axios';
 export class HoroscopesPage implements OnInit {
   constructor(
     private http: HttpClient,
-    private translateService: TranslateService,
+    private loadingCtrl: LoadingController,
+    private translateService: TranslateService
   ) {
     this.onImageChange();
   }
 
-  async ngOnInit() {
-    try {
-      await this.getIPAddress();
-      console.log('Adresse IP:', this.ipAddress);
-      // Utilisez this.ipAddress comme nécessaire dans votre application
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'adresse IP:", error);
-    }
-    this.translateService.setDefaultLang('fr');
-
-    const browserLang = navigator.language;
-
-    this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
-      this.translateToFrench();
-    }
-    this.getHoroscopeBySunSign();
-    this.onImageChange();
-  }
   browserLanguage!: string;
   ipAddress!: string;
   home: string = 'Home';
@@ -77,7 +60,38 @@ export class HoroscopesPage implements OnInit {
     'Poissons',
   ];
 
+  async ngOnInit() {
+
+      try {
+        await this.getIPAddress();
+        console.log('Adresse IP:', this.ipAddress);
+        // Utilisez this.ipAddress comme nécessaire dans votre application
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'adresse IP:", error);
+      }
+    this.translateService.setDefaultLang('fr');
+
+    const browserLang = navigator.language;
+
+    this.browserLanguage = browserLang!;
+    if (this.browserLanguage == 'fr-FR') {
+      this.translateToFrench();
+    }
+    this.getHoroscopeBySunSign();
+    this.onImageChange();
+  }
+
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
+
+    loading.present();
+    return () => loading.dismiss();
+  }
+
   async getHoroscopeBySunSign() {
+ const dismissLoading = await this.showLoading();
     const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${this.selectedSign}`;
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
@@ -101,7 +115,8 @@ export class HoroscopesPage implements OnInit {
         });
         const log = {
           level: 'debug',
-          message: 'Affiche la lhoroscope en fonction du signe astrologique choisi',
+          message:
+            'Affiche la lhoroscope en fonction du signe astrologique choisi',
           userId: localStorage.getItem('jId'),
           ipAddress: this.ipAddress,
         };
@@ -115,7 +130,9 @@ export class HoroscopesPage implements OnInit {
           }
         );
       });
+      dismissLoading()
     } catch (error) {
+      dismissLoading()
       const log = {
         level: 'error',
         message: 'Erreur lors de la recuperation de lhoroscope' + error,
@@ -168,20 +185,20 @@ export class HoroscopesPage implements OnInit {
       this.horoscope = translatedHoroscope;
       console.log(this.horoscope); // Afficher le résultat en console
 
-       const log = {
-         level: 'debug',
-         message: 'Horoscope traduit',
-         userId: localStorage.getItem('jId'),
-         ipAddress: this.ipAddress,
-       };
-       this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-         (response) => {
-           console.log('Réponse:', response);
-         },
-         (error) => {
-           console.error('Erreur lors de la requête POST logs:', error);
-         }
-       );
+      const log = {
+        level: 'debug',
+        message: 'Horoscope traduit',
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     } catch (error) {
       const log = {
         level: 'error',

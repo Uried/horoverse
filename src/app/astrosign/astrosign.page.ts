@@ -6,6 +6,7 @@ import { LOCALE_ID } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ModalController } from '@ionic/angular';
 import { PickerController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class AstrosignPage implements OnInit {
     private afMessaging: AngularFireMessaging,
     public modalCtrl: ModalController,
     private pickerCtrl: PickerController,
+    private loadingCtrl: LoadingController,
     @Inject(LOCALE_ID) public locale: string
   ) {}
 
@@ -49,10 +51,19 @@ export class AstrosignPage implements OnInit {
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.phone = parseInt(localStorage.getItem('phone') || '0');
     this.requestFirebaseToken();
-
     const browserLang = navigator.language;
     this.browserLanguage = browserLang;
     this.translateService.use(browserLang);
+  }
+
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+      
+    });
+
+    loading.present();
+    return () => loading.dismiss();
   }
 
   async openDatePicker() {
@@ -66,7 +77,7 @@ export class AstrosignPage implements OnInit {
           text: 'OK',
           handler: (value: any) => {
             this.selectedDate = `${value.day.text}-${value.month.text}`;
-            this.getAstrologicalSign()
+            this.getAstrologicalSign();
 
             // Ajoutez votre logique ici
           },
@@ -235,7 +246,7 @@ export class AstrosignPage implements OnInit {
       const credentials = {
         jId: this.jId,
         pseudo: this.pseudo,
-        phone: this.phone,
+        phone: this.jId,
         sign: this.astrologicalSign,
         tokenFCM: this.tokenFCM,
       };

@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { BlogService } from '../blog.service';
 import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-viewblog',
@@ -25,6 +26,7 @@ export class ViewblogPage implements OnInit {
     private blogService: BlogService,
     private http: HttpClient,
     private route: ActivatedRoute,
+    private loadingCtrl: LoadingController
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -52,7 +54,18 @@ export class ViewblogPage implements OnInit {
     this.getBlog();
   }
 
-  getBlog() {
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+      duration: 2000,
+    });
+
+    loading.present();
+    return () => loading.dismiss();
+  }
+
+  async getBlog() {
+     const dismissLoading = await this.showLoading();
     const idBlog = this.route.snapshot.paramMap.get('id')!;
     this.idBlog = idBlog;
     this.blogService.getBlogById(idBlog).subscribe(
@@ -61,8 +74,10 @@ export class ViewblogPage implements OnInit {
         this.title = blog.title;
         this.image = blog.image;
         this.content = blog.content;
+        dismissLoading()
       },
       (error) => {
+        dismissLoading()
         console.log(error);
         const log = {
           level: 'error',
@@ -82,6 +97,7 @@ export class ViewblogPage implements OnInit {
       }
     );
   }
+
   getIPAddress(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.http

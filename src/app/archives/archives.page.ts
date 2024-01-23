@@ -5,6 +5,7 @@ import { Observable, catchError, filter, from, of, switchMap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import axios from 'axios';
+import { LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -29,12 +30,13 @@ export class ArchivesPage implements OnInit {
     private publicationService: PublicationService,
     private router: Router,
     private translateService: TranslateService,
-    private http: HttpClient
+    private http: HttpClient,
+    private loadingCtrl: LoadingController
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.getAllPublications();
+        // this.getAllPublications();
       });
   }
 
@@ -54,13 +56,24 @@ export class ArchivesPage implements OnInit {
     this.getAllPublications();
   }
 
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
+
+    loading.present();
+    return () => loading.dismiss();
+  }
+
   async getAllPublications() {
+    const dismissLoading = await this.showLoading();
+
     try {
-       this.publicationService
-         .getAllPublications()
-         .subscribe(async (publications: any) => {
-           this.publications = publications;
-           if (this.browserLanguage == 'fr-FR') {
+      this.publicationService
+        .getAllPublications()
+        .subscribe(async (publications: any) => {
+          this.publications = publications;
+          if (this.browserLanguage == 'fr-FR') {
             for (const publication of this.publications) {
               if (publication[this.sign]) {
                 try {
@@ -78,11 +91,9 @@ export class ArchivesPage implements OnInit {
                 }
               }
             }
-          }else{
+          } else {
           }
-
-
-         });
+        });
 
       const log = {
         level: 'debug',
@@ -99,8 +110,10 @@ export class ArchivesPage implements OnInit {
           console.error('Erreur lors de la requête POST logs:', error);
         }
       );
+      dismissLoading()
     } catch (error) {
       console.log(error);
+      dismissLoading()
 
       const log = {
         level: 'error',
@@ -122,7 +135,7 @@ export class ArchivesPage implements OnInit {
     }
   }
 
-  async translateHoroscope(horoscope: string){
+  async translateHoroscope(horoscope: string) {
     const url = `https://api.mymemory.translated.net/get`;
     const horoscopePhrases = this.segmentText(horoscope, '.');
 
@@ -203,7 +216,8 @@ export class ArchivesPage implements OnInit {
     this.router.navigateByUrl('/comment');
   }
 
-  addComment(idPub: string) {
+  async addComment(idPub: string) {
+    const dismissLoading = await this.showLoading();
     if (!this.commentContent) {
       this.showAlertModal();
     } else {
@@ -215,6 +229,7 @@ export class ArchivesPage implements OnInit {
         this.showDoneIcon();
         this.commentContent = '';
       });
+      dismissLoading()
     }
   }
 

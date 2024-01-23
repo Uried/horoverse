@@ -5,7 +5,7 @@
       <div class="ml-[32%]">Blogs</div>
     </div>
 
-    <div slot="top" class="mt-4 bg-[#f5f5f5] h-full overflow-y-scroll">
+    <div slot="top" class="mt-4 bg-[#f5f5f5] text-white h-full overflow-y-scroll">
       <div [routerLink]="['/viewblog', blog._id]" *ngFor="let blog of blogs"
         class="flex mt-3 bg-white text-black w-[95%] h-[16%] ml-auto mr-auto rounded-md shadow-md">
         <div><img src="{{blog.image}}" alt="" class="h-full w-48 rounded-tl-md rounded-bl-md"></div>

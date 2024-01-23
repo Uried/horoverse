@@ -5,6 +5,7 @@ import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import axios from 'axios';
 import { HttpClient } from '@angular/common/http';
+import { LoadingController } from '@ionic/angular';
 
 export interface Comment {
   _id: string;
@@ -39,7 +40,7 @@ export class CommentPage implements OnInit {
     private translateService: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
-
+     private loadingCtrl: LoadingController,
     private http: HttpClient
   ) {}
 
@@ -58,6 +59,7 @@ export class CommentPage implements OnInit {
   }
 
   async translateHoroscope() {
+    const dismissLoading = await this.showLoading();
     const url = `https://api.mymemory.translated.net/get`;
 
     const horoscopePhrases = this.segmentText(this.publicationContent, '.'); // Segmenter par phrases
@@ -104,7 +106,9 @@ export class CommentPage implements OnInit {
           console.error('Erreur lors de la requête POST logs:', error);
         }
       );
+      dismissLoading()
     } catch (error) {
+      dismissLoading()
       console.error(error);
       const log = {
         level: 'error',
@@ -143,8 +147,17 @@ export class CommentPage implements OnInit {
       this.showModal = false;
     }, 2000);
   }
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
 
-  getPublicationComments() {
+    loading.present();
+    return () => loading.dismiss();
+  }
+
+ async getPublicationComments() {
+    const dismissLoading = await this.showLoading();
     const idPub = this.route.snapshot.paramMap.get('id')!;
     const datePub = this.route.snapshot.paramMap.get('date');
     this.datePub = datePub!;
@@ -182,7 +195,9 @@ export class CommentPage implements OnInit {
           }
         );
       });
+      dismissLoading()
     } catch (error) {
+      dismissLoading()
       console.error(error);
       const log = {
         level: 'error',
@@ -201,7 +216,8 @@ export class CommentPage implements OnInit {
     }
   }
 
-  addcomment() {
+ async addcomment() {
+    const dismissLoading = await this.showLoading();
     if (this.commentContent == '') {
       this.showAlertModal;
     } else {
@@ -217,7 +233,9 @@ export class CommentPage implements OnInit {
             this.getPublicationComments();
             this.commentContent = '';
           });
+          dismissLoading()
       } catch (error) {
+        dismissLoading()
         console.log(error);
         const log = {
           level: 'error',
@@ -245,7 +263,8 @@ export class CommentPage implements OnInit {
       });
   }
 
-  addResponse(): void {
+async  addResponse(){
+    const dismissLoading = await this.showLoading();
     if (this.selectedCommentId) {
       let response = {
         name: this.pseudo,
@@ -263,7 +282,9 @@ export class CommentPage implements OnInit {
               this.hideResponseZone(); // Fermer la zone de réponse après l'ajout
             });
         }
+        dismissLoading()
       } catch (error) {
+        dismissLoading()
         // Gérer les erreurs
       }
     }

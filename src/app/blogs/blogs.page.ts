@@ -5,6 +5,7 @@ import { ViewblogPage } from '../viewblog/viewblog.page';
 import {  NavigationEnd, Router} from '@angular/router';
 import { BlogService } from '../blog.service';
 import { filter } from 'rxjs';
+import { LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -21,12 +22,14 @@ export class BlogsPage implements OnInit {
   blogs: any[] = [];
   blogDate!: string;
   ipAddress!: string;
+  jId: string = localStorage.getItem('jId') || '';
 
   constructor(
     private translateService: TranslateService,
     private http: HttpClient,
     private router: Router,
-    private blogServive: BlogService
+    private blogServive: BlogService,
+    private loadingCtrl: LoadingController
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -36,8 +39,6 @@ export class BlogsPage implements OnInit {
   }
 
   async ngOnInit() {
-    console.log(localStorage);
-
     try {
       await this.getIPAddress();
       console.log('Adresse IP:', this.ipAddress);
@@ -54,6 +55,15 @@ export class BlogsPage implements OnInit {
       //this.translateHoroscope(); // Appeler translateHoroscope() ici
     }
     this.getBlogs();
+  }
+
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
+
+    loading.present();
+    return () => loading.dismiss();
   }
 
   translateToFrench() {
@@ -141,7 +151,8 @@ export class BlogsPage implements OnInit {
     return `${day}-${month}-${year}`;
   }
 
-  getBlogs() {
+async  getBlogs() {
+    const dismissLoading = await this.showLoading();
     try {
       this.http
         .get(`https://apihoroverse.vercel.app/blogs/`)
@@ -150,7 +161,7 @@ export class BlogsPage implements OnInit {
 
           const log = {
             level: 'debug',
-            message: "Affiche la liste des blogs",
+            message: 'Affiche la liste des blogs',
             userId: localStorage.getItem('jId'),
             ipAddress: this.ipAddress,
           };
@@ -164,10 +175,12 @@ export class BlogsPage implements OnInit {
             }
           );
         });
+        dismissLoading()
     } catch (error) {
+      dismissLoading()
       const log = {
         level: 'error',
-        message: 'Erreur de recuperation de la liste des blogs'+ error,
+        message: 'Erreur de recuperation de la liste des blogs' + error,
         userId: localStorage.getItem('jId'),
         ipAddress: this.ipAddress,
       };
