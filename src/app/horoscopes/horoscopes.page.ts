@@ -25,11 +25,12 @@ export class HoroscopesPage implements OnInit {
   opinion: string = 'Opinions';
   guidePhrase: string = 'Choose a date or astrological sign';
   selectedDate!: string;
-  public horoscope: string = '';
-  public selectedSign: string = 'aries';
+  public horoscope: string = '...';
+  public selectedSign: string = '';
   signInterval: string = this.getZodiacDateRange(this.selectedSign);
   public choosedImage: string = '';
   public sunsign: string = '';
+  private autoScrollInterval: any;
   public signs: string[] = [
     'aries',
     'taurus',
@@ -61,14 +62,13 @@ export class HoroscopesPage implements OnInit {
   ];
 
   async ngOnInit() {
-
-      try {
-        await this.getIPAddress();
-        console.log('Adresse IP:', this.ipAddress);
-        // Utilisez this.ipAddress comme nécessaire dans votre application
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'adresse IP:", error);
-      }
+    try {
+      await this.getIPAddress();
+      console.log('Adresse IP:', this.ipAddress);
+      // Utilisez this.ipAddress comme nécessaire dans votre application
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'adresse IP:", error);
+    }
     this.translateService.setDefaultLang('fr');
 
     const browserLang = navigator.language;
@@ -79,6 +79,34 @@ export class HoroscopesPage implements OnInit {
     }
     this.getHoroscopeBySunSign();
     this.onImageChange();
+    this.startAutoScroll();
+  }
+
+  ngOnDestroy() {
+    this.stopAutoScroll();
+  }
+
+  private startAutoScroll() {
+    this.autoScrollInterval = setInterval(() => {
+      // Changez le signe astrologique ici
+      this.changeImageAutomatically();
+    }, 3000); // 2000 millisecondes (2 secondes)
+  }
+
+  private stopAutoScroll() {
+    clearInterval(this.autoScrollInterval);
+  }
+
+  private changeImageAutomatically() {
+    // Changez l'image ici
+    // Par exemple, déplacez-vous à l'image suivante dans votre tableau d'images
+    const currentIndex = this.signs.indexOf(this.selectedSign);
+    const nextIndex = (currentIndex + 1) % this.signs.length;
+    this.selectedSign = this.signs[nextIndex];
+
+    // Mettez à jour le reste des informations
+    this.onImageChange();
+    this.onTranslate();
   }
 
   async showLoading() {
@@ -91,7 +119,8 @@ export class HoroscopesPage implements OnInit {
   }
 
   async getHoroscopeBySunSign() {
- const dismissLoading = await this.showLoading();
+    this.stopAutoScroll()
+    const dismissLoading = await this.showLoading();
     const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${this.selectedSign}`;
     try {
       this.http.get(apiUrl).subscribe((result: any) => {
@@ -130,9 +159,9 @@ export class HoroscopesPage implements OnInit {
           }
         );
       });
-      dismissLoading()
+      dismissLoading();
     } catch (error) {
-      dismissLoading()
+      dismissLoading();
       const log = {
         level: 'error',
         message: 'Erreur lors de la recuperation de lhoroscope' + error,
@@ -264,7 +293,6 @@ export class HoroscopesPage implements OnInit {
         this.choosedImage = '../../assets/signes/capricorne.png';
         break;
       default:
-        this.choosedImage = '../../assets/signes/horo.png';
         break;
     }
   }
@@ -413,7 +441,7 @@ export class HoroscopesPage implements OnInit {
     if (dateRange) {
       return `${dateRange.start.day} ${dateRange.start.month} - ${dateRange.end.day} ${dateRange.end.month}`;
     } else {
-      return 'Invalid sign';
+      return 'Aucun signe choisis';
     }
   }
 
@@ -479,7 +507,7 @@ export class HoroscopesPage implements OnInit {
     if (dateRange) {
       return `${dateRange.start.day} ${dateRange.start.month} - ${dateRange.end.day} ${dateRange.end.month}`;
     } else {
-      return 'Invalid sign';
+      return 'No sign selected';
     }
   }
 

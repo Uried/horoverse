@@ -59,7 +59,7 @@ export class AstrosignPage implements OnInit {
   async showLoading() {
     const loading = await this.loadingCtrl.create({
       message: 'Please wait...',
-      
+
     });
 
     loading.present();
@@ -95,7 +95,7 @@ export class AstrosignPage implements OnInit {
       ],
     });
 
-    await picker.present();
+    picker.present();
   }
 
   generateDayOptions() {

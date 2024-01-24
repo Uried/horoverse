@@ -1,7 +1,7 @@
 <ion-header>
   <div class="flex text-white h-10 py-2 text-xl font-bold bg-[#1a2d7d]">
     <i class="fas fa-arrow-left ml-3 text-[#ca9631]" routerLink="/home"></i>
-    <div class="ml-[32%]">Avis</div>
+    <div class="ml-[32%]">Archives</div>
   </div>
 </ion-header>
 <ion-content [fullscreen]="true">
@@ -35,7 +35,7 @@
       <div class="flex bg-slate-100 ml-2 rounded-full w-[75%]">
         <textarea placeholder="Ecrivez un commentaire..." [(ngModel)]="commentContent" name="commentContent"
           class="h-10 rounded-full outline-none w-[85%] pl-3 resize-none text-black bg-slate-100"></textarea>
-        <div (click)="addComment(publication._id)"><i class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i>
+        <div [routerLink]="['/comment', publication._id, publication.date]" (click)="addComment(publication._id)"><i class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i>
         </div>
       </div>
 

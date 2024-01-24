@@ -26,6 +26,7 @@ export class HomePage implements OnInit {
   pseudo!: string;
   phone!: string;
   jId!: string;
+  waiting: boolean = false;
   isSpeaking: boolean = false;
   selectedVoice!: string;
   choosedImage!: string;
@@ -218,7 +219,7 @@ export class HomePage implements OnInit {
           // Masquer le chargement une fois que la variable horoscope contient du texte
           dismissLoading();
         });
-          dismissLoading();
+      dismissLoading();
     } catch (error) {
       console.error(error);
 
@@ -263,14 +264,36 @@ export class HomePage implements OnInit {
   }
 
   speak() {
-    this.isSpeaking = !this.isSpeaking;
-    let detectedLanguage = franc(this.horoscope);
-    this.selectedVoice = this.getVoiceForLanguage(detectedLanguage);
-    responsiveVoice.speak(this.horoscope, this.selectedVoice, {
-      onend: () => {
-        this.onEnd();
-      },
-    });
+    // Vérifiez si responsiveVoice est disponible
+    if (typeof responsiveVoice !== 'undefined') {
+      // ResponsiveVoice est disponible, effectuez votre action normale
+      this.isSpeaking = !this.isSpeaking;
+      let detectedLanguage = franc(this.horoscope);
+      this.selectedVoice = this.getVoiceForLanguage(detectedLanguage);
+      responsiveVoice.speak(this.horoscope, this.selectedVoice, {
+
+        onstart: () => {
+          // Ajouter la classe 'scale' au début de la lecture
+          this.isSpeaking = true;
+        },
+        onend: () => {
+          // Retirer la classe 'scale' à la fin de la lecture
+          this.isSpeaking = false;
+          this.onEnd();
+        },
+        onerror: () => {
+          // En cas d'erreur, assurez-vous de retirer la classe 'scale'
+          this.isSpeaking = false;
+          console.error("Une erreur s'est produite lors de la lecture.");
+        },
+      });
+    } else {
+      this.waiting = true;
+      // ResponsiveVoice n'est pas disponible, effectuez une action alternative (par exemple, informer l'utilisateur)
+      console.warn(
+        'ResponsiveVoice is not available. Perform alternative action.'
+      );
+    }
   }
 
   getVoiceForLanguage(languageCode: string): string {

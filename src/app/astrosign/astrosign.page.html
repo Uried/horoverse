@@ -15,14 +15,11 @@
 
   <h2 class="text-2xl text-white font-bold text-center">{{welcomeMessage}}</h2>
 
-  <div>
-    <p>{{jId}}</p>
-    <p>{{pseudo}}</p>
-  </div>
 
   <div class="mt-10 text-white flex flex-col justify-center items-center">
-    <input type="text" placeholder={{firstname}} value={{pseudo}} [(ngModel)]="pseudo"
-      class="border border-[#ca9631] focus:outline-none rounded-lg bg-transparent h-10 w-80 text-center font-bold"><br>
+  <input type="text" placeholder="{{ firstname }}" [value]="pseudo ? pseudo : ''" [(ngModel)]="pseudo"
+    class="border border-[#ca9631] focus:outline-none rounded-lg bg-transparent h-10 w-80 text-center font-bold">
+<br>
 
     <ion-input id="date-input" type="text" (ngModelChange)="getAstrologicalSign()"
       class="border border-[#ca9631] rounded-lg focus:outline-none mb-4 bg-transparent h-10 w-80 text-center font-bold"

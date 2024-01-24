@@ -217,10 +217,11 @@ export class ArchivesPage implements OnInit {
   }
 
   async addComment(idPub: string) {
-    const dismissLoading = await this.showLoading();
+
     if (!this.commentContent) {
       this.showAlertModal();
     } else {
+      const dismissLoading = await this.showLoading();
       let comment = {
         name: this.pseudo,
         content: this.commentContent,
