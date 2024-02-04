@@ -1,36 +1,48 @@
-<ion-content [fullscreen]="true">
-
-
-  <div class="flex text-white mt-3 text-xl font-bold">
-    <i class="fas fa-arrow-left ml-3 text-[#ca9631]" (click)="goToHome()"></i>
-    <div class="ml-[30%]">Parametres</div>
+<ion-content [fullscreen]="true" class="">
+  <div class="flex text-white bg-[#494a4e] font-bold h-10 fixed top-0 w-full">
+    <i class="fas fa-arrow-left mt-2 ml-3 text-[#ca9631] text-xl" routerLink="/home"></i>
+    <div class="ml-[32%] font-bold mt-2 text-2xl">Profil</div>
   </div>
 
-  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-16 h-16 rounded-md">
-    <div class="w-16 ml-3">
+  <div class="flex bg-[#494a4e] text-white w-80 ml-auto mr-auto mt-20 h-16 rounded-md">
+    <div class="w-16 ml-3 mt-2">
       <img src={{choosedImage}} alt="">
     </div>
     <div class="py-4 px-12 font-bold text-2xl">{{astrologicalSign}}</div>
   </div>
 
-  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
 
-    <i class="fas fa-user py-2 px-4 text-3xl rounded-full w-[17%] h-[84%] text-white bg-[#ca9631] mt-1 ml-3"></i>
-
-    <div class="py-4 px-16 font-bold text-xl">{{pseudo}}</div>
+  <div class="flex bg-[#494a4e] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
+    <div class="rounded-full mt-2 ml-3"
+      style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; background-color: #ca9631;">
+      <i class="fas fa-user text-3xl text-white"></i>
+    </div>
+    <div class="py-4 px-16 font-bold text-center text-xl">{{pseudo}}</div>
   </div>
 
-  <div class="flex bg-[#09154a] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
-    <i class="fas fa-calendar py-3 px-4 text-3xl rounded-full w-[17%] h-[84%] text-white bg-[#ca9631] mt-2 ml-3"></i>
+  <div class="flex bg-[#494a4e] text-white w-80 ml-auto mr-auto mt-4 h-16 rounded-md">
+    <div class="rounded-full mt-2 ml-3"
+      style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; background-color: #ca9631;">
+      <i class="fas fa-phone text-white text-3xl"></i>
+    </div>
+
+    <div class="py-4 px-16 font-bold text-center text-xl">{{jId}}</div>
+  </div>
+  <h3 class="text-white text-center mt-2 font-bold">{{'Choose a day and a month'| translate}}</h3>
+  <div class="flex bg-[#494a4e] text-white text-center w-80 ml-auto mr-auto mt-3 h-16 rounded-md">
+    <div class="rounded-full mt-2 ml-3"
+      style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; background-color: #ca9631;">
+    <i class="fas fa-calendar text-3xl"></i>
+    </div>
     <div class="py-3 px-10">
-      <input id="date-input" type="date" [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()"
+      <input id="date-input" type="text" placeholder="mm/dd" [(ngModel)]="selectedDate" (ngModelChange)="getAstrologicalSign()"
         class="rounded-lg focus:outline-none mb-4 bg-transparent h-10  text-center font-bold" />
     </div>
 
   </div>
   <div class="flex justify-center">
     <button class="bg-[#ca9631] hover:bg-[#ca8431] text-white rounded-lg font-bold w-80 px-4 py-2 mt-10"
-      (click)="changeAstrologicalSign()">Modifier</button>
+      (click)="changeAstrologicalSign()">{{'Change the astrological sign' | translate}}</button>
   </div>
 
 </ion-content>

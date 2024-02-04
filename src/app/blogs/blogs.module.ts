@@ -6,12 +6,19 @@ import { IonicModule } from '@ionic/angular';
 
 import { BlogsPageRoutingModule } from './blogs-routing.module';
 import { ViewblogPageModule } from '../viewblog/viewblog.module';
-
+import { TranslateModule } from '@ngx-translate/core';
 import { BlogsPage } from './blogs.page';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, BlogsPageRoutingModule, ViewblogPageModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    BlogsPageRoutingModule,
+    ViewblogPageModule,
+    TranslateModule.forChild(),
+  ],
   declarations: [BlogsPage],
-  exports: [BlogsPage]
+  exports: [BlogsPage],
 })
 export class BlogsPageModule {}

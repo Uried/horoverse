@@ -18,19 +18,24 @@ export class BlogsPage implements OnInit {
   idBlog!: string;
   home: string = 'Home';
   news: string = 'News';
-  opinion: string = 'Opinions';
+  opinion: string = 'Archives';
   blogs: any[] = [];
   blogDate!: string;
   ipAddress!: string;
   jId: string = localStorage.getItem('jId') || '';
 
   constructor(
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private http: HttpClient,
     private router: Router,
     private blogServive: BlogService,
     private loadingCtrl: LoadingController
   ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -46,14 +51,7 @@ export class BlogsPage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.translateService.setDefaultLang('fr');
-    const browserLang = navigator.language;
 
-    this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
-      this.translateToFrench();
-      //this.translateHoroscope(); // Appeler translateHoroscope() ici
-    }
     this.getBlogs();
   }
 
@@ -69,7 +67,6 @@ export class BlogsPage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.opinion = 'Avis';
   }
 
   truncateText(text: string, maxLength: number): string {

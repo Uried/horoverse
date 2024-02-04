@@ -4,8 +4,8 @@ import { initializeApp } from 'firebase/app';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -21,9 +21,8 @@ import { BlogsPageModule } from './blogs/blogs.module';
 initializeApp(environment.firebase)
 
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(http);
 }
-
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,7 +39,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     AngularFireMessagingModule,
     TranslateModule.forRoot({
-      defaultLanguage: 'fr',
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
@@ -53,6 +51,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

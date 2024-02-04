@@ -7,12 +7,13 @@ import { IonicModule } from '@ionic/angular';
 import { CommentPageRoutingModule } from './comment-routing.module';
 
 import { CommentPage } from './comment.page';
-
+import { TranslateModule } from '@ngx-translate/core';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    TranslateModule.forChild(),
     CommentPageRoutingModule
   ],
   declarations: [CommentPage]

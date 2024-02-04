@@ -1,3 +1,4 @@
+
 import { Component, Inject, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,27 +9,55 @@ import { ModalController } from '@ionic/angular';
 import { PickerController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 
-
 @Component({
   selector: 'app-astrosign',
   templateUrl: './astrosign.page.html',
   styleUrls: ['./astrosign.page.scss'],
 })
 export class AstrosignPage implements OnInit {
+  days = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+  ];
+  months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  selectedMonth = 'Jan';
+  selectedDay = 1;
+
   constructor(
     private http: HttpClient,
     private router: Router,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private afMessaging: AngularFireMessaging,
     public modalCtrl: ModalController,
     private pickerCtrl: PickerController,
     private loadingCtrl: LoadingController,
+
     @Inject(LOCALE_ID) public locale: string
-  ) {}
+  ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+    if (browserLang == 'fr'){
+      this.onTranslate()
+    }
+  }
 
   selectedDate!: string;
   astrologicalSign!: string;
-  symbolSign!: string;
   jId!: string;
   pseudo!: string;
   phone!: Number;
@@ -36,7 +65,8 @@ export class AstrosignPage implements OnInit {
   tokenFCM!: string;
   browserLanguage!: string;
   ipAddress!: string;
-  welcomeMessage: string = 'Hello, what is your first name and your birthday?';
+  welcomeMessage: string =
+    'Hello, what is your first name, day and month of birth?';
   firstname: string = 'Firstname';
 
   async ngOnInit() {
@@ -51,62 +81,24 @@ export class AstrosignPage implements OnInit {
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.phone = parseInt(localStorage.getItem('phone') || '0');
     this.requestFirebaseToken();
-    const browserLang = navigator.language;
-    this.browserLanguage = browserLang;
-    this.translateService.use(browserLang);
+    this.getAstrologicalSign()
+  }
+
+  selectDay(day: any) {
+    this.selectedDay = day;
+  }
+
+  selectMonth(month: any) {
+    this.selectedMonth = month;
   }
 
   async showLoading() {
     const loading = await this.loadingCtrl.create({
       message: 'Please wait...',
-
     });
 
     loading.present();
     return () => loading.dismiss();
-  }
-
-  async openDatePicker() {
-    const picker = await this.pickerCtrl.create({
-      buttons: [
-        {
-          text: 'Annuler',
-          role: 'cancel',
-        },
-        {
-          text: 'OK',
-          handler: (value: any) => {
-            this.selectedDate = `${value.day.text}-${value.month.text}`;
-            this.getAstrologicalSign();
-
-            // Ajoutez votre logique ici
-          },
-        },
-      ],
-      columns: [
-        {
-          name: 'day',
-          options: this.generateDayOptions(),
-        },
-        {
-          name: 'month',
-          options: this.generateMonthOptions(),
-        },
-      ],
-    });
-
-    picker.present();
-  }
-
-  generateDayOptions() {
-    const dayOptions = [];
-    for (let i = 1; i <= 31; i++) {
-      dayOptions.push({
-        text: i.toString().padStart(2, '0'),
-        value: i.toString().padStart(2, '0'),
-      });
-    }
-    return dayOptions;
   }
 
   generateMonthOptions() {
@@ -128,8 +120,9 @@ export class AstrosignPage implements OnInit {
   }
 
   getAstrologicalSign() {
+    this.selectedDate = `${this.selectedDay}-${this.selectedMonth}`;
+
     this.astrologicalSign = this.calculateAstrologicalSign(this.selectedDate);
-    console.log(this.astrologicalSign);
 
     if (this.browserLanguage == 'fr-FR') {
       this.translateWelcomeMessage();
@@ -160,43 +153,59 @@ export class AstrosignPage implements OnInit {
     const month =
       monthNames.findIndex((name) => name === monthAbbreviation) + 1;
 
-    if (
-      isNaN(day) ||
-      isNaN(month) ||
-      day < 1 ||
-      day > 31 ||
-      month < 1 ||
-      month > 12
-    ) {
-      return 'Entrez une date valide';
-    }
-
     if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
-      return 'aquarius';
-    } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
-      return 'pisces';
-    } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
-      return 'aries';
-    } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
-      return 'taurus';
-    } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
-      return 'gemini';
-    } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
-      return 'cancer';
+      return 'AQUARIUS';
+    } else if (
+      (month === 2 && day >= 19 && day < 30) ||
+      (month === 3 && day <= 20)
+    ) {
+      return 'PISCES';
+    } else if (
+      (month === 3 && day >= 21) ||
+      (month === 4 && day <= 19 && day < 31)
+    ) {
+      return 'ARIES';
+    } else if (
+      (month === 4 && day >= 20 && day < 31) ||
+      (month === 5 && day <= 20)
+    ) {
+      return 'TAURUS';
+    } else if (
+      (month === 5 && day >= 21) ||
+      (month === 6 && day <= 20 && day < 31)
+    ) {
+      return 'GEMINI';
+    } else if (
+      (month === 6 && day >= 21 && day < 31) ||
+      (month === 7 && day <= 22)
+    ) {
+      return 'CANCER';
     } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
-      return 'leo';
-    } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
-      return 'virgo';
-    } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
-      return 'libra';
-    } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
-      return 'scorpio';
-    } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
-      return 'sagittarius';
+      return 'LEO';
+    } else if (
+      (month === 8 && day >= 23) ||
+      (month === 9 && day <= 22 && day < 31)
+    ) {
+      return 'VIRGO';
+    } else if (
+      (month === 9 && day >= 23 && day < 31) ||
+      (month === 10 && day <= 22)
+    ) {
+      return 'LIBRA';
+    } else if (
+      (month === 10 && day >= 23) ||
+      (month === 11 && day <= 21 && day < 31)
+    ) {
+      return 'SCORPIO';
+    } else if (
+      (month === 11 && day >= 22 && day < 31) ||
+      (month === 12 && day <= 21)
+    ) {
+      return 'SAGITTARIUS';
     } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
-      return 'capricorn';
+      return 'CAPRICORN';
     } else {
-      return "Entrez votre date d'anniversaire";
+      return 'Entrez un jour valide';
     }
   }
 
@@ -239,7 +248,8 @@ export class AstrosignPage implements OnInit {
     );
   }
 
-  createNewUser() {
+  async createNewUser() {
+    const dismissLoading = await this.showLoading();
     if (!this.selectedDate) {
       this.showAlertModal();
     } else {
@@ -253,12 +263,13 @@ export class AstrosignPage implements OnInit {
 
       try {
         this.http
-          .post('https://apihoroverse.vercel.app/users/', credentials)
+          .post('apihoroverse.vercel.app/users/', credentials)
           .subscribe((res) => {
             console.log('user Created');
             this.router.navigateByUrl('/home');
             //this.router.navigate(['home'])
           });
+        dismissLoading();
         const log = {
           level: 'logging',
           message: 'Nouvel utilisateur cree',
@@ -275,6 +286,7 @@ export class AstrosignPage implements OnInit {
         );
       } catch (error: any) {
         console.log(error.message);
+        dismissLoading();
         const log = {
           level: 'error',
           message: 'Erreur lors de la creation dun nouvel utilisateur' + error,
@@ -296,41 +308,41 @@ export class AstrosignPage implements OnInit {
 
   onTranslate() {
     switch (this.astrologicalSign) {
-      case 'aquarius':
-        this.symbolSign = 'Verseau';
+      case 'AQUARIUS':
+        this.astrologicalSign = 'Verseau';
         break;
-      case 'pisces':
-        this.symbolSign = 'Poissons';
+      case 'PISCES':
+        this.astrologicalSign = 'Poissons';
         break;
-      case 'aries':
-        this.symbolSign = 'Bélier';
+      case 'ARIES':
+        this.astrologicalSign = 'Bélier';
         break;
-      case 'taurus':
-        this.symbolSign = 'Taureau';
+      case 'TAURUS':
+        this.astrologicalSign = 'Taureau';
         break;
-      case 'gemini':
-        this.symbolSign = 'Gémeaux';
+      case 'GEMINI':
+        this.astrologicalSign = 'Gémeaux';
         break;
-      case 'cancer':
-        this.symbolSign = 'Cancer';
+      case 'CANCER':
+        this.astrologicalSign = 'Cancer';
         break;
-      case 'leo':
-        this.symbolSign = 'Lion';
+      case 'LEO':
+        this.astrologicalSign = 'Lion';
         break;
-      case 'virgo':
-        this.symbolSign = 'Vierge';
+      case 'VIRGO':
+        this.astrologicalSign = 'Vierge';
         break;
-      case 'libra':
-        this.symbolSign = 'Balance';
+      case 'LIBRA':
+        this.astrologicalSign = 'Balance';
         break;
-      case 'scorpio':
-        this.symbolSign = 'Scorpion';
+      case 'SCORPIO':
+        this.astrologicalSign = 'Scorpion';
         break;
-      case 'sagittarius':
-        this.symbolSign = 'Sagittaire';
+      case 'SAGITTARIUS':
+        this.astrologicalSign = 'Sagittaire';
         break;
-      case 'capricorn':
-        this.symbolSign = 'Capricorne';
+      case 'CAPRICORN':
+        this.astrologicalSign = 'Capricorne';
         break;
       default:
         break;
@@ -339,7 +351,7 @@ export class AstrosignPage implements OnInit {
 
   translateWelcomeMessage() {
     this.welcomeMessage =
-      "Bonjour, quel est votre prénom et votre date d'anniversaire ?";
+      'Bonjour, quel est votre prénom votre jour et mois de naissance?';
     this.firstname = 'Prénom';
   }
 
@@ -359,4 +371,3 @@ export class AstrosignPage implements OnInit {
     });
   }
 }
-

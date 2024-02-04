@@ -5,6 +5,7 @@ import { NavigationEnd, Router, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import axios from 'axios';
 import { HttpClient } from '@angular/common/http';
+
 import { LoadingController } from '@ionic/angular';
 
 export interface Comment {
@@ -31,35 +32,130 @@ export class CommentPage implements OnInit {
   responseZoneShow: boolean = false;
   showModal: boolean = false;
   comments: any[] = [];
-  browserLanguage!: string;
   ipAddress!: string;
   selectedCommentId: string | null = null;
-
+  language: string = 'en';
   constructor(
     private publicationService: PublicationService,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
-     private loadingCtrl: LoadingController,
+    private loadingCtrl: LoadingController,
     private http: HttpClient
-  ) {}
+  ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+     if (browserLang == 'fr') {
+       this.language = 'fr';
+     }
+
+       this.router.events
+         .pipe(filter((event) => event instanceof NavigationEnd))
+         .subscribe(() => {
+           this.translateHoroscope()
+         });
+  }
 
   async ngOnInit() {
     try {
+      await this.translateHoroscope()
       await this.getIPAddress();
       console.log('Adresse IP:', this.ipAddress);
       // Utilisez this.ipAddress comme nécessaire dans votre application
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.translateService.setDefaultLang('fr');
-    const browserLang = navigator.language;
+
+    if (this.language == 'fr') {
+      this.translateHoroscope()
+    }
+
     this.getPublicationComments();
-    this.browserLanguage = browserLang!;
+  }
+
+  showResponseZone(commentId: string): void {
+    this.responseZoneShow = true;
+    this.selectedCommentId = commentId;
+  }
+
+  hideResponseZone(): void {
+    this.responseZoneShow = false;
+    this.selectedCommentId = null;
+  }
+  showAlertModal() {
+    this.showModal = true;
+    setTimeout(() => {
+      this.showModal = false;
+    }, 2000);
+  }
+  async showLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+    });
+
+    loading.present();
+    return () => loading.dismiss();
+  }
+
+  async getPublicationComments() {
+    const dismissLoading = await this.showLoading();
+    const idPub = this.route.snapshot.paramMap.get('id')!;
+    const datePub = this.route.snapshot.paramMap.get('date');
+    this.datePub = datePub!;
+    this.idPub = idPub;
+    try {
+      this.publicationService
+        .getPublicationById(this.idPub)
+        .subscribe((publication: any) => {
+          this.publicationContent = publication[this.sign].split('|');
+        });
+
+      this.publicationService.getComments(idPub).subscribe((comments: any) => {
+        this.comments = comments;
+        comments.forEach((element: any) => {
+          console.log(element.responses);
+        });
+        const log = {
+          level: 'debug',
+          message: 'Affiche les avis sur lhoroscope',
+          userId: localStorage.getItem('jId'),
+          ipAddress: this.ipAddress,
+        };
+
+        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+          (response) => {
+            console.log('Réponse:', response);
+          },
+          (error) => {
+            console.error('Erreur lors de la requête POST logs:', error);
+          }
+        );
+      });
+      dismissLoading();
+    } catch (error) {
+      dismissLoading();
+      console.error(error);
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la recuperation de lhoroscope' + error,
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
+    }
   }
 
   async translateHoroscope() {
-    const dismissLoading = await this.showLoading();
+
     const url = `https://api.mymemory.translated.net/get`;
 
     const horoscopePhrases = this.segmentText(this.publicationContent, '.'); // Segmenter par phrases
@@ -87,13 +183,29 @@ export class CommentPage implements OnInit {
         }
       }
 
-      let translatedHoroscope = translatedPhrases.join('. '); //
-      translatedHoroscope += '.'; //
+      let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
+      translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
       this.publicationContent = translatedHoroscope;
       console.log(this.publicationContent); // Afficher le résultat en console
+
       const log = {
         level: 'debug',
-        message: 'Traduction de lhoroscope',
+        message: 'Horoscope traduit',
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
+    } catch (error) {
+      const log = {
+        level: 'error',
+        message: 'Erreur lors de la traduction du texte' + error,
         userId: localStorage.getItem('jId'),
         ipAddress: this.ipAddress,
       };
@@ -106,24 +218,8 @@ export class CommentPage implements OnInit {
           console.error('Erreur lors de la requête POST logs:', error);
         }
       );
-      dismissLoading()
-    } catch (error) {
-      dismissLoading()
+
       console.error(error);
-      const log = {
-        level: 'error',
-        message: 'Erreur lors de la traduction de lhoroscope' + error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
-      };
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
-        }
-      );
     }
   }
 
@@ -132,91 +228,7 @@ export class CommentPage implements OnInit {
     return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
   }
 
-  showResponseZone(commentId: string): void {
-    this.responseZoneShow = true;
-    this.selectedCommentId = commentId;
-  }
-
-  hideResponseZone(): void {
-    this.responseZoneShow = false;
-    this.selectedCommentId = null;
-  }
-  showAlertModal() {
-    this.showModal = true;
-    setTimeout(() => {
-      this.showModal = false;
-    }, 2000);
-  }
-  async showLoading() {
-    const loading = await this.loadingCtrl.create({
-      message: 'Please wait...',
-    });
-
-    loading.present();
-    return () => loading.dismiss();
-  }
-
- async getPublicationComments() {
-    const dismissLoading = await this.showLoading();
-    const idPub = this.route.snapshot.paramMap.get('id')!;
-    const datePub = this.route.snapshot.paramMap.get('date');
-    this.datePub = datePub!;
-    this.idPub = idPub;
-    try {
-      this.publicationService
-        .getPublicationById(idPub)
-        .subscribe((publication: any) => {
-          this.publicationContent = publication[this.sign];
-          if (this.browserLanguage == 'fr-FR') {
-            this.translateHoroscope();
-
-            localStorage.setItem('frenchHoroscope', this.publicationContent);
-          }
-        });
-
-      this.publicationService.getComments(idPub).subscribe((comments: any) => {
-        this.comments = comments;
-        comments.forEach((element: any) => {
-          console.log(element.responses);
-        });
-        const log = {
-          level: 'debug',
-          message: 'Affiche les avis sur lhoroscope',
-          userId: localStorage.getItem('jId'),
-          ipAddress: this.ipAddress,
-        };
-
-        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-          (response) => {
-            console.log('Réponse:', response);
-          },
-          (error) => {
-            console.error('Erreur lors de la requête POST logs:', error);
-          }
-        );
-      });
-      dismissLoading()
-    } catch (error) {
-      dismissLoading()
-      console.error(error);
-      const log = {
-        level: 'error',
-        message: 'Erreur lors de la recuperation de lhoroscope' + error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
-      };
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
-        }
-      );
-    }
-  }
-
- async addcomment() {
+  async addcomment() {
     const dismissLoading = await this.showLoading();
     if (this.commentContent == '') {
       this.showAlertModal;
@@ -233,9 +245,9 @@ export class CommentPage implements OnInit {
             this.getPublicationComments();
             this.commentContent = '';
           });
-          dismissLoading()
+        dismissLoading();
       } catch (error) {
-        dismissLoading()
+        dismissLoading();
         console.log(error);
         const log = {
           level: 'error',
@@ -263,7 +275,7 @@ export class CommentPage implements OnInit {
       });
   }
 
-async  addResponse(){
+  async addResponse() {
     const dismissLoading = await this.showLoading();
     if (this.selectedCommentId) {
       let response = {
@@ -282,9 +294,9 @@ async  addResponse(){
               this.hideResponseZone(); // Fermer la zone de réponse après l'ajout
             });
         }
-        dismissLoading()
+        dismissLoading();
       } catch (error) {
-        dismissLoading()
+        dismissLoading();
         // Gérer les erreurs
       }
     }
@@ -307,7 +319,7 @@ async  addResponse(){
       inputDate.getMonth() === currentDate.getMonth() &&
       inputDate.getFullYear() === currentDate.getFullYear()
     ) {
-      if (this.browserLanguage == 'fr-FR') {
+      if (this.language == 'fr') {
         return "d'aujourd'hui";
       } else {
         return 'Today';
@@ -322,11 +334,11 @@ async  addResponse(){
       inputDate.getMonth() === yesterday.getMonth() &&
       inputDate.getFullYear() === yesterday.getFullYear()
     ) {
-      if (this.browserLanguage == 'fr-FR') {
-        return "d'hier";
-      } else {
-        return 'Yesterday';
-      }
+        if (this.language == 'fr') {
+          return "d'hier";
+        } else {
+          return 'Yesterday';
+        }
     }
 
     // Vérifier si la date est dans la semaine en cours
@@ -354,11 +366,11 @@ async  addResponse(){
         'Friday',
         'Satuday',
       ];
-      if (this.browserLanguage == 'fr-FR') {
-        return joursDeLaSemaine[inputDate.getDay()];
-      } else {
-        return daysOfWeek[inputDate.getDay()];
-      }
+       if (this.language == 'fr') {
+         return joursDeLaSemaine[inputDate.getDay()];
+       } else {
+         return daysOfWeek[inputDate.getDay()];
+       }
     }
 
     // Retourner la date au format jj-mm-aaaa

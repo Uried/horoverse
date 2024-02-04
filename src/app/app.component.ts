@@ -4,7 +4,7 @@ import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { TranslateService } from '@ngx-translate/core';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { Observable, forkJoin } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  horoscope: any;
   private apiUrl = 'https://any.ge/horoscope/api/';
   constructor(
     private translateService: TranslateService,
@@ -22,6 +23,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+   
     //await this.getHoroscopes();
     const browserLang = navigator.language;
     this.translateService.use(browserLang.match(/fr|en/) ? browserLang : 'fr');
@@ -90,4 +92,38 @@ export class AppComponent implements OnInit {
 
     return this.http.put(url, body);
   }
+
+  getHoroscope(sign: string) {
+    const headers = {
+      'X-RapidAPI-Key': 'c79e7cce1dmsh6fd8ba52278c9d4p1d6288jsn7bbcd57be239',
+      'X-RapidAPI-Host': 'horoscopes-ai.p.rapidapi.com',
+    };
+
+    //getDailyHoroscope(language: string): Observable<Daily> {
+    const today = new Date();
+    const formattedDate = today.toISOString().slice(0, 10); // YYYY-MM-DD format
+    console.log(formattedDate);
+
+    //   const url = `http://localhost:3000/dailies/${formattedDate}/${language}`; // Replace with your server URL
+
+    //   return this.http.get<Daily>(url);
+    // }
+
+    this.http
+      .get<any>(
+        `https://horoscopes-ai.p.rapidapi.com/get_horoscope/${sign}/today/general/fr`,
+        { headers }
+      )
+      .subscribe(
+        (data) => {
+          this.horoscope = data;
+          console.log(data);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+  }
+
+
 }

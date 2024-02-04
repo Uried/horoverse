@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { franc } from 'franc-min';
 import axios from 'axios';
 import { LoadingController } from '@ionic/angular';
+import { PickerController } from '@ionic/angular';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-horoscopes',
   templateUrl: './horoscopes.page.html',
@@ -13,37 +15,49 @@ export class HoroscopesPage implements OnInit {
   constructor(
     private http: HttpClient,
     private loadingCtrl: LoadingController,
-    private translateService: TranslateService
+    private translate: TranslateService,
+    private pickerCtrl: PickerController,
+    private router: Router
   ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+    console.log(browserLang);
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+
     this.onImageChange();
+
+    if (browserLang == 'fr') {
+      this.translateToFrench();
+    }
   }
 
   browserLanguage!: string;
   ipAddress!: string;
   home: string = 'Home';
   news: string = 'News';
-  opinion: string = 'Opinions';
+  opinion: string = 'Archives';
   guidePhrase: string = 'Choose a date or astrological sign';
   selectedDate!: string;
-  public horoscope: string = '...';
+  public horoscope: string = '';
   public selectedSign: string = '';
-  signInterval: string = this.getZodiacDateRange(this.selectedSign);
   public choosedImage: string = '';
   public sunsign: string = '';
   private autoScrollInterval: any;
+
   public signs: string[] = [
-    'aries',
-    'taurus',
-    'gemini',
-    'cancer',
-    'leo',
-    'virgo',
-    'libra',
-    'scorpio',
-    'sagittarius',
-    'capricorn',
-    'aquarius',
-    'pisces',
+    'ARIES',
+    'TAURUS',
+    'GEMINI',
+    'CANCER',
+    'LEO',
+    'VIRGO',
+    'LIBRA',
+    'SCORPIO',
+    'SAGITTARIUS',
+    'CAPRICORN',
+    'AQUARIUS',
+    'PISCES',
   ];
 
   public translateSign: string[] = [
@@ -69,15 +83,6 @@ export class HoroscopesPage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.translateService.setDefaultLang('fr');
-
-    const browserLang = navigator.language;
-
-    this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
-      this.translateToFrench();
-    }
-    this.getHoroscopeBySunSign();
     this.onImageChange();
     this.startAutoScroll();
   }
@@ -106,7 +111,6 @@ export class HoroscopesPage implements OnInit {
 
     // Mettez à jour le reste des informations
     this.onImageChange();
-    this.onTranslate();
   }
 
   async showLoading() {
@@ -118,67 +122,70 @@ export class HoroscopesPage implements OnInit {
     return () => loading.dismiss();
   }
 
-  async getHoroscopeBySunSign() {
-    this.stopAutoScroll()
-    const dismissLoading = await this.showLoading();
-    const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${this.selectedSign}`;
-    try {
-      this.http.get(apiUrl).subscribe((result: any) => {
-        this.horoscope = result.horoscope;
-        console.log(result);
-
-        result.forEach((obj: any) => {
-          const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
-          this.horoscope = text;
-          this.onImageChange();
-          this.onTranslate();
-          this.signInterval = this.getZodiacDateRange(this.selectedSign);
-          if (this.browserLanguage == 'fr-FR') {
-            this.translateHoroscope();
-            this.signInterval = this.getZodiacDateRange(this.selectedSign);
-          } else {
-            this.signInterval = this.getTranslatedZodiacDateRange(
-              this.selectedSign
-            );
-          }
-        });
-        const log = {
-          level: 'debug',
-          message:
-            'Affiche la lhoroscope en fonction du signe astrologique choisi',
-          userId: localStorage.getItem('jId'),
-          ipAddress: this.ipAddress,
-        };
-
-        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-          (response) => {
-            console.log('Réponse:', response);
-          },
-          (error) => {
-            console.error('Erreur lors de la requête POST logs:', error);
-          }
-        );
-      });
-      dismissLoading();
-    } catch (error) {
-      dismissLoading();
-      const log = {
-        level: 'error',
-        message: 'Erreur lors de la recuperation de lhoroscope' + error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
-      };
-
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
+  goToShowHoroscope(sign: string) {
+    this.router.navigateByUrl(`/othersign/${sign}`);
+  }
+  async openDatePicker() {
+    const picker = await this.pickerCtrl.create({
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          cssClass: 'color-button',
         },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
-        }
-      );
-      console.error(error);
+        {
+          text: 'OK',
+          handler: (value: any) => {
+            this.selectedDate = `${value.day.text}-${value.month.text}`;
+            this.getAstrologicalSign();
+            this.goToShowHoroscope(this.selectedSign);
+
+            // Ajoutez votre logique ici
+          },
+        },
+      ],
+      columns: [
+        {
+          name: 'day',
+          options: this.generateDayOptions(),
+        },
+        {
+          name: 'month',
+          options: this.generateMonthOptions(),
+        },
+      ],
+      cssClass: 'date-picker-background',
+    });
+
+    picker.present();
+  }
+
+  generateDayOptions() {
+    const dayOptions = [];
+    for (let i = 1; i <= 31; i++) {
+      dayOptions.push({
+        text: i.toString().padStart(2, '0'),
+        value: i.toString().padStart(2, '0'),
+      });
     }
+    return dayOptions;
+  }
+  generateMonthOptions() {
+    const monthOptions = [
+      { text: 'Jan', value: '01' },
+      { text: 'Feb', value: '02' },
+      { text: 'Mar', value: '03' },
+      { text: 'Apr', value: '04' },
+      { text: 'May', value: '05' },
+      { text: 'Jun', value: '06' },
+      { text: 'Jul', value: '07' },
+      { text: 'Aug', value: '08' },
+      { text: 'Sep', value: '09' },
+      { text: 'Oct', value: '10' },
+      { text: 'Nov', value: '11' },
+      { text: 'Dec', value: '12' },
+    ];
+    return monthOptions;
   }
 
   async translateHoroscope() {
@@ -256,94 +263,52 @@ export class HoroscopesPage implements OnInit {
 
   onImageChange() {
     switch (this.selectedSign) {
-      case 'aquarius':
+      case 'AQUARIUS':
         this.choosedImage = '../../assets/signes/verseau.png';
         break;
-      case 'pisces':
+      case 'PISCES':
         this.choosedImage = '../../assets/signes/poissons.png';
         break;
-      case 'aries':
+      case 'ARIES':
         this.choosedImage = '../../assets/signes/belier.png';
         break;
-      case 'taurus':
+      case 'TAURUS':
         this.choosedImage = '../../assets/signes/taureau.png';
         break;
-      case 'gemini':
+      case 'GEMINI':
         this.choosedImage = '../../assets/signes/gemeaux.png';
         break;
-      case 'cancer':
+      case 'CANCER':
         this.choosedImage = '../../assets/signes/cancer.png';
         break;
-      case 'leo':
+      case 'LEO':
         this.choosedImage = '../../assets/signes/lion.png';
         break;
-      case 'virgo':
+      case 'VIRGO':
         this.choosedImage = '../../assets/signes/vierge.png';
         break;
-      case 'libra':
+      case 'LIBRA':
         this.choosedImage = '../../assets/signes/balance.png';
         break;
-      case 'scorpio':
+      case 'SCORPIO':
         this.choosedImage = '../../assets/signes/scorpion.png';
         break;
-      case 'sagittarius':
+      case 'SAGITTARIUS':
         this.choosedImage = '../../assets/signes/sagitaire.png';
         break;
-      case 'capricorn':
+      case 'CAPRICORN':
         this.choosedImage = '../../assets/signes/capricorne.png';
         break;
       default:
+        this.choosedImage = '../../assets/signes/horo.png';
         break;
     }
   }
 
-  onTranslate() {
-    switch (this.selectedSign) {
-      case 'aquarius':
-        this.sunsign = 'Verseau';
-        break;
-      case 'pisces':
-        this.sunsign = 'Poissons';
-        break;
-      case 'aries':
-        this.sunsign = 'Bélier';
-        break;
-      case 'taurus':
-        this.sunsign = 'Taureau';
-        break;
-      case 'gemini':
-        this.sunsign = 'Gémeaux';
-        break;
-      case 'cancer':
-        this.sunsign = 'Cancer';
-        break;
-      case 'leo':
-        this.sunsign = 'Lion';
-        break;
-      case 'virgo':
-        this.sunsign = 'Vierge';
-        break;
-      case 'libra':
-        this.sunsign = 'Balance';
-        break;
-      case 'scorpio':
-        this.sunsign = 'Scorpion';
-        break;
-      case 'sagittarius':
-        this.sunsign = 'Sagittaire';
-        break;
-      case 'capricorn':
-        this.sunsign = 'Capricorne';
-        break;
-      default:
-        break;
-    }
-  }
 
   getAstrologicalSign() {
     const date = new Date(this.selectedDate);
     this.selectedSign = this.calculateAstrologicalSign(date);
-    this.getHoroscopeBySunSign();
   }
 
   calculateAstrologicalSign(date: any) {
@@ -351,97 +316,31 @@ export class HoroscopesPage implements OnInit {
     const day = date.getDate();
 
     if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
-      return 'aquarius';
+      return 'AQUARIUS';
     } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
-      return 'pisces';
+      return 'PISCES';
     } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
-      return 'aries';
+      return 'ARIES';
     } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
-      return 'taurus';
+      return 'TAURUS';
     } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
-      return 'gemini';
+      return 'GEMINI';
     } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
-      return 'cancer';
+      return 'CANCER';
     } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
-      return 'leo';
+      return 'LEO';
     } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
-      return 'virgo';
+      return 'VIRGO';
     } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
-      return 'libra';
+      return 'LIBRA';
     } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
-      return 'scorpio';
+      return 'SCORPIO';
     } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
-      return 'sagittarius';
+      return 'SAGITTARIUS';
     } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
-      return 'capricorn';
+      return 'CAPRICORN';
     } else {
       return "Entrez votre date d'anniversaire";
-    }
-  }
-
-  getZodiacDateRange(sign: string): string {
-    const dateRanges: Record<
-      string,
-      {
-        start: { day: number; month: string };
-        end: { day: number; month: string };
-      }
-    > = {
-      aries: {
-        start: { day: 21, month: 'mars' },
-        end: { day: 19, month: 'avril' },
-      },
-      taurus: {
-        start: { day: 20, month: 'avril' },
-        end: { day: 20, month: 'mai' },
-      },
-      gemini: {
-        start: { day: 21, month: 'mai' },
-        end: { day: 20, month: 'juin' },
-      },
-      cancer: {
-        start: { day: 21, month: 'juin' },
-        end: { day: 22, month: 'juillet' },
-      },
-      leo: {
-        start: { day: 23, month: 'juillet' },
-        end: { day: 22, month: 'août' },
-      },
-      virgo: {
-        start: { day: 23, month: 'août' },
-        end: { day: 22, month: 'septembre' },
-      },
-      libra: {
-        start: { day: 23, month: 'septembre' },
-        end: { day: 22, month: 'octobre' },
-      },
-      scorpio: {
-        start: { day: 23, month: 'octobre' },
-        end: { day: 21, month: 'novembre' },
-      },
-      sagittarius: {
-        start: { day: 22, month: 'novembre' },
-        end: { day: 21, month: 'décembre' },
-      },
-      capricorn: {
-        start: { day: 22, month: 'décembre' },
-        end: { day: 19, month: 'janvier' },
-      },
-      aquarius: {
-        start: { day: 20, month: 'janvier' },
-        end: { day: 18, month: 'février' },
-      },
-      pisces: {
-        start: { day: 19, month: 'février' },
-        end: { day: 20, month: 'mars' },
-      },
-    };
-
-    const dateRange = dateRanges[sign.toLowerCase()];
-    if (dateRange) {
-      return `${dateRange.start.day} ${dateRange.start.month} - ${dateRange.end.day} ${dateRange.end.month}`;
-    } else {
-      return 'Aucun signe choisis';
     }
   }
 
@@ -514,9 +413,8 @@ export class HoroscopesPage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.opinion = 'Avis';
     this.guidePhrase = 'Choisissez une date ou un signe astrologique';
-    this.onTranslate();
+
   }
 
   getIPAddress(): Promise<void> {

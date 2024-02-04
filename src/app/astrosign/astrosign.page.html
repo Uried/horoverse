@@ -1,36 +1,47 @@
 <ion-content [fullscreen]="true">
   <div class="flex">
-    <div class="w-24 ml-2 mt-2">
-      <img src="../../assets/logos/output-onlinepngtools.png" alt="" class="">
+    <div class="w-40 mt-3 ml-2">
+      <img src="../../assets/logos/Logo-Horoscope-White-.svg" alt="" class="">
     </div>
   </div>
 
   <div class="fixed inset-0 flex items-center justify-center mb-96 text-white" *ngIf="showModal">
-    <div class="bg-[#1a2d7d] bg-opacity-50 border border-[#ca9631] rounded">
-      <div class="bg-[#1a2d7d] p-4 rounded">
-        <p>Veuillez remplir vos informations</p>
+    <div class="bg-[#494a4e] bg-opacity-50 border border-[#ca9631] rounded">
+      <div class="bg-[#494a4e] p-4 rounded">
+        <p>{{'Please enter your day and month of birth'| translate}}</p>
       </div>
     </div>
   </div>
 
-  <h2 class="text-2xl text-white font-bold text-center">{{welcomeMessage}}</h2>
+  <h2 class="text-2xl text-white mt-5 font-bold text-center">{{'Hello, what is your first name, day and month of birth?'| translate}}</h2>
 
+  <div class="mt-8 text-white flex flex-col justify-center items-center">
+    <input type="text" placeholder="{{ firstname }}" [value]="pseudo ? pseudo : ''" [(ngModel)]="pseudo"
+      class="border border-[#ca9631] focus:outline-none rounded-lg bg-transparent h-10 w-[95%] ml-2.5 mr-2.5 text-center font-bold">
+    <br>
 
-  <div class="mt-10 text-white flex flex-col justify-center items-center">
-  <input type="text" placeholder="{{ firstname }}" [value]="pseudo ? pseudo : ''" [(ngModel)]="pseudo"
-    class="border border-[#ca9631] focus:outline-none rounded-lg bg-transparent h-10 w-80 text-center font-bold">
-<br>
+<h3 class="text-white text-center font-bold">{{'Choose a day' | translate}}</h3>
+<div class="container">
+  <div class="flex mt-2 days-container gap-4 overflow-x-auto">
+    <div class="day bg-[#494a4e] text-gray-500 font-bold text-2xl border border-[#494a4e] rounded-full" *ngFor="let day of days" [class.selected]="day === selectedDay">
+      <div class="day-label border border-white rounded-full text-xl w-16 h-16 flex items-center justify-center" (click)="selectDay(day)" (click)="getAstrologicalSign()">
+        {{ day }}</div>
+    </div>
+  </div>
+</div>
+  <h3 class="text-white text-center font-bold mt-5">{{'Choose a month' | translate}}</h3>
+<div class="container">
+  <div class="flex mt-3 months-container gap-4 overflow-x-auto">
+    <div class="month bg-[#494a4e] text-gray-500 font-bold text-2xl border border-[#494a4e] rounded-full" *ngFor="let month of months" [class.selected]="month === selectedMonth">
+      <div class="month-label border border-white rounded-full text-xl w-16 h-16 flex items-center justify-center" (click)="selectMonth(month)" (click)="getAstrologicalSign()">
+        {{ month }}</div>
+    </div>
+  </div>
+</div>
 
-    <ion-input id="date-input" type="text" (ngModelChange)="getAstrologicalSign()"
-      class="border border-[#ca9631] rounded-lg focus:outline-none mb-4 bg-transparent h-10 w-80 text-center font-bold"
-      placeholder="Date"
-      [(ngModel)]="selectedDate" (click)="openDatePicker()">
-    </ion-input>
-
-
-    <p *ngIf="astrologicalSign" id="sign-output" class="font-bold text-2xl mb-4 text-[#ca9631]">{{ symbolSign }}</p>
-    <button class="bg-[#ca9631] hover:bg-[#ca8631] text-white rounded-lg ml- px-4 py-2 mt-6"
-      (click)="createNewUser()">Voir mon horoscope</button>
+    <p *ngIf="astrologicalSign" id="sign-output" class="font-bold text-2xl mb-4 mt-3 text-[#ca9631]">{{ astrologicalSign }}</p>
+    <button class="bg-[#ca9631] hover:bg-[#ca8631] font-bold text-white rounded-lg ml- px-4 py-2 mt-6"
+      (click)="createNewUser()">{{'See my horoscope' | translate}}</button>
   </div>
 
 

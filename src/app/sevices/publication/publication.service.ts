@@ -11,8 +11,10 @@ export class PublicationService {
   constructor(private http: HttpClient) {}
 
   // Récupérer une publication par son idArch
-  getPublicationById(_id: string): Observable<any> {
-    const url = this.apiUrl + _id;
+  getPublicationById(id: string): Observable<any> {
+    const add = '/byId/';
+    const url = this.apiUrl + add + id;
+
     return this.http.get(url);
   }
 

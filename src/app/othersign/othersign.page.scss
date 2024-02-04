@@ -1,0 +1,68 @@
+.sign {
+  font-family: AspiraWideDemi;
+}
+
+.title {
+  font-family: NoyhGeometricSlimExtraLight;
+}
+
+.tab {
+  font-family: BetmRoundedRegular;
+}
+
+.text {
+  font-family: NoyhGeometricLight;
+}
+
+h6 {
+  font-family: BillCorporateMediumSemibold;
+}
+
+h4 {
+  font-family: AspiraWideDemi;
+}
+
+span {
+  font-family: NoyhGeometricSlimExtraLight;
+}
+
+ion-content {
+  --background: url("../../assets/logos/stars.gif") center/cover no-repeat fixed;
+  --opacity: 1;
+  background-size: 100% 100%;
+}
+
+
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-infinite {
+  animation: rotate 2s linear infinite;
+  /* Vous pouvez ajuster la durée selon vos préférences */
+}
+
+@keyframes scaleAnimation {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.scale {
+  animation: scaleAnimation 1.5s infinite;
+}

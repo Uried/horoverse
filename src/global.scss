@@ -29,3 +29,43 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+@font-face {
+  font-family: 'ArquitectaLight';
+  src: url('./assets/fonts/ArquitectaLight.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'AspiraWideDemi';
+  src: url('./assets/fonts/AspiraWideDemi.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'NoyhGeometricSlimExtraLight';
+  src: url('./assets/fonts/NoyhGeometricSlimExtraLight.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'BetmRoundedRegular';
+  src: url('./assets/fonts/BetmRoundedRegular.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NoyhGeometricLight';
+  src: url('./assets/fonts/NoyhGeometricLight.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BillCorporateMediumSemibold';
+  src: url('./assets/fonts/billcorporatemedium-semibold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

@@ -26,6 +26,7 @@ export class ArchivesPage implements OnInit {
   home: string = 'Home';
   news: string = 'News';
   opinion: string = 'Opinions';
+  language: string = 'en';
   constructor(
     private publicationService: PublicationService,
     private router: Router,
@@ -36,7 +37,7 @@ export class ArchivesPage implements OnInit {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        // this.getAllPublications();
+        //this.getAllPublications();
       });
   }
 
@@ -53,6 +54,10 @@ export class ArchivesPage implements OnInit {
 
     this.browserLanguage = browserLang!;
 
+    if (this.browserLanguage == 'fr-FR') {
+      this.language = 'fr';
+    }
+
     this.getAllPublications();
   }
 
@@ -65,36 +70,28 @@ export class ArchivesPage implements OnInit {
     return () => loading.dismiss();
   }
 
+  truncateText(text: string, maxLength: number): string {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text;
+  }
+
   async getAllPublications() {
     const dismissLoading = await this.showLoading();
-
     try {
-      this.publicationService
-        .getAllPublications()
-        .subscribe(async (publications: any) => {
+      this.http.get(`https://apihoroverse.vercel.app/publications`).subscribe(
+        (publications: any) => {
           this.publications = publications;
-          if (this.browserLanguage == 'fr-FR') {
-            for (const publication of this.publications) {
-              if (publication[this.sign]) {
-                try {
-                  const texteTraduit = await this.translateHoroscope(
-                    publication[this.sign]
-                  );
-                  publication[this.sign] = texteTraduit;
-                } catch (error) {
-                  console.error(
-                    `Erreur lors de la traduction pour la publication : ${JSON.stringify(
-                      publication
-                    )}`,
-                    error
-                  );
-                }
-              }
-            }
-          } else {
-          }
-        });
-
+          console.log(this.publications);
+        },
+        (error) => {
+          console.error(
+            'An error occurred while retrieving publications',
+            error
+          );
+        }
+      );
       const log = {
         level: 'debug',
         message: 'Afficher lhistorique des horoscopes',
@@ -103,17 +100,15 @@ export class ArchivesPage implements OnInit {
       };
 
       this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
+        (response) => {},
         (error) => {
           console.error('Erreur lors de la requête POST logs:', error);
         }
       );
-      dismissLoading()
+      dismissLoading();
     } catch (error) {
       console.log(error);
-      dismissLoading()
+      dismissLoading();
 
       const log = {
         level: 'error',
@@ -125,9 +120,7 @@ export class ArchivesPage implements OnInit {
       };
 
       this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
+        (response) => {},
         (error) => {
           console.error('Erreur lors de la requête POST logs:', error);
         }
@@ -217,7 +210,6 @@ export class ArchivesPage implements OnInit {
   }
 
   async addComment(idPub: string) {
-
     if (!this.commentContent) {
       this.showAlertModal();
     } else {
@@ -230,7 +222,7 @@ export class ArchivesPage implements OnInit {
         this.showDoneIcon();
         this.commentContent = '';
       });
-      dismissLoading()
+      dismissLoading();
     }
   }
 

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -13,8 +14,9 @@ import { AstrosignPage } from './astrosign.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    AstrosignPageRoutingModule
+    AstrosignPageRoutingModule,
+    TranslateModule.forChild()
   ],
-  declarations: [AstrosignPage]
+  declarations: [AstrosignPage],
 })
 export class AstrosignPageModule {}

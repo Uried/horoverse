@@ -1,4 +1,4 @@
-<ion-header class="bg-[#1a2d7d] h-12">
+<ion-header class=" bg-[#494a4e] h-12">
   <div class="flex text-white w-full mt-3 text-xl font-bold" slot="top">
     <i class="fas fa-arrow-left ml-3 text-[#ca9631]" (click)="backToAvis()"></i>
     <div class="ml-auto mr-auto">Horoscope {{formatDate(datePub)}}</div>
@@ -69,7 +69,7 @@
     <textarea [(ngModel)]="commentContent" name="commentContent"
       class="w-[85%] h-12 rounded-md resize-none text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
       placeholder="Ajouter un commentaire..."></textarea>
-    <div (click)="addcomment()"><i type="submit" class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
+    <div (click)="addcomment()" (click)="translateHoroscope()"><i type="submit" class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
   </form>
 
 </ion-content>

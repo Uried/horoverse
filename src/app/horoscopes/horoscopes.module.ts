@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -13,8 +14,9 @@ import { HoroscopesPage } from './horoscopes.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    HoroscopesPageRoutingModule
+    HoroscopesPageRoutingModule,
+    TranslateModule.forChild()
   ],
-  declarations: [HoroscopesPage]
+  declarations: [HoroscopesPage],
 })
 export class HoroscopesPageModule {}

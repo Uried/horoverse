@@ -40,6 +40,10 @@ const routes: Routes = [
     path: 'archives',
     loadChildren: () => import('./archives/archives.module').then( m => m.ArchivesPageModule)
   },
+  {
+    path: 'othersign/:sign',
+    loadChildren: () => import('./othersign/othersign.module').then( m => m.OthersignPageModule)
+  },
 ];
 
 @NgModule({

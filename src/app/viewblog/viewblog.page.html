@@ -1,17 +1,16 @@
 <ion-content [fullscreen]="true">
-    <div class="flex text-white mt-3 font-bold border-b border-[ca9631] h-7">
-      <i class="fas fa-arrow-left ml-3 text-[#ca9631] text-xl" routerLink="/blogs"></i>
+  <div class="flex text-white bg-[#494a4e] font-bold h-10 fixed top-0 w-full z-10">
+    <i class="fas fa-arrow-left mt-2 ml-3 text-[#ca9631] text-xl" routerLink="/blogs"></i>
+  </div>
+
+  <div class="block text-black pt-10">
+    <h2 class="mt-4 text-center font-bold ml-2 mr-2">{{title}}</h2>
+    <div class="mt-4 ml-auto mr-auto">
+      <img src="{{image}}" alt="">
     </div>
+  </div>
 
-    <div class="block text-black max-h-[87%] overflow-y-scroll">
-      <h2 class="mt-4 text-center font-bold ml-2 mr-2">{{title}}</h2>
-      <div class="mt-4 ml-auto mr-auto">
-        <img src="{{image}}" alt="">
-      </div>
-      <div class="mt-3 mr-2 ml-2">
-        {{content}}
-      </div>
-    </div>
-
-
+  <div class="mt-3 mr-2 text-black ml-2">
+    {{content}}
+  </div>
 </ion-content>

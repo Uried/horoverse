@@ -1,8 +1,36 @@
+.sign{
+  font-family: AspiraWideDemi;
+}
+
+.title{
+  font-family: NoyhGeometricSlimExtraLight;
+}
+
+.tab{
+  font-family: BetmRoundedRegular;
+}
+.text{
+  font-family: NoyhGeometricLight;
+}
+
+h6{
+  font-family: BillCorporateMediumSemibold;
+}
+h4{
+  font-family: AspiraWideDemi;
+}
+
+span{
+font-family: NoyhGeometricSlimExtraLight;
+}
+
 ion-content {
-  --ion-background-color: linear-gradient(#1a2d7d, #09154a);
-  // --background: url("../../assets/wave-frequency.gif") center/cover no-repeat fixed;
+  --background: url("../../assets/logos/stars.gif") center/cover no-repeat fixed;
+  --opacity: 1;
   background-size: 100% 100%;
 }
+
+
 
 @keyframes rotate {
   0% {

@@ -26,9 +26,19 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private location: Location,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     @Inject(LOCALE_ID) public locale: string
-  ) {}
+  ) {
+     translate.setDefaultLang('en');
+     const browserLang = translate.getBrowserLang();
+     console.log(browserLang);
+
+     translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+
+       if (browserLang == 'fr') {
+         this.onTranslate();
+       }
+  }
 
   async ngOnInit() {
     try {
@@ -42,15 +52,6 @@ export class SettingsPage implements OnInit {
     this.pseudo = localStorage.getItem('pseudo') || '';
     this.jId = localStorage.getItem('jId') || '';
     this.onImageChange();
-
-    this.translateService.setDefaultLang('fr');
-
-    const browserLang = navigator.language;
-    this.browserLanguage = browserLang!;
-
-    if (this.browserLanguage == 'fr-FR') {
-      this.onTranslate();
-    }
   }
 
   goToHome() {
@@ -68,29 +69,29 @@ export class SettingsPage implements OnInit {
     const day = date.getDate();
 
     if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) {
-      return 'aquarius';
+      return 'AQUARIUS';
     } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
-      return 'pisces';
+      return 'PISCES';
     } else if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) {
-      return 'aries';
+      return 'ARIES';
     } else if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) {
-      return 'taurus';
+      return 'TAURUS';
     } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
-      return 'gemini';
+      return 'GEMINI';
     } else if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) {
-      return 'cancer';
+      return 'CANCER';
     } else if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) {
-      return 'leo';
+      return 'LEO';
     } else if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) {
-      return 'virgo';
+      return 'VIRGO';
     } else if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) {
-      return 'libra';
+      return 'LIBRA';
     } else if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) {
-      return 'scorpio';
+      return 'SCORPIO';
     } else if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) {
-      return 'sagittarius';
+      return 'SAGITTARIUS';
     } else if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) {
-      return 'capricorn';
+      return 'CAPRICORN';
     } else {
       return "Entrez votre date d'anniversaire";
     }
@@ -98,40 +99,40 @@ export class SettingsPage implements OnInit {
 
   onImageChange() {
     switch (this.astrologicalSign) {
-      case 'aquarius':
+      case 'AQUARIUS':
         this.choosedImage = '../../assets/signes/verseau.png';
         break;
-      case 'pisces':
+      case 'PISCES':
         this.choosedImage = '../../assets/signes/poissons.png';
         break;
-      case 'aries':
+      case 'ARIES':
         this.choosedImage = '../../assets/signes/belier.png';
         break;
-      case 'taurus':
+      case 'TAURUS':
         this.choosedImage = '../../assets/signes/taureau.png';
         break;
-      case 'gemini':
+      case 'GEMINI':
         this.choosedImage = '../../assets/signes/gemeaux.png';
         break;
-      case 'cancer':
+      case 'CANCER':
         this.choosedImage = '../../assets/signes/cancer.png';
         break;
-      case 'leo':
+      case 'LEO':
         this.choosedImage = '../../assets/signes/lion.png';
         break;
-      case 'virgo':
+      case 'VIRGO':
         this.choosedImage = '../../assets/signes/vierge.png';
         break;
-      case 'libra':
+      case 'LIBRA':
         this.choosedImage = '../../assets/signes/balance.png';
         break;
-      case 'scorpio':
+      case 'SCORPIO':
         this.choosedImage = '../../assets/signes/scorpion.png';
         break;
-      case 'sagittarius':
+      case 'SAGITTARIUS':
         this.choosedImage = '../../assets/signes/sagitaire.png';
         break;
-      case 'capricorn':
+      case 'CAPRICORN':
         this.choosedImage = '../../assets/signes/capricorne.png';
         break;
       default:
@@ -142,40 +143,40 @@ export class SettingsPage implements OnInit {
 
   onTranslate() {
     switch (this.astrologicalSign) {
-      case 'aquarius':
+      case 'AQUARIUS':
         this.astrologicalSign = 'Verseau';
         break;
-      case 'pisces':
+      case 'PISCES':
         this.astrologicalSign = 'Poissons';
         break;
-      case 'aries':
+      case 'ARIES':
         this.astrologicalSign = 'Bélier';
         break;
-      case 'taurus':
+      case 'TAURUS':
         this.astrologicalSign = 'Taureau';
         break;
-      case 'gemini':
+      case 'GEMINI':
         this.astrologicalSign = 'Gémeaux';
         break;
-      case 'cancer':
+      case 'CANCER':
         this.astrologicalSign = 'Cancer';
         break;
-      case 'leo':
+      case 'LEO':
         this.astrologicalSign = 'Lion';
         break;
-      case 'virgo':
+      case 'VIRGO':
         this.astrologicalSign = 'Vierge';
         break;
-      case 'libra':
+      case 'LIBRA':
         this.astrologicalSign = 'Balance';
         break;
-      case 'scorpio':
+      case 'SCORPIO':
         this.astrologicalSign = 'Scorpion';
         break;
-      case 'sagittarius':
+      case 'SAGITTARIUS':
         this.sign = 'Sagittaire';
         break;
-      case 'capricorn':
+      case 'CAPRICORN':
         this.astrologicalSign = 'Capricorne';
         break;
       default:
@@ -210,21 +211,20 @@ export class SettingsPage implements OnInit {
         .subscribe(() => {
           this.router.navigateByUrl('/home', { skipLocationChange: false });
         });
-        const log = {
-          level: 'debug',
-          message: 'Modification de son signe astrologique',
-          userId: localStorage.getItem('jId'),
-          ipAddress: this.ipAddress,
-        };
-        this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-          (response) => {
-            console.log('Réponse:', response);
-          },
-          (error) => {
-            console.error('Erreur lors de la requête POST logs:', error);
-          }
-        );
-
+      const log = {
+        level: 'debug',
+        message: 'Modification de son signe astrologique',
+        userId: localStorage.getItem('jId'),
+        ipAddress: this.ipAddress,
+      };
+      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
+        (response) => {
+          console.log('Réponse:', response);
+        },
+        (error) => {
+          console.error('Erreur lors de la requête POST logs:', error);
+        }
+      );
     } catch (error) {
       const log = {
         level: 'error',
@@ -242,7 +242,6 @@ export class SettingsPage implements OnInit {
         }
       );
     }
-
   }
   getIPAddress(): Promise<void> {
     return new Promise<void>((resolve, reject) => {

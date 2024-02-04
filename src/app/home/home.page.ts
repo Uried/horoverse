@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit, DoCheck } from '@angular/core';
 //import { HoroscopeService } from '../sevices/horoscope/horoscope-api.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Route, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { LOCALE_ID } from '@angular/core';
 import { PublicationService } from '../sevices/publication/publication.service';
 import { LoadingController } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
+import { Observable, forkJoin } from 'rxjs';
 declare var responsiveVoice: any;
 @Component({
   selector: 'app-home',
@@ -20,33 +21,47 @@ export class HomePage implements OnInit {
   isOpenMenu = false;
   home: string = 'Home';
   news: string = 'News';
-  opinion: string = 'Opinions';
+  opinion: string = 'Archives';
   sign!: string;
-  horoscope: string = '';
+  horoscope: any[] = [];
+  textToSpeak!: string;
+  weeklyHoroscope!: string;
+  monthlyHoroscope!: string;
+  yearlyHoroscope!: string;
   pseudo!: string;
   phone!: string;
   jId!: string;
-  waiting: boolean = false;
+  remainingText: string = '';
+  isPaused: boolean = false;
+  headPhones: boolean = true;
   isSpeaking: boolean = false;
   selectedVoice!: string;
   choosedImage!: string;
   isRegistered: boolean = true;
   browserLanguage!: string;
+  currentPosition: number = 0;
   horoTitle: string = 'My daily horoscope';
   ipAddress!: string;
+  language: string = 'en';
   publication: any;
+  dailyHoroscopes: any[] = [];
   dateAujourdhui = new Date().toISOString().split('T')[0];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private publicationService: PublicationService,
     private loadingCtrl: LoadingController,
     private toastController: ToastController,
     @Inject(LOCALE_ID) public locale: string
   ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+
     this.route.queryParams.subscribe((params) => {
       this.jId = params['phone'] || localStorage.getItem('jId');
       this.pseudo = params['pseudo'] || localStorage.getItem('pseudo');
@@ -57,6 +72,11 @@ export class HomePage implements OnInit {
       .subscribe(() => {
         this.getUserByjId();
       });
+
+    if (browserLang == 'fr') {
+      this.language = 'fr';
+      this.translateToFrench();
+    }
   }
 
   async ngOnInit() {
@@ -67,14 +87,7 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-
-    this.translateService.setDefaultLang('fr');
-    if (this.browserLanguage == 'fr-FR') {
-      this.translateToFrench();
-    }
-    const browserLang = navigator.language;
-
-    this.browserLanguage = browserLang!;
+    this.getUserByjId();
   }
 
   async showLoading() {
@@ -94,8 +107,8 @@ export class HomePage implements OnInit {
           (user: any) => {
             this.pseudo = user.pseudo;
             this.sign = user.sign;
-            this.getAllPublications();
             this.onImageChange();
+            this.getDailyHoroscope();
             localStorage.setItem('idUser', user._id);
             localStorage.setItem('sign', this.sign);
 
@@ -147,107 +160,8 @@ export class HomePage implements OnInit {
     }
   }
 
-  async translateHoroscope() {
-    const url = `https://api.mymemory.translated.net/get`;
-
-    const horoscopePhrases = this.segmentText(this.horoscope, '.'); // Segmenter par phrases
-
-    const translatedPhrases = [];
-
-    try {
-      for (const phrase of horoscopePhrases) {
-        const response = await axios.get(url, {
-          params: {
-            q: phrase.trim(), // Supprimer les espaces en début et fin de phrase
-            langpair: `en|fr`,
-          },
-        });
-
-        const translatedPhrase = response.data.responseData.translatedText;
-
-        // Vérifier si la traduction est valide avant de l'ajouter
-        if (
-          translatedPhrase &&
-          translatedPhrase !==
-            'NO QUERY SPECIFIED. EXAMPLE REQUEST: GET?Q=HELLO&LANGPAIR=EN|IT'
-        ) {
-          translatedPhrases.push(translatedPhrase);
-        }
-      }
-
-      let translatedHoroscope = translatedPhrases.join('. '); // Concaténer les phrases traduites avec un point
-      translatedHoroscope += '.'; // Ajouter un point à la fin du texte traduit
-      this.horoscope = translatedHoroscope;
-      localStorage.setItem('myHoroscope', translatedHoroscope);
-      console.log(this.horoscope); // Afficher le résultat en console
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  segmentText(text: any, delimiter: any) {
-    const segments = text.split(delimiter);
-    return segments.map((segment: string) => segment.trim()); // Supprimer les espaces en début et fin de segment
-  }
-
-  async getDailyHoroscope() {
-    const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${this.sign}`;
-
-    // Afficher le chargement avant de faire la requête
-    const dismissLoading = await this.showLoading();
-
-    try {
-      // Use 'await' with the asynchronous operation
-      await this.http
-        .get(apiUrl)
-        .toPromise()
-        .then((result: any) => {
-          this.horoscope = result.horoscope;
-          result.forEach((obj: any) => {
-            const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
-            this.horoscope = text;
-          });
-
-          if (this.browserLanguage == 'fr-FR') {
-            // Traduire l'horoscope
-            this.translateHoroscope();
-            this.onTranslate();
-            this.horoTitle = 'Mon horoscope du jour';
-            this.translateToFrench();
-          }
-
-          // Masquer le chargement une fois que la variable horoscope contient du texte
-          dismissLoading();
-        });
-      dismissLoading();
-    } catch (error) {
-      console.error(error);
-
-      // En cas d'erreur, masquer le chargement
-      dismissLoading();
-
-      const log = {
-        level: 'error',
-        message: 'Erreur de recuperation de lhoroscope' + error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
-      };
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
-        }
-      );
-    }
-
-    // Appeler getHoroscopes après avoir obtenu l'horoscope quotidien
-    this.getHoroscopes();
-  }
-
   getLanguageForResponsiveVoice(text: string): string {
-    const detectedLanguage = franc(this.horoscope);
+    const detectedLanguage = franc(this.textToSpeak);
     let languageCode = '';
 
     if (detectedLanguage === 'fra') {
@@ -264,35 +178,27 @@ export class HomePage implements OnInit {
   }
 
   speak() {
-    // Vérifiez si responsiveVoice est disponible
-    if (typeof responsiveVoice !== 'undefined') {
-      // ResponsiveVoice est disponible, effectuez votre action normale
-      this.isSpeaking = !this.isSpeaking;
-      let detectedLanguage = franc(this.horoscope);
-      this.selectedVoice = this.getVoiceForLanguage(detectedLanguage);
-      responsiveVoice.speak(this.horoscope, this.selectedVoice, {
-
-        onstart: () => {
-          // Ajouter la classe 'scale' au début de la lecture
-          this.isSpeaking = true;
-        },
-        onend: () => {
-          // Retirer la classe 'scale' à la fin de la lecture
-          this.isSpeaking = false;
-          this.onEnd();
-        },
-        onerror: () => {
-          // En cas d'erreur, assurez-vous de retirer la classe 'scale'
-          this.isSpeaking = false;
-          console.error("Une erreur s'est produite lors de la lecture.");
-        },
-      });
+    this.isSpeaking = !this.isSpeaking;
+    if (this.isSpeaking) {
+      if (this.remainingText !== '') {
+        this.isPaused = false;
+        this.headPhones = true;
+        responsiveVoice.resume();
+      } else {
+        let detectedLanguage = franc(this.textToSpeak);
+        this.remainingText = this.textToSpeak.slice(this.currentPosition);
+        this.selectedVoice = this.getVoiceForLanguage(detectedLanguage);
+        responsiveVoice.speak(this.remainingText, this.selectedVoice, {
+          onend: () => {
+            this.isSpeaking = false;
+            this.onEnd();
+          },
+        });
+      }
     } else {
-      this.waiting = true;
-      // ResponsiveVoice n'est pas disponible, effectuez une action alternative (par exemple, informer l'utilisateur)
-      console.warn(
-        'ResponsiveVoice is not available. Perform alternative action.'
-      );
+      responsiveVoice.pause();
+      this.isPaused = true;
+      this.headPhones = false;
     }
   }
 
@@ -315,40 +221,40 @@ export class HomePage implements OnInit {
 
   onImageChange() {
     switch (this.sign) {
-      case 'aquarius':
+      case 'AQUARIUS':
         this.choosedImage = '../../assets/signes/verseau.png';
         break;
-      case 'pisces':
+      case 'PISCES':
         this.choosedImage = '../../assets/signes/poissons.png';
         break;
-      case 'aries':
+      case 'ARIES':
         this.choosedImage = '../../assets/signes/belier.png';
         break;
-      case 'taurus':
+      case 'TAURUS':
         this.choosedImage = '../../assets/signes/taureau.png';
         break;
-      case 'gemini':
+      case 'GEMINI':
         this.choosedImage = '../../assets/signes/gemeaux.png';
         break;
-      case 'cancer':
+      case 'CANCER':
         this.choosedImage = '../../assets/signes/cancer.png';
         break;
-      case 'leo':
+      case 'LEO':
         this.choosedImage = '../../assets/signes/lion.png';
         break;
-      case 'virgo':
+      case 'VIRGO':
         this.choosedImage = '../../assets/signes/vierge.png';
         break;
-      case 'libra':
+      case 'LIBRA':
         this.choosedImage = '../../assets/signes/balance.png';
         break;
-      case 'scorpio':
+      case 'SCORPIO':
         this.choosedImage = '../../assets/signes/scorpion.png';
         break;
-      case 'sagittarius':
+      case 'SAGITTARIUS':
         this.choosedImage = '../../assets/signes/sagitaire.png';
         break;
-      case 'capricorn':
+      case 'CAPRICORN':
         this.choosedImage = '../../assets/signes/capricorne.png';
         break;
       default:
@@ -359,40 +265,40 @@ export class HomePage implements OnInit {
 
   onTranslate() {
     switch (this.sign) {
-      case 'aquarius':
+      case 'AQUARIUS':
         this.sign = 'Verseau';
         break;
-      case 'pisces':
+      case 'PISCES':
         this.sign = 'Poissons';
         break;
-      case 'aries':
+      case 'ARIES':
         this.sign = 'Bélier';
         break;
-      case 'taurus':
+      case 'TAURUS':
         this.sign = 'Taureau';
         break;
-      case 'gemini':
+      case 'GEMINI':
         this.sign = 'Gémeaux';
         break;
-      case 'cancer':
+      case 'CANCER':
         this.sign = 'Cancer';
         break;
-      case 'leo':
+      case 'LEO':
         this.sign = 'Lion';
         break;
-      case 'virgo':
+      case 'VIRGO':
         this.sign = 'Vierge';
         break;
-      case 'libra':
+      case 'LIBRA':
         this.sign = 'Balance';
         break;
-      case 'scorpio':
+      case 'SCORPIO':
         this.sign = 'Scorpion';
         break;
-      case 'sagittarius':
+      case 'SAGITTARIUS':
         this.sign = 'Sagittaire';
         break;
-      case 'capricorn':
+      case 'CAPRICORN':
         this.sign = 'Capricorne';
         break;
       default:
@@ -403,7 +309,6 @@ export class HomePage implements OnInit {
   translateToFrench() {
     this.home = 'Acceuil';
     this.news = 'Infos';
-    this.opinion = 'Avis';
   }
   goToSettings() {
     this.router.navigateByUrl('/settings', { skipLocationChange: false });
@@ -424,103 +329,383 @@ export class HomePage implements OnInit {
     });
   }
 
-  async getAllPublications() {
-    try {
-      this.publicationService
-        .getAllPublications()
-        .subscribe(async (publications: any) => {
-          let publicationFound = false;
-
-          for (const publication of publications) {
-            const publicationDate = new Date(publication.date)
-              .toISOString()
-              .split('T')[0];
-
-            if (publicationDate === this.dateAujourdhui) {
-              this.horoscope = publication[this.sign];
-              publicationFound = true;
-              break;
-            }
-          }
-
-          if (!publicationFound) {
-            await this.getDailyHoroscope();
-          }
-          if (this.browserLanguage == 'fr-FR') {
-            this.translateHoroscope(); //Traduire l'horoscope
-            this.onTranslate();
-            this.horoTitle = 'Mon horoscope du jour';
-            this.translateToFrench();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-
-      const log = {
-        level: 'error',
-        message:
-          'Erreur lors de la récupération de lhistorique des horoscopes' +
-          error,
-        userId: localStorage.getItem('jId'),
-        ipAddress: this.ipAddress,
-      };
-
-      this.http.post('https://apihoroverse.vercel.app/logs', log).subscribe(
-        (response) => {
-          console.log('Réponse:', response);
-        },
-        (error) => {
-          console.error('Erreur lors de la requête POST logs:', error);
-        }
-      );
-    }
+  recallDailyHoroscope() {
+    this.http
+      .get(
+        `apihoroverse.vercel.app/daily/${this.dateAujourdhui}/${this.language}`
+      )
+      .subscribe(async (result: any) => {
+        this.textToSpeak = result[this.sign];
+        const removeCharacter = result[this.sign];
+        this.horoscope = removeCharacter.split('~');
+        console.log(this.horoscope);
+      });
   }
 
-  async getHoroscopes() {
-    const horoscopes: { [key: string]: string } = {};
-    const signArray = [
-      'aries',
-      'pisces',
-      'gemini',
-      'taurus',
-      'libra',
-      'scorpio',
-      'cancer',
-      'leo',
-      'virgo',
-      'sagittarius',
-      'capricorn',
-      'aquarius',
-    ];
+  recallWeeklyHoroscope() {
+    this.http
+      .get(`https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`)
+      .subscribe(async (result: any) => {
+        this.horoscope = result[this.sign];
+      });
+  }
 
-    let successfulRequests = 0;
+  recallMonthlyHoroscope() {
+    this.http
+      .get(`https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`)
+      .subscribe(async (result: any) => {
+        this.horoscope = result[this.sign];
+      });
+  }
 
-    for (const sign of signArray) {
-      const apiUrl = `https://apihoroverse.vercel.app/api/horoscope/${sign}`;
-      try {
-        const result: any = await this.http.get(apiUrl).toPromise();
-        result.forEach((obj: any) => {
-          const text = obj.text.replace(/<[^>]+>/g, ''); // remove html characters
-          horoscopes[sign] = text;
-        });
+  recallYearlyHoroscope() {
+    this.http
+      .get(`https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`)
+      .subscribe(async (result: any) => {
+        this.horoscope = result[this.sign];
+      });
+  }
 
-        successfulRequests++;
+  getDailyHoroscope() {
+    const url = `https://apihoroverse.vercel.app/daily/${this.dateAujourdhui}`;
 
-        // Vérifier si toutes les requêtes ont réussi
-        if (successfulRequests === signArray.length) {
-          // Effectuer la requête POST une fois que toutes les requêtes sont terminées
-          await this.http
-            .post('https://apihoroverse.vercel.app/savehoroscopes', {
-              horoscopes,
-            })
-            .toPromise();
+    this.http.get(url).subscribe(
+      (result: any) => {
+        this.textToSpeak = result[this.sign];
+        const removeCharacter = result[this.sign];
+        this.horoscope = removeCharacter.split('|');
+      },
+      (error) => {
+        if (error.status === 404) {
+          try {
+            const api_key = '8c00dee24c9878fea090ed070b44f1ab';
+            const timezone = '1';
+            const signArray = [
+              'ARIES',
+              'PISCES',
+              'GEMINI',
+              'TAURUS',
+              'LIBRA',
+              'SCORPIO',
+              'CANCER',
+              'LEO',
+              'VIRGO',
+              'SAGITTARIUS',
+              'CAPRICORN',
+              'AQUARIUS',
+            ];
+            const apiUrl =
+              'https://divineapi.com/api/1.0/get_daily_horoscope.php';
+            const horoscopes: { [key: string]: string } = {};
+
+            const observables = signArray.map((sign) => {
+              const headers = new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              });
+              const body = new URLSearchParams();
+              body.set('date', this.dateAujourdhui);
+              body.set('api_key', api_key);
+              body.set('sign', sign);
+              body.set('timezone', timezone);
+
+              return this.http.post(apiUrl, body.toString(), {
+                headers: headers,
+              });
+            });
+
+            forkJoin(observables).subscribe((results: any[]) => {
+              results.forEach((data: any, index: number) => {
+                const horoscopeData = data.data.prediction;
+                const luck = horoscopeData.luck;
+
+                const horoscope = [
+                  horoscopeData.personal,
+                  horoscopeData.health,
+                  horoscopeData.profession,
+                  horoscopeData.emotions,
+                  horoscopeData.travel,
+                  luck[4],
+                  luck[5],
+                  luck[0],
+                  luck[1],
+                ];
+                const tmp = horoscope.join('|');
+                horoscopes[signArray[index]] = tmp;
+              });
+
+              console.log(horoscopes);
+
+              if (Object.keys(horoscopes).length > 0) {
+                console.log(horoscopes);
+                this.http
+                  .post(`https://apihoroverse.vercel.app/daily/`, horoscopes)
+                  .subscribe();
+              }
+            });
+            this.recallDailyHoroscope();
+          } catch (error) {
+            console.log(error);
+          }
         }
-      } catch (error) {
-        console.error(`Erreur pour le signe ${sign}:`, error);
       }
-    }
+    );
+  }
 
-    console.log(horoscopes);
-    return horoscopes;
+  getWeekHoroscope() {
+    const url = `https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`;
+
+    this.http.get(url).subscribe(
+      (result: any) => {
+        this.textToSpeak = result[this.sign];
+        const removeCharacter = result[this.sign];
+        this.horoscope = removeCharacter.split('|');
+        console.log(this.horoscope);
+      },
+      (error) => {
+        if (error.status === 404) {
+          try {
+            const api_key = '8c00dee24c9878fea090ed070b44f1ab';
+            const timezone = '1';
+            const signArray = [
+              'ARIES',
+              'PISCES',
+              'GEMINI',
+              'TAURUS',
+              'LIBRA',
+              'SCORPIO',
+              'CANCER',
+              'LEO',
+              'VIRGO',
+              'SAGITTARIUS',
+              'CAPRICORN',
+              'AQUARIUS',
+            ];
+            const apiUrl =
+              'https://divineapi.com/api/1.0/get_weekly_horoscope.php';
+            const horoscopes: { [key: string]: string } = {};
+
+            const observables = signArray.map((sign) => {
+              const headers = new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              });
+              const body = new URLSearchParams();
+              body.set('week', "current");
+              body.set('api_key', api_key);
+              body.set('sign', sign);
+              body.set('timezone', timezone);
+
+              return this.http.post(apiUrl, body.toString(), {
+                headers: headers,
+              });
+            });
+
+            forkJoin(observables).subscribe((results: any[]) => {
+              results.forEach((data: any, index: number) => {
+                const horoscopeData = data.data.weekly_horoscope;
+                const luck = horoscopeData.luck;
+
+                const horoscope = [
+                  horoscopeData.personal,
+                  horoscopeData.health,
+                  horoscopeData.profession,
+                  horoscopeData.emotions,
+                  horoscopeData.travel,
+                  luck[4],
+                  luck[5],
+                  luck[0],
+                  luck[1],
+                ];
+                const tmp = horoscope.join('|');
+                horoscopes[signArray[index]] = tmp;
+              });
+
+              console.log(horoscopes);
+
+              if (Object.keys(horoscopes).length > 0) {
+                console.log(horoscopes);
+                this.http
+                  .post(`https://apihoroverse.vercel.app/weekly/`, horoscopes)
+                  .subscribe();
+              }
+            });
+            this.recallWeeklyHoroscope();
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    );
+  }
+
+  async getMonthlyHoroscope() {
+    const url = `https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`;
+
+    this.http.get(url).subscribe(
+      (result: any) => {
+        this.textToSpeak = result[this.sign];
+        const removeCharacter = result[this.sign];
+        this.horoscope = removeCharacter.split('|');
+        console.log(this.horoscope);
+      },
+      (error) => {
+        if (error.status === 404) {
+          try {
+            const api_key = '8c00dee24c9878fea090ed070b44f1ab';
+            const timezone = '1';
+            const signArray = [
+              'ARIES',
+              'PISCES',
+              'GEMINI',
+              'TAURUS',
+              'LIBRA',
+              'SCORPIO',
+              'CANCER',
+              'LEO',
+              'VIRGO',
+              'SAGITTARIUS',
+              'CAPRICORN',
+              'AQUARIUS',
+            ];
+            const apiUrl =
+              'https://divineapi.com/api/1.0/get_monthly_horoscope.php';
+            const horoscopes: { [key: string]: string } = {};
+
+            const observables = signArray.map((sign) => {
+              const headers = new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              });
+              const body = new URLSearchParams();
+              body.set('month', 'current');
+              body.set('api_key', api_key);
+              body.set('sign', sign);
+              body.set('timezone', timezone);
+
+              return this.http.post(apiUrl, body.toString(), {
+                headers: headers,
+              });
+            });
+
+            forkJoin(observables).subscribe((results: any[]) => {
+              results.forEach((data: any, index: number) => {
+                const horoscopeData = data.data.monthly_horoscope;
+                const luck = horoscopeData.luck;
+
+                const horoscope = [
+                  horoscopeData.personal,
+                  horoscopeData.health,
+                  horoscopeData.profession,
+                  horoscopeData.emotions,
+                  horoscopeData.travel,
+                  luck[4],
+                  luck[5],
+                  luck[0],
+                  luck[1],
+                ];
+                const tmp = horoscope.join('|');
+                horoscopes[signArray[index]] = tmp;
+              });
+
+              console.log(horoscopes);
+
+              if (Object.keys(horoscopes).length > 0) {
+                console.log(horoscopes);
+                this.http
+                  .post(`https://apihoroverse.vercel.app/monthly/`, horoscopes)
+                  .subscribe();
+              }
+            });
+            this.recallMonthlyHoroscope();
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    );
+  }
+
+  async getYearlyHoroscope() {
+    const url = `https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`;
+
+    this.http.get(url).subscribe(
+      (result: any) => {
+        this.textToSpeak = result[this.sign];
+        const removeCharacter = result[this.sign];
+        this.horoscope = removeCharacter.split('|');
+        console.log(this.horoscope);
+      },
+      (error) => {
+        if (error.status === 404) {
+          try {
+            const api_key = '8c00dee24c9878fea090ed070b44f1ab';
+            const timezone = '1';
+            const signArray = [
+              'ARIES',
+              'PISCES',
+              'GEMINI',
+              'TAURUS',
+              'LIBRA',
+              'SCORPIO',
+              'CANCER',
+              'LEO',
+              'VIRGO',
+              'SAGITTARIUS',
+              'CAPRICORN',
+              'AQUARIUS',
+            ];
+            const apiUrl =
+              'https://divineapi.com/api/1.0/get_yearly_horoscope.php';
+            const horoscopes: { [key: string]: string } = {};
+
+            const observables = signArray.map((sign) => {
+              const headers = new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+              });
+              const body = new URLSearchParams();
+              body.set('year', 'current');
+              body.set('api_key', api_key);
+              body.set('sign', sign);
+              body.set('timezone', timezone);
+
+              return this.http.post(apiUrl, body.toString(), {
+                headers: headers,
+              });
+            });
+
+            forkJoin(observables).subscribe((results: any[]) => {
+              results.forEach((data: any, index: number) => {
+                const horoscopeData = data.data.yearly_horoscope;
+                const luck = horoscopeData.luck;
+
+                const horoscope = [
+                  horoscopeData.personal,
+                  horoscopeData.health,
+                  horoscopeData.profession,
+                  horoscopeData.emotions,
+                  horoscopeData.travel,
+                  luck[4],
+                  luck[5],
+                  luck[0],
+                  luck[1],
+                ];
+                const tmp = horoscope.join('|');
+                horoscopes[signArray[index]] = tmp;
+              });
+
+              console.log(horoscopes);
+
+              if (Object.keys(horoscopes).length > 0) {
+                console.log(horoscopes);
+                this.http
+                  .post(`https://apihoroverse.vercel.app/yearly/`, horoscopes)
+                  .subscribe();
+              }
+            });
+            this.recallYearlyHoroscope();
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    );
   }
 }
