@@ -246,6 +246,13 @@
     --ion-card-background: #1e1e1e;
   }
 }
+/* Dans le fichier variables.scss ou dans le CSS spécifique du composant */
+ion-picker {
+  --ion-color-primary: #ca9631;
+  /* Couleur principale */
+  --ion-color-primary-contrast: #ffffff;
+  /* Couleur contrastante pour le texte */
+}
 
 html {
   /*

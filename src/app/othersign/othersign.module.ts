@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { OthersignPageRoutingModule } from './othersign-routing.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { OthersignPage } from './othersign.page';
 
@@ -13,7 +14,8 @@ import { OthersignPage } from './othersign.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    OthersignPageRoutingModule
+    OthersignPageRoutingModule,
+    TranslateModule.forChild()
   ],
   declarations: [OthersignPage]
 })

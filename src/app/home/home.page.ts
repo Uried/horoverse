@@ -31,6 +31,10 @@ export class HomePage implements OnInit {
   pseudo!: string;
   phone!: string;
   jId!: string;
+  dailyShowed: boolean = false;
+  weeklyShowed: boolean = false;
+  monthlyShowed: boolean = false;
+  yearlyShowed: boolean = false;
   remainingText: string = '';
   isPaused: boolean = false;
   headPhones: boolean = true;
@@ -72,11 +76,6 @@ export class HomePage implements OnInit {
       .subscribe(() => {
         this.getUserByjId();
       });
-
-    if (browserLang == 'fr') {
-      this.language = 'fr';
-      this.translateToFrench();
-    }
   }
 
   async ngOnInit() {
@@ -306,10 +305,6 @@ export class HomePage implements OnInit {
     }
   }
 
-  translateToFrench() {
-    this.home = 'Acceuil';
-    this.news = 'Infos';
-  }
   goToSettings() {
     this.router.navigateByUrl('/settings', { skipLocationChange: false });
   }
@@ -329,44 +324,82 @@ export class HomePage implements OnInit {
     });
   }
 
-  recallDailyHoroscope() {
-    this.http
-      .get(
-        `apihoroverse.vercel.app/daily/${this.dateAujourdhui}/${this.language}`
-      )
-      .subscribe(async (result: any) => {
-        this.textToSpeak = result[this.sign];
-        const removeCharacter = result[this.sign];
-        this.horoscope = removeCharacter.split('~');
-        console.log(this.horoscope);
-      });
+  async recallDailyHoroscope() {
+    const dismissLoading = await this.showLoading();
+    try {
+       this.http
+         .get(`apihoroverse.vercel.app/daily/${this.dateAujourdhui}`)
+         .subscribe(async (result: any) => {
+           this.textToSpeak = result[this.sign];
+           const removeCharacter = result[this.sign];
+           this.horoscope = removeCharacter.split('~');
+           console.log(this.horoscope);
+         });
+          dismissLoading();
+    } catch (error) {
+      console.log(error);
+      dismissLoading()
+    }
+
   }
 
-  recallWeeklyHoroscope() {
-    this.http
-      .get(`https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`)
-      .subscribe(async (result: any) => {
-        this.horoscope = result[this.sign];
-      });
+ async recallWeeklyHoroscope() {
+    const dismissLoading = await this.showLoading();
+    try {
+      this.http
+        .get(`https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`)
+        .subscribe(async (result: any) => {
+          this.horoscope = result[this.sign];
+        });
+        dismissLoading()
+    } catch (error) {
+      dismissLoading()
+      console.log(error);
+
+    }
+
   }
 
-  recallMonthlyHoroscope() {
-    this.http
-      .get(`https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`)
-      .subscribe(async (result: any) => {
-        this.horoscope = result[this.sign];
-      });
+ async recallMonthlyHoroscope() {
+    const dismissLoading = await this.showLoading();
+    try {
+      this.http
+        .get(`https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`)
+        .subscribe(async (result: any) => {
+          this.horoscope = result[this.sign];
+        });
+        dismissLoading()
+    } catch (error) {
+      dismissLoading()
+      console.log(error);
+
+    }
+
+
   }
 
-  recallYearlyHoroscope() {
-    this.http
-      .get(`https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`)
-      .subscribe(async (result: any) => {
-        this.horoscope = result[this.sign];
-      });
+ async recallYearlyHoroscope() {
+    const dismissLoading = await this.showLoading();
+    try {
+      this.http
+        .get(`https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`)
+        .subscribe(async (result: any) => {
+          this.horoscope = result[this.sign];
+        });
+        dismissLoading()
+    } catch (error) {
+      dismissLoading()
+      console.log();
+
+    }
+
   }
 
   getDailyHoroscope() {
+    this.dailyShowed = true,
+    this.weeklyShowed = false
+    this.monthlyShowed = false
+    this.yearlyShowed = false
     const url = `https://apihoroverse.vercel.app/daily/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(
@@ -452,6 +485,9 @@ export class HomePage implements OnInit {
   }
 
   getWeekHoroscope() {
+    (this.dailyShowed = false), (this.weeklyShowed = true);
+    this.monthlyShowed = false
+    this.yearlyShowed = false
     const url = `https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(
@@ -489,7 +525,7 @@ export class HomePage implements OnInit {
                 'Content-Type': 'application/x-www-form-urlencoded',
               });
               const body = new URLSearchParams();
-              body.set('week', "current");
+              body.set('week', 'current');
               body.set('api_key', api_key);
               body.set('sign', sign);
               body.set('timezone', timezone);
@@ -538,6 +574,10 @@ export class HomePage implements OnInit {
   }
 
   async getMonthlyHoroscope() {
+    this.dailyShowed = false,
+    this.weeklyShowed = false
+    this.monthlyShowed = true;
+    this.yearlyShowed = false;
     const url = `https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(
@@ -624,6 +664,9 @@ export class HomePage implements OnInit {
   }
 
   async getYearlyHoroscope() {
+    this.dailyShowed = false, this.weeklyShowed = false;
+    this.monthlyShowed = false;
+    this.yearlyShowed = true;
     const url = `https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(

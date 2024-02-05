@@ -154,7 +154,6 @@ export class HoroscopesPage implements OnInit {
           options: this.generateMonthOptions(),
         },
       ],
-      cssClass: 'date-picker-background',
     });
 
     picker.present();

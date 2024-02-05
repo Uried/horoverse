@@ -56,9 +56,9 @@ export class ArchivesPage implements OnInit {
 
     if (this.browserLanguage == 'fr-FR') {
       this.language = 'fr';
-    }
+    }//localhost:8100/#/archives
 
-    this.getAllPublications();
+    http: this.getAllPublications();
   }
 
   async showLoading() {
@@ -80,10 +80,9 @@ export class ArchivesPage implements OnInit {
   async getAllPublications() {
     const dismissLoading = await this.showLoading();
     try {
-      this.http.get(`https://apihoroverse.vercel.app/publications`).subscribe(
+      this.http.get('https://apihoroverse.vercel.app/publications/').subscribe(
         (publications: any) => {
           this.publications = publications;
-          console.log(this.publications);
         },
         (error) => {
           console.error(

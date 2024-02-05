@@ -48,12 +48,17 @@ export class OthersignPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private publicationService: PublicationService,
     private loadingCtrl: LoadingController,
     private toastController: ToastController,
     @Inject(LOCALE_ID) public locale: string
   ) {
+    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -72,14 +77,6 @@ export class OthersignPage implements OnInit {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
 
-    this.translateService.setDefaultLang('fr');
-    const browserLang = navigator.language;
-    this.browserLanguage = browserLang!;
-    if (this.browserLanguage == 'fr-FR') {
-      this.onTranslate();
-      this.language = 'fr';
-      this.translateToFrench();
-    }
   }
 
   async showLoading() {

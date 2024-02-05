@@ -90,6 +90,7 @@ export class CommentPage implements OnInit {
       this.showModal = false;
     }, 2000);
   }
+
   async showLoading() {
     const loading = await this.loadingCtrl.create({
       message: 'Please wait...',
@@ -106,9 +107,7 @@ export class CommentPage implements OnInit {
     this.datePub = datePub!;
     this.idPub = idPub;
     try {
-      this.publicationService
-        .getPublicationById(this.idPub)
-        .subscribe((publication: any) => {
+      this.publicationService.getPublicationById(idPub).subscribe((publication: any) => {
           this.publicationContent = publication[this.sign].split('|');
         });
 
@@ -229,10 +228,11 @@ export class CommentPage implements OnInit {
   }
 
   async addcomment() {
-    const dismissLoading = await this.showLoading();
-    if (this.commentContent == '') {
-      this.showAlertModal;
+
+    if (!this.commentContent) {
+      this.showAlertModal();
     } else {
+      const dismissLoading = await this.showLoading();
       try {
         let comment = {
           name: this.pseudo,

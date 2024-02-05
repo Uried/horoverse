@@ -69,3 +69,10 @@
   font-weight: normal;
   font-style: normal;
 }
+
+.color-button {
+  --color: red;
+  /* Couleur du texte */
+  --background: yellow;
+  /* Couleur de fond */
+}

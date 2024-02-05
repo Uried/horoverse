@@ -5,7 +5,7 @@
   </div>
 </ion-header>
 <ion-content>
-  <div class="container mx-auto px-4 text-black max-h-[90%] overflow-y-scroll">
+  <div class="container mx-auto px-4 text-black max-h-[90%] overflow-y-scroll font-semibold">
 
     <div class="mb-6 mt-6 bg-slate-100 rounded-md">
       <p class="ml-2">{{publicationContent}}</p>
@@ -15,26 +15,27 @@
       <div class="bg-slate-300 rounded-md">
         <div class="bg-transparent p-4 rounded-md">
           <div class="flex items-center justify-between mb-2">
-            <div class="font-bold">{{comment.name}}</div>
+            <div class="font-bold text-[#ca9631]">{{comment.name}}</div>
             <div class="text-sm text-gray-500">{{comment.date}}</div>
           </div>
-          <div class="mb-2">{{comment.content}}</div>
+          <div class="">{{comment.content}}</div>
           <div class="flex items-center">
             <!-- <button class="mr-2 text-blue-500">Modifier</button>
             <button class="text-red-500" (click)="delelteComment(comment._id)">Supprimer</button> -->
           </div>
         </div>
-      <button class="text-blue-500 ml-3 mb-2" (click)="showResponseZone(comment._id)">Répondre</button>
+        <button class="text-blue-600 ml-3 mb-2 font-thin" (click)="showResponseZone(comment._id)">{{'Reply'|
+          translate}}</button>
 
       </div>
 
       <div *ngFor="let response of comment.responses" class="ml-8 mt-2">
         <div class="bg-gray-200 p-2 rounded-md">
           <div class="flex items-center justify-between mb-2">
-            <div class="font-bold">{{response.name}}</div>
+            <div class="font-bold text-[#ca9631]">{{response.name}}</div>
             <div class="text-sm text-gray-500"></div>
           </div>
-          <div class="mb-2">{{response.content}}</div>
+          <div class="">{{response.content}}</div>
           <div class="flex items-center">
             <!-- <button class="mr-2 text-blue-500">Modifier</button>
             <button class="text-red-500" (click)="deleResponse(comment._id, response._id)" >Supprimer</button> -->
@@ -46,18 +47,20 @@
         <div class="fixed inset-0 flex items-center justify-center mb-96 text-white" *ngIf="showModal">
           <div class="bg-[#1a2d7d] bg-opacity-50 border border-[#ca9631] rounded">
             <div class="bg-[#1a2d7d] p-4 rounded">
-              <p>Veuillez remplir vos informations</p>
+              <p>{{'Write something please' | translate}}</p>
             </div>
           </div>
         </div>
 
-      <form *ngIf="responseZoneShow && selectedCommentId === comment._id">
+        <form *ngIf="responseZoneShow && selectedCommentId === comment._id">
           <textarea [(ngModel)]="responseContent" name="responseContent"
-            class="w-full h-12 text-white resize-none rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Répondre au commentaire..." required></textarea>
+            class="w-full h-12 text-white resize-none rounded-md outline-none focus:outline-none pl-3"
+            placeholder="{{'Reply to comment...'| translate}}" required></textarea>
           <div class="mt-2">
-          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md" (click)="addResponse()">Envoyer</button>
-            <button type="button" class="ml-2 text-gray-500" (click)="hideResponseZone()">Annuler</button>
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md" (click)="addResponse()">{{'Send' |
+              translate}}</button>
+            <button type="button" class="ml-2 text-gray-500" (click)="hideResponseZone()">{{'Cancel'|
+              translate}}</button>
           </div>
         </form>
 
@@ -65,11 +68,12 @@
     </div>
   </div>
 
-  <form class="flex ml-3">
+  <form class="flex ml-3 border border-[#ca9631] rounded-md">
     <textarea [(ngModel)]="commentContent" name="commentContent"
-      class="w-[85%] h-12 rounded-md resize-none text-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="Ajouter un commentaire..."></textarea>
-    <div (click)="addcomment()" (click)="translateHoroscope()"><i type="submit" class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
+      class="w-[85%] h-12 bg-transparent rounded-md resize-none text-black outline-none focus:outline-none font-bold pl-3"
+      placeholder="{{'Add a comment...'| translate}}"></textarea>
+    <div (click)="addcomment()" (click)="translateHoroscope()"><i type="submit"
+        class="fas fa-paper-plane text-2xl text-[#ca9631] ml-2 py-2"></i></div>
   </form>
 
 </ion-content>
