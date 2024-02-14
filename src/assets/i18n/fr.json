@@ -1,6 +1,6 @@
 {
   "Hello": "Bonjour",
-  "discover your horoscope": "découvrez votre horoscope",
+  "discover your horoscope": "découvres ton horoscope",
   "BE CURIOUS, CONSULT ANOTHER SIGN": "SOYEZ CURIEUX, CONSULTEZ UN AUTRE SIGNE",
   "Daily": "Quotidien",
   "Monthly": "Mensuel",
@@ -48,5 +48,13 @@
   "My daily horoscope": "Mon horoscope quotidien",
   "My weekly horoscope": "Mon horoscope hebdomadaire",
   "My monthly horoscope": "Mon horoscope mensuel",
-  "My yearly horoscope": "Mon horoscope annuel"
+  "My yearly horoscope": "Mon horoscope annuel",
+  "HEALTH":"SANTE",
+  "PROFESSION":"TRAVAIL",
+  "TRAVEL":"VOYAGES",
+  "Tips for singles: ":"Conseils pour les célibataires : ",
+  "Tips for couples: ":"Conseils pour les couples: ",
+  "Colors of the day: ":"Couleurs du jour: ",
+  "Lucky numbers of the day: ":"Les numeros chanceux du jour : ",
+  "Leave a comment...": "Laisser un commentaire..."
 }

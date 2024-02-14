@@ -30,15 +30,19 @@ export class ArchivesPage implements OnInit {
   constructor(
     private publicationService: PublicationService,
     private router: Router,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private http: HttpClient,
     private loadingCtrl: LoadingController
   ) {
+    const browserLang = translate.getBrowserLang();
+
+    if (browserLang == 'fr') {
+      this.language = 'fr';
+    }
+    translate.use(browserLang!.match(/en|fr/) ? browserLang! : 'en');
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        //this.getAllPublications();
-      });
+      .subscribe(() => {});
   }
 
   async ngOnInit() {
@@ -49,14 +53,6 @@ export class ArchivesPage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.translateService.setDefaultLang('fr');
-    const browserLang = navigator.language;
-
-    this.browserLanguage = browserLang!;
-
-    if (this.browserLanguage == 'fr-FR') {
-      this.language = 'fr';
-    }//localhost:8100/#/archives
 
     http: this.getAllPublications();
   }
@@ -82,7 +78,7 @@ export class ArchivesPage implements OnInit {
     try {
       this.http.get('https://apihoroverse.vercel.app/publications/').subscribe(
         (publications: any) => {
-          this.publications = publications;
+          this.publications = publications.slice().reverse()
         },
         (error) => {
           console.error(
@@ -235,7 +231,7 @@ export class ArchivesPage implements OnInit {
       inputDate.getMonth() === currentDate.getMonth() &&
       inputDate.getFullYear() === currentDate.getFullYear()
     ) {
-      if (this.browserLanguage == 'fr-FR') {
+      if ((this.language = 'fr')) {
         return "d'aujourd'hui";
       } else {
         return 'Today';
@@ -250,7 +246,7 @@ export class ArchivesPage implements OnInit {
       inputDate.getMonth() === yesterday.getMonth() &&
       inputDate.getFullYear() === yesterday.getFullYear()
     ) {
-      if (this.browserLanguage == 'fr-FR') {
+      if ((this.language = 'fr')) {
         return "d'hier";
       } else {
         return 'Yesterday';
@@ -282,7 +278,7 @@ export class ArchivesPage implements OnInit {
         'Friday',
         'Satuday',
       ];
-      if (this.browserLanguage == 'fr-FR') {
+      if ((this.language = 'fr')) {
         return joursDeLaSemaine[inputDate.getDay()];
       } else {
         return daysOfWeek[inputDate.getDay()];

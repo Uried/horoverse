@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { ArchivesPageRoutingModule } from './archives-routing.module';
-
+import { TranslateModule } from '@ngx-translate/core';
 import { ArchivesPage } from './archives.page';
 
 @NgModule({
@@ -13,8 +13,9 @@ import { ArchivesPage } from './archives.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ArchivesPageRoutingModule
+    TranslateModule.forChild(),
+    ArchivesPageRoutingModule,
   ],
-  declarations: [ArchivesPage]
+  declarations: [ArchivesPage],
 })
 export class ArchivesPageModule {}

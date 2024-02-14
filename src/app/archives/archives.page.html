@@ -30,7 +30,7 @@
 
   <div class="h-14 border-t border-stone-200">
     <div class="flex mt-1.5 py-0.5">
-
+      <p [routerLink]="['/comment', publication._id, publication.date]" class="py-2 font-bold ml-6 text-[#ca9631] ">{{'Leave a comment...' | translate}}</p>
       <i [routerLink]="['/comment', publication._id, publication.date]" class="fas fa-comments text-2xl py-2 text-[#ca9631] ml-auto mr-4"
         ></i>
     </div>

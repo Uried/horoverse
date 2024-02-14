@@ -103,8 +103,7 @@ export class HoroscopesPage implements OnInit {
   }
 
   private changeImageAutomatically() {
-    // Changez l'image ici
-    // Par exemple, déplacez-vous à l'image suivante dans votre tableau d'images
+   
     const currentIndex = this.signs.indexOf(this.selectedSign);
     const nextIndex = (currentIndex + 1) % this.signs.length;
     this.selectedSign = this.signs[nextIndex];

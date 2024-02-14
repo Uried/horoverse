@@ -218,6 +218,17 @@ export class HomePage implements OnInit {
     }
   }
 
+  adviceList = [
+    'Tips for Singles : Join or create a book club dedicated to spiritual literature.',
+    'Another Advice : Your second piece of advice goes here.',
+    // Ajoutez d'autres conseils selon vos besoins
+  ];
+
+  extractSuffix(advice: string): string {
+    const parts = advice.split(':');
+    return parts.length > 1 ? parts[1].trim() : '';
+  }
+
   onImageChange() {
     switch (this.sign) {
       case 'AQUARIUS':
@@ -327,23 +338,22 @@ export class HomePage implements OnInit {
   async recallDailyHoroscope() {
     const dismissLoading = await this.showLoading();
     try {
-       this.http
-         .get(`apihoroverse.vercel.app/daily/${this.dateAujourdhui}`)
-         .subscribe(async (result: any) => {
-           this.textToSpeak = result[this.sign];
-           const removeCharacter = result[this.sign];
-           this.horoscope = removeCharacter.split('~');
-           console.log(this.horoscope);
-         });
-          dismissLoading();
+      this.http
+        .get(`apihoroverse.vercel.app/daily/${this.dateAujourdhui}`)
+        .subscribe(async (result: any) => {
+          this.textToSpeak = result[this.sign];
+          const removeCharacter = result[this.sign];
+          this.horoscope = removeCharacter.split('~');
+          console.log(this.horoscope);
+        });
+      dismissLoading();
     } catch (error) {
+      dismissLoading();
       console.log(error);
-      dismissLoading()
     }
-
   }
 
- async recallWeeklyHoroscope() {
+  async recallWeeklyHoroscope() {
     const dismissLoading = await this.showLoading();
     try {
       this.http
@@ -351,16 +361,14 @@ export class HomePage implements OnInit {
         .subscribe(async (result: any) => {
           this.horoscope = result[this.sign];
         });
-        dismissLoading()
+      dismissLoading();
     } catch (error) {
-      dismissLoading()
+      dismissLoading();
       console.log(error);
-
     }
-
   }
 
- async recallMonthlyHoroscope() {
+  async recallMonthlyHoroscope() {
     const dismissLoading = await this.showLoading();
     try {
       this.http
@@ -368,17 +376,14 @@ export class HomePage implements OnInit {
         .subscribe(async (result: any) => {
           this.horoscope = result[this.sign];
         });
-        dismissLoading()
+      dismissLoading();
     } catch (error) {
-      dismissLoading()
+      dismissLoading();
       console.log(error);
-
     }
-
-
   }
 
- async recallYearlyHoroscope() {
+  async recallYearlyHoroscope() {
     const dismissLoading = await this.showLoading();
     try {
       this.http
@@ -386,20 +391,17 @@ export class HomePage implements OnInit {
         .subscribe(async (result: any) => {
           this.horoscope = result[this.sign];
         });
-        dismissLoading()
+      dismissLoading();
     } catch (error) {
-      dismissLoading()
-      console.log();
-
+      dismissLoading();
+      console.log(error);
     }
-
   }
 
-  getDailyHoroscope() {
-    this.dailyShowed = true,
-    this.weeklyShowed = false
-    this.monthlyShowed = false
-    this.yearlyShowed = false
+  async getDailyHoroscope() {
+    (this.dailyShowed = true), (this.weeklyShowed = false);
+    this.monthlyShowed = false;
+    this.yearlyShowed = false;
     const url = `https://apihoroverse.vercel.app/daily/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(
@@ -450,7 +452,6 @@ export class HomePage implements OnInit {
               results.forEach((data: any, index: number) => {
                 const horoscopeData = data.data.prediction;
                 const luck = horoscopeData.luck;
-
                 const horoscope = [
                   horoscopeData.personal,
                   horoscopeData.health,
@@ -475,6 +476,7 @@ export class HomePage implements OnInit {
                   .subscribe();
               }
             });
+
             this.recallDailyHoroscope();
           } catch (error) {
             console.log(error);
@@ -486,8 +488,8 @@ export class HomePage implements OnInit {
 
   getWeekHoroscope() {
     (this.dailyShowed = false), (this.weeklyShowed = true);
-    this.monthlyShowed = false
-    this.yearlyShowed = false
+    this.monthlyShowed = false;
+    this.yearlyShowed = false;
     const url = `https://apihoroverse.vercel.app/weekly/${this.dateAujourdhui}`;
 
     this.http.get(url).subscribe(
@@ -548,8 +550,7 @@ export class HomePage implements OnInit {
                   horoscopeData.travel,
                   luck[4],
                   luck[5],
-                  luck[0],
-                  luck[1],
+
                 ];
                 const tmp = horoscope.join('|');
                 horoscopes[signArray[index]] = tmp;
@@ -574,8 +575,7 @@ export class HomePage implements OnInit {
   }
 
   async getMonthlyHoroscope() {
-    this.dailyShowed = false,
-    this.weeklyShowed = false
+    (this.dailyShowed = false), (this.weeklyShowed = false);
     this.monthlyShowed = true;
     this.yearlyShowed = false;
     const url = `https://apihoroverse.vercel.app/monthly/${this.dateAujourdhui}`;
@@ -638,8 +638,7 @@ export class HomePage implements OnInit {
                   horoscopeData.travel,
                   luck[4],
                   luck[5],
-                  luck[0],
-                  luck[1],
+
                 ];
                 const tmp = horoscope.join('|');
                 horoscopes[signArray[index]] = tmp;
@@ -664,7 +663,7 @@ export class HomePage implements OnInit {
   }
 
   async getYearlyHoroscope() {
-    this.dailyShowed = false, this.weeklyShowed = false;
+    (this.dailyShowed = false), (this.weeklyShowed = false);
     this.monthlyShowed = false;
     this.yearlyShowed = true;
     const url = `https://apihoroverse.vercel.app/yearly/${this.dateAujourdhui}`;
@@ -727,8 +726,7 @@ export class HomePage implements OnInit {
                   horoscopeData.travel,
                   luck[4],
                   luck[5],
-                  luck[0],
-                  luck[1],
+                  
                 ];
                 const tmp = horoscope.join('|');
                 horoscopes[signArray[index]] = tmp;

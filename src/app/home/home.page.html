@@ -60,7 +60,7 @@
       </div>
     </div>
 
-        <div class="block transform -translate-y-8">
+        <div class="block text-white transform -translate-y-8">
             <div class="font-bold text-3xl text-white ml-2 ">{{ 'Hello' | translate }} {{pseudo}},</div>
             <div class="text-2xl ml-3">{{'discover your horoscope' | translate}}</div>
         </div>
@@ -112,14 +112,19 @@
 
       <div class="max-h-56 min-h-56 overflow-y-scroll mt-0.5">
         <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[0]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[1]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[2]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[3]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[4]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[5]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[6]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[7]}}</p>
-        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[8]}}</p>
+        <p class="text-center text-green-500 text-xl font-bold">{{'HEALTH' | translate}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[1]}}</p>
+        <p class="text-center text-yellow-600 text-xl font-bold">{{'PROFESSION' | translate}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[2]}}</p>
+        <p class="text-center text-purple-300 text-xl font-bold">{{'EMOTIONS' | translate}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[3]}}</p>
+        <p class="text-center text-blue-500 text-xl font-bold">{{'TRAVEL' | translate}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[4]}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-yellow-500">{{'Tips for singles: ' | translate}}</span>{{extractSuffix(horoscope[5])}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-pink-500">{{'Tips for couples: '| translate}}</span>{{extractSuffix(horoscope[6])}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-blue-300">{{'Colors of the day: '| translate}}</span>{{extractSuffix(horoscope[7])}}</p>
+        <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-purple-300">{{'Lucky numbers of the day: ' | translate}}</span>{{extractSuffix(horoscope[8])}}</p>
+
       </div>
     </div>
 

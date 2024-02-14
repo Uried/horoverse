@@ -76,7 +76,8 @@ export class OthersignPage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-
+    this.getDailyHoroscope()
+    this.onImageChange()
   }
 
   async showLoading() {
@@ -131,7 +132,6 @@ export class OthersignPage implements OnInit {
   }
 
   getZodiacDateRange(sign: string): string {
-
     const dateRanges: Record<
       string,
       {
@@ -205,6 +205,11 @@ export class OthersignPage implements OnInit {
       deu: 'Deutsch Female',
     };
     return voiceMap[languageCode];
+  }
+
+  extractSuffix(advice: string): string {
+    const parts = advice.split(':');
+    return parts.length > 1 ? parts[1].trim() : '';
   }
 
   onEnd() {

@@ -1,58 +1,65 @@
 <ion-content [fullscreen]="true" class="fixed">
 
 
-    <div class="flex text-white text-center font-bold h-10 fixed top-0 w-full">
-      <i class="fas fa-arrow-left mt-3 ml-3 text-[#ca9631] text-xl" routerLink="/horoscopes"></i>
-      <div class="w-[95%] font-bold mt-2 text-2xl">Horoscope</div>
+  <div class="flex text-white text-center font-bold h-10 fixed top-0 w-full">
+    <i class="fas fa-arrow-left mt-3 ml-3 text-[#ca9631] text-xl" routerLink="/horoscopes"></i>
+    <div class="ml-auto mr-auto">
+      <div class="flex font-extrabold mt-2 text-3xl">Horoscope</div>
+    </div>
+  </div>
+
+  <div class="ml-auto mr-auto mt-12">
+    <img src={{choosedImage}} alt="" class="w-56 ml-auto mr-auto">
+    <p class="sign font-bold text-center lowercase text-3xl text-white">{{sign | translate}}</p>
+    <p class="text-center">{{signInterval}}</p>
+  </div>
+
+  <div class="w-full max-h-[44%] mt-12">
+
+    <div class="flex ml-2 gap-4 overflow-x-auto">
+      <div
+        class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-32 font-bold py-1 h-8 hover:bg-white hover:text-black"
+        (click)="getDailyHoroscope()">{{'Daily' | translate}}</div>
+      <div
+        class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
+        (click)="getWeekHoroscope()">
+        {{'Weekly' | translate}}</div>
+      <div
+        class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
+        (click)="getMonthlyHoroscope()">
+        {{'Monthly'| translate}}</div>
+      <div
+        class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
+        (click)="getYearlyHoroscope()">
+        {{'Yearly' | translate}}</div>
     </div>
 
-    <div class="ml-auto mr-auto mt-12">
-      <img src={{choosedImage}} alt="" class="w-48 ml-auto mr-auto">
-      <p class="sign font-bold text-center lowercase text-3xl text-white">{{sign | translate}}</p>
-      <p class="text-center">{{signInterval}}</p>
+    <div class="flex">
+
+      <i *ngIf="headPhones" class="fa fa-headphones ml-auto mr-2 mt-2 text-2xl text-white"
+        [ngClass]="{'text-[#ca9631]': isSpeaking, 'text-white': !isSpeaking, 'scale': isSpeaking}" (click)="speak()">
+      </i>
+      <i *ngIf="isPaused" class="fa fa-play ml-auto mr-2 mt-2 text-2xl text-[#ca9631]" (click)="speak()">
+      </i>
     </div>
 
-    <div class="w-full max-h-[44%] mt-12">
+    <div class="max-h-72 min-h-72 overflow-y-scroll mt-0.5">
+      <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[0]}}</p>
+      <p class="text-center text-green-500 text-xl font-bold">{{'HEALTH' | translate}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[1]}}</p>
+      <p class="text-center text-yellow-600 text-xl font-bold">{{'PROFESSION' | translate}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[2]}}</p>
+      <p class="text-center text-purple-300 text-xl font-bold">EMOTIONS</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[3]}}</p>
+      <p class="text-center text-blue-500 text-xl font-bold">{{'TRAVEL' | translate}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[4]}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-yellow-500">{{'Tips for singles: ' | translate}}</span>{{extractSuffix(horoscope[5])}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-pink-500">{{'Tips for couples: '| translate}}</span>{{extractSuffix(horoscope[6])}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-blue-300">{{'Colors of the day: '| translate}}</span>{{extractSuffix(horoscope[7])}}</p>
+      <p class="text text-xl ml-2 mr-2 py-1 text-white"><span class="font-extrabold text-xl text-purple-300">{{'Lucky numbers of the day: ' | translate}}</span>{{extractSuffix(horoscope[8])}}</p>
 
-      <div class="flex ml-2 gap-4 overflow-x-auto">
-        <div
-          class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-32 font-bold py-1 h-8 hover:bg-white hover:text-black"
-          (click)="getDailyHoroscope()">{{'Daily' | translate}}</div>
-        <div
-          class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
-          (click)="getWeekHoroscope()">
-          {{'Weekly' | translate}}</div>
-        <div
-          class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
-          (click)="getMonthlyHoroscope()">
-          {{'Monthly'| translate}}</div>
-        <div
-          class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-28 font-bold py-1 h-8 hover:bg-white hover:text-black"
-          (click)="getYearlyHoroscope()">
-          {{'Yearly' | translate}}</div>
-      </div>
-
-      <div class="flex">
-
-        <i *ngIf="headPhones" class="fa fa-headphones ml-auto mr-2 mt-2 text-2xl text-white"
-          [ngClass]="{'text-[#ca9631]': isSpeaking, 'text-white': !isSpeaking, 'scale': isSpeaking}" (click)="speak()">
-        </i>
-        <i *ngIf="isPaused" class="fa fa-play ml-auto mr-2 mt-2 text-2xl text-[#ca9631]" (click)="speak()">
-        </i>
-      </div>
-
-      <div class="h-80 overflow-y-scroll mt-0.5">
-          <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[0]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[1]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[2]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[3]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[4]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[5]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[6]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[7]}}</p>
-          <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[8]}}</p>
-        </div>
-      </div>
+    </div>
+  </div>
 
 
 </ion-content>

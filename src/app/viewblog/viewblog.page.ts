@@ -14,7 +14,6 @@ import { LoadingController } from '@ionic/angular';
 export class ViewblogPage implements OnInit {
   browserLanguage!: string;
   title!: string;
-  content!: string;
   image!: string;
   idBlog: string = localStorage.getItem('idBlog') || '';
   blog!: any[];
@@ -70,10 +69,12 @@ export class ViewblogPage implements OnInit {
     this.idBlog = idBlog;
     this.blogService.getBlogById(idBlog).subscribe(
       (blog: any) => {
-        // Utilisez les données du blog ici
+        const content = document.getElementById('blog')
         this.title = blog.title;
         this.image = blog.image;
-        this.content = blog.content;
+        content!.innerHTML = blog.content
+        console.log(blog.content);
+
         dismissLoading()
       },
       (error) => {
