@@ -34,7 +34,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "angular-font-awesome": "^3.1.2",
-    "axios": "^1.6.2",
+    "axios": "^1.6.7",
     "firebase": "^10.7.1",
     "font-awesome": "^4.7.0",
     "franc": "^6.1.0",

@@ -21,10 +21,6 @@ const routes: Routes = [
     loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
   },
   {
-    path: 'horoscopes',
-    loadChildren: () => import('./horoscopes/horoscopes.module').then( m => m.HoroscopesPageModule)
-  },
-  {
     path: 'blogs',
     loadChildren: () => import('./blogs/blogs.module').then( m => m.BlogsPageModule)
   },
@@ -44,15 +40,20 @@ const routes: Routes = [
     path: 'othersign/:sign',
     loadChildren: () => import('./othersign/othersign.module').then( m => m.OthersignPageModule)
   },
+  {
+    path: 'horoscopes',
+    loadChildren: () => import('./horoscopes/horoscopes.module').then( m => m.HoroscopesPageModule)
+  },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
+      enableTracing: true,
+    }),
   ],
   exports: [RouterModule],
-  providers: [
-    {provide: LocationStrategy, useClass: HashLocationStrategy}
-  ]
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

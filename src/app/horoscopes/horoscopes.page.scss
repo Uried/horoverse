@@ -2,23 +2,26 @@ ion-content {
   --background: url("../../assets/logos/stars.gif") center/cover no-repeat fixed;
   background-size: 100% 100%;
 }
+
 ion-item {
   --border-style: none;
   --border-width: 1px;
   --border-color: var(--ion-color-medium);
 }
 
-.color-button{
+.color-button {
   color: rgb(41, 41, 233);
 }
 
 h3 {
   font-family: NoyhGeometricSlimExtraLight;
 }
+
 h6 {
   font-family: AspiraWideDemi;
 }
-.date-picker{
+
+.date-picker {
   background-color: white;
   color: blue;
 }

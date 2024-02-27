@@ -15,7 +15,7 @@ import { HoroscopesPage } from './horoscopes.page';
     FormsModule,
     IonicModule,
     HoroscopesPageRoutingModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
   ],
   declarations: [HoroscopesPage],
 })

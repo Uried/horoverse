@@ -4,33 +4,36 @@
   <ion-tabs>
     <div class="flex text-white bg-[#494a4e] font-bold h-10 fixed top-0 w-full">
       <i class="fas fa-arrow-left mt-3 text-xl ml-3 text-[#ca9631]" routerLink="/home"></i>
-    <div class="ml-[32%] font-bold mt-2 text-2xl">Horoscopes</div>
+      <div class="ml-[32%] font-bold mt-2 text-2xl">Horoscopes</div>
     </div>
 
-    <h3 class="uppercase text-center font-bold text-xl">{{'BE CURIOUS, CONSULT ANOTHER SIGN' | translate}}</h3>
+    <h3 class="uppercase text-center -translate-y-16 font-bold text-xl">{{'BE CURIOUS, CONSULT ANOTHER SIGN' |
+      translate}}</h3>
 
-    <div class="mt-2 mb-16">
+    <div class="-translate-y-12 mb-16">
 
       <div class="grid grid-cols-3 gap-3 mt-2">
         <!-- Première ligne -->
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'ARIES']">
-        <div
-          class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/belier.png" alt="Image 1" class="w-20">
           </div>
           <h6 class="text-center text-[#f5d16d] font-bold">{{'Aries'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'TAURUS']">
-        <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/taureau.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#4b6db6] font-bold">{{'Taurus'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'GEMINI']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/gemeaux.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#cf575b] font-bold">{{'Gemini' | translate}}</h6>
@@ -38,21 +41,24 @@
 
         <!-- Deuxième ligne -->
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'CANCER']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/cancer.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#955bcc] font-bold">{{'Cancer'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'LEO']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/lion.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#fa675a] font-bold">{{'Leo'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'VIRGO']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/vierge.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#ffd6d7] font-bold">{{'Virgo'| translate}}</h6>
@@ -60,21 +66,24 @@
 
         <!-- Troisième ligne -->
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'LIBRA']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/balance.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#028b4b] font-bold">{{'Libra' | translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'SCORPIO']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/scorpion.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#ed651b] font-bold">{{'Scorpio'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'SAGITTARIUS']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/sagitaire.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#b453bb] font-bold">{{'Sagittarius'| translate}}</h6>
@@ -82,32 +91,35 @@
 
         <!-- Quatrième ligne -->
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'CAPRICORN']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/capricorne.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#d37b58] font-bold">{{'Capricorn'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'AQUARIUS']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/verseau.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#0ac7b7] font-bold">{{'Aquarius'| translate}}</h6>
         </div>
 
         <div class="flex flex-col items-center" [routerLink]="['/othersign', 'PISCES']">
-          <div class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
+          <div
+            class="h-22 w-22 rounded-2xl flex items-center justify-center bg-gradient-to-tr from-[#545458] to-[#292a2f]">
             <img src="../../assets/signes/poissons.png" class="w-20" alt="Image 1">
           </div>
           <h6 class="text-center text-[#007edb] font-bold">{{'Pisces' | translate}}</h6>
         </div>
       </div>
 
-      <div class="mt-4">
-      <ion-input id="date-input" type="" (ngModelChange)="getAstrologicalSign()"
-        class="border border-[#ca9631] rounded-lg focus:outline-nonebg-transparent h-8 w-80 ml-auto mr-auto text-center text-white font-bold"
-        placeholder="{{'Choose a day and a month'| translate}}" [(ngModel)]="selectedDate" (click)="openDatePicker()">
-      </ion-input>
+      <div class="mt-8">
+        <ion-input id="date-input" type="" (ngModelChange)="getAstrologicalSign()"
+          class="border border-[#ca9631] rounded-lg focus:outline-nonebg-transparent h-8 w-80 ml-auto mr-auto text-center text-white font-bold"
+          placeholder="{{'Choose a day and a month'| translate}}" [(ngModel)]="selectedDate" (click)="openDatePicker()">
+        </ion-input>
       </div>
     </div>
 
@@ -116,17 +128,17 @@
         <ion-icon name="home"></ion-icon>
         {{'Home'| translate}}
       </ion-tab-button>
-      <ion-tab-button tab="sunny" class=" text-white" routerLink="/horoscopes">
+      <ion-tab-button tab="horoscopes" class="hover: text-[#ca9631]" routerLink="/horoscopes">
         <div class="flex">
           <i class="fas fa-star mt-2 translate-x-2"></i><i class="fas fa-moon rotate-180 text-2xl"></i>
         </div>
         Horoscopes
       </ion-tab-button>
-      <ion-tab-button tab="newspaper" class="hover: text-[#ca9631]" routerLink="/blogs">
+      <ion-tab-button tab="blogs" class="text-white" routerLink="/blogs">
         <ion-icon name="newspaper"></ion-icon>
         Blogs
       </ion-tab-button>
-      <ion-tab-button tab="chatbubbles" class="hover: text-[#ca9631]" routerLink="/archives">
+      <ion-tab-button tab="archives" class="hover: text-[#ca9631]" routerLink="/archives">
         <i class="fa fa-folder text-2xl"></i>
         Archives
       </ion-tab-button>

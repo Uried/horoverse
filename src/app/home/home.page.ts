@@ -450,6 +450,8 @@ export class HomePage implements OnInit {
 
             forkJoin(observables).subscribe((results: any[]) => {
               results.forEach((data: any, index: number) => {
+                console.log(data.data);
+
                 const horoscopeData = data.data.prediction;
                 const luck = horoscopeData.luck;
                 const horoscope = [
@@ -726,7 +728,7 @@ export class HomePage implements OnInit {
                   horoscopeData.travel,
                   luck[4],
                   luck[5],
-                  
+
                 ];
                 const tmp = horoscope.join('|');
                 horoscopes[signArray[index]] = tmp;

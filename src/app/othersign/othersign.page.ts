@@ -11,6 +11,7 @@ import { PublicationService } from '../sevices/publication/publication.service';
 import { LoadingController } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { Location } from '@angular/common';
 declare var responsiveVoice: any;
 
 @Component({
@@ -52,6 +53,7 @@ export class OthersignPage implements OnInit {
     private publicationService: PublicationService,
     private loadingCtrl: LoadingController,
     private toastController: ToastController,
+    private location: Location,
     @Inject(LOCALE_ID) public locale: string
   ) {
     translate.setDefaultLang('en');
@@ -76,8 +78,8 @@ export class OthersignPage implements OnInit {
     } catch (error) {
       console.error("Erreur lors de la récupération de l'adresse IP:", error);
     }
-    this.getDailyHoroscope()
-    this.onImageChange()
+    this.getDailyHoroscope();
+    this.onImageChange();
   }
 
   async showLoading() {
@@ -708,4 +710,6 @@ export class OthersignPage implements OnInit {
       }
     );
   }
+
+  
 }

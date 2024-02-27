@@ -231,7 +231,7 @@ export class ArchivesPage implements OnInit {
       inputDate.getMonth() === currentDate.getMonth() &&
       inputDate.getFullYear() === currentDate.getFullYear()
     ) {
-      if ((this.language = 'fr')) {
+      if ((this.language == 'fr')) {
         return "d'aujourd'hui";
       } else {
         return 'Today';
@@ -246,7 +246,7 @@ export class ArchivesPage implements OnInit {
       inputDate.getMonth() === yesterday.getMonth() &&
       inputDate.getFullYear() === yesterday.getFullYear()
     ) {
-      if ((this.language = 'fr')) {
+      if ((this.language == 'fr')) {
         return "d'hier";
       } else {
         return 'Yesterday';
@@ -278,7 +278,7 @@ export class ArchivesPage implements OnInit {
         'Friday',
         'Satuday',
       ];
-      if ((this.language = 'fr')) {
+      if ((this.language == 'fr')) {
         return joursDeLaSemaine[inputDate.getDay()];
       } else {
         return daysOfWeek[inputDate.getDay()];

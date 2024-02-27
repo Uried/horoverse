@@ -17,6 +17,7 @@ import 'firebase/compat/firestore';
 import { ViewblogPageModule } from './viewblog/viewblog.module';
 import { BlogsPageModule } from './blogs/blogs.module';
 
+
 initializeApp(environment.firebase)
 
 export function HttpLoaderFactory(http: HttpClient) {
