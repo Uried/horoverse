@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 import { HomePageRoutingModule } from './home-routing.module';
 
 
@@ -15,8 +15,9 @@ import { HomePageRoutingModule } from './home-routing.module';
     FormsModule,
     IonicModule,
     HttpClientModule,
+    ExploreContainerComponentModule,
      TranslateModule.forChild(),
-    HomePageRoutingModule
+    HomePageRoutingModule,
   ],
   declarations: [HomePage]
 })

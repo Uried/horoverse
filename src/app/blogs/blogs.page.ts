@@ -155,6 +155,8 @@ async  getBlogs() {
         .get(`https://apihoroverse.vercel.app/blogs/`)
         .subscribe((blogs: any) => {
           this.blogs = blogs.data;
+          console.log(blogs.data);
+
 
           const log = {
             level: 'debug',

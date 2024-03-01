@@ -17,8 +17,7 @@ import 'firebase/compat/firestore';
 import { ViewblogPageModule } from './viewblog/viewblog.module';
 import { BlogsPageModule } from './blogs/blogs.module';
 
-
-initializeApp(environment.firebase)
+initializeApp(environment.firebase);
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -51,11 +50,10 @@ export function HttpLoaderFactory(http: HttpClient) {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: LOCALE_ID, useValue: navigator.language }
+    { provide: LOCALE_ID, useValue: navigator.language },
   ],
   bootstrap: [AppComponent],
 })

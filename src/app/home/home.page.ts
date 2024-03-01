@@ -409,6 +409,9 @@ export class HomePage implements OnInit {
         this.textToSpeak = result[this.sign];
         const removeCharacter = result[this.sign];
         this.horoscope = removeCharacter.split('|');
+        console.log(this.horoscope);
+
+
       },
       (error) => {
         if (error.status === 404) {

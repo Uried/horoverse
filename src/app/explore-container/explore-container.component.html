@@ -1,0 +1,23 @@
+<ion-tabs class="mt-0">
+
+  <ion-tab-bar slot="bottom" color="primary" class="border-t border-[#ca9631]">
+    <ion-tab-button tab="home" class="text-white" routerLink="/home">
+      <ion-icon name="home"></ion-icon>
+      Home
+    </ion-tab-button>
+    <ion-tab-button tab="sunny" class="hover: text-[#ca9631]" routerLink="/horoscopes">
+      <div class="flex">
+        <i class="fas fa-star mt-2 translate-x-2"></i><i class="fas fa-moon rotate-180 text-2xl"></i>
+      </div>
+      Horoscopes
+    </ion-tab-button>
+    <ion-tab-button tab="newspaper" class="hover: text-[#ca9631]" routerLink="/blogs">
+      <ion-icon name="newspaper"></ion-icon>
+      Blogs
+    </ion-tab-button>
+    <ion-tab-button tab="chatbubbles" class="hover: text-[#ca9631]" routerLink="/archives">
+      <i class="fa fa-folder text-2xl"></i>
+      Archives
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

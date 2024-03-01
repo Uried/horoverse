@@ -1,16 +1,15 @@
 <ion-content [fullscreen]="true" class="fixed text-white">
 
 
-  <ion-tabs>
     <div class="flex text-white bg-[#494a4e] font-bold h-10 fixed top-0 w-full">
       <i class="fas fa-arrow-left mt-3 text-xl ml-3 text-[#ca9631]" routerLink="/home"></i>
       <div class="ml-[32%] font-bold mt-2 text-2xl">Horoscopes</div>
     </div>
 
-    <h3 class="uppercase text-center -translate-y-16 font-bold text-xl">{{'BE CURIOUS, CONSULT ANOTHER SIGN' |
+    <h3 class="uppercase text-center mt-32 font-bold text-xl">{{'BE CURIOUS, CONSULT ANOTHER SIGN' |
       translate}}</h3>
 
-    <div class="-translate-y-12 mb-16">
+    <div class=" pt-8 mb-16">
 
       <div class="grid grid-cols-3 gap-3 mt-2">
         <!-- Première ligne -->
@@ -123,25 +122,31 @@
       </div>
     </div>
 
-    <ion-tab-bar slot="bottom" color="primary" class="border-t border-[#ca9631]">
-      <ion-tab-button tab="home" class="text-[#ca9631]" routerLink="/home">
-        <ion-icon name="home"></ion-icon>
-        {{'Home'| translate}}
-      </ion-tab-button>
-      <ion-tab-button tab="horoscopes" class="hover: text-[#ca9631]" routerLink="/horoscopes">
+    <div
+      class="fixed inset-x-0 bottom-0 text-[#ca9631] flex justify-around items-center bg-primary border-t border-[#ca9631] pt-4 z-50">
+      <div class="tab-button text-xl text-white" routerLink="/home">
+        <i class="fas fa-home text-xl"></i>
+        <p class="text-xs">Home</p>
+      </div>
+
+      <div class="tab-button hover:text-white" routerLink="/horoscopes">
         <div class="flex">
-          <i class="fas fa-star mt-2 translate-x-2"></i><i class="fas fa-moon rotate-180 text-2xl"></i>
+          <i class="fas fa-star mt-1 transform translate-x-2"></i><i
+            class="fas fa-moon -mt-2 transform rotate-180 text-2xl"></i>
         </div>
-        Horoscopes
-      </ion-tab-button>
-      <ion-tab-button tab="blogs" class="text-white" routerLink="/blogs">
-        <ion-icon name="newspaper"></ion-icon>
-        Blogs
-      </ion-tab-button>
-      <ion-tab-button tab="archives" class="hover: text-[#ca9631]" routerLink="/archives">
-        <i class="fa fa-folder text-2xl"></i>
-        Archives
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
+        <p class="text-xs">Horoscopes</p>
+      </div>
+
+      <div class="tab-button hover:text-white" routerLink="/blogs">
+        <i class="fas fa-newspaper text-xl"></i>
+        <p class="text-xs">Blogs</p>
+      </div>
+
+      <div class="tab-button hover:text-white" routerLink="/archives">
+        <i class="fas fa-folder text-2xl"></i>
+        <p class="text-xs">Archives</p>
+      </div>
+    </div>
+
+
 </ion-content>

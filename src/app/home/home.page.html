@@ -1,8 +1,7 @@
-<ion-content [fullscreen]="true" class="fixed">
+<ion-content [fullscreen]="true" class="overflow-hidden">
 
-  <ion-tabs class="mt-0">
 
-    <div class="flex" slot="top">
+    <div class="flex top-0 inset-x-0">
       <div class="w-40 mt-3 ml-2">
         <img src="../../assets/logos/Logo-Horoscope-White-.svg" alt="" class="">
       </div>
@@ -61,21 +60,21 @@
       </div>
     </div>
 
-        <div class="block text-white transform -translate-y-36">
+        <div class="block text-white">
             <div class="font-bold text-3xl text-white ml-2 ">{{ 'Hello' | translate }} {{pseudo}},</div>
             <div class="text-2xl ml-3">{{'discover your horoscope' | translate}}</div>
         </div>
 
 
 
-    <div class="ml-auto -translate-y-28 max-h-40 mr-auto">
+    <div class="ml-auto mt-4 max-h-40 mr-auto">
       <img src={{choosedImage}} alt="" class="w-48 ml-auto mr-auto">
       <p class="sign font-bold text-center text-3xl text-white">{{sign | translate}}</p>
     </div>
 
-    <div class="w-full -translate-y-2">
+    <div class="w-full pt-16">
 
-      <div class="flex -translate-y-2 ml-2 gap-4 overflow-x-auto">
+      <div class="flex ml-2 gap-4 overflow-x-auto">
         <div
           class="tab text-center border border-[#ca9631] text-white bg-opacity-70 transition duration-500 ease-in-out bg-[#494a4e] rounded-md w-32 font-bold py-1 h-8 hover:bg-white hover:text-black"
           (click)="getDailyHoroscope()">{{'Daily' | translate}}</div>
@@ -111,7 +110,7 @@
         </i>
       </div>
 
-      <div class="max-h-56 overflow-y-scroll">
+      <div class="max-h-64 overflow-y-scroll">
         <p class="text text-xl ml-2 mr-2 py-3 text-white">{{horoscope[0]}}</p>
         <p class="text-center text-green-500 text-xl font-bold">{{'HEALTH' | translate}}</p>
         <p class="text text-xl ml-2 mr-2 py-1 text-white">{{horoscope[1]}}</p>
@@ -129,27 +128,29 @@
       </div>
     </div>
 
-    <ion-tab-bar slot="bottom" color="primary" class="border-t border-[#ca9631]">
-      <ion-tab-button tab="home" class="text-white" routerLink="/home">
-        <ion-icon name="home"></ion-icon>
-        {{'Home'| translate}}
-      </ion-tab-button>
-      <ion-tab-button tab="sunny" class="hover: text-[#ca9631]" routerLink="/horoscopes">
-        <div class="flex">
-          <i class="fas fa-star mt-2 translate-x-2"></i><i class="fas fa-moon rotate-180 text-2xl"></i>
+      <div class="fixed inset-x-0 bottom-0 text-[#ca9631] font-bold flex justify-around items-center bg-primary border-t border-[#ca9631] pt-4 z-50">
+        <div class="tab-button text-xl text-white" routerLink="/home">
+          <i class="fas fa-home text-xl"></i>
+          <p class="text-xs">Home</p>
         </div>
-        Horoscopes
-      </ion-tab-button>
-      <ion-tab-button tab="newspaper" class="hover: text-[#ca9631]" routerLink="/blogs">
-        <ion-icon name="newspaper"></ion-icon>
-        Blogs
-      </ion-tab-button>
-      <ion-tab-button tab="chatbubbles" class="hover: text-[#ca9631]" routerLink="/archives">
-        <i class="fa fa-folder text-2xl"></i>
-        Archives
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
+
+        <div class="tab-button hover:text-white" routerLink="/horoscopes">
+          <div class="flex">
+            <i class="fas fa-star mt-1 transform translate-x-2"></i><i class="fas fa-moon -mt-2 transform rotate-180 text-2xl"></i>
+          </div>
+          <p class="text-xs">Horoscopes</p>
+        </div>
+
+        <div class="tab-button hover:text-white" routerLink="/blogs">
+          <i class="fas fa-newspaper text-xl"></i>
+          <p class="text-xs">Blogs</p>
+        </div>
+
+        <div class="tab-button hover:text-white" routerLink="/archives">
+          <i class="fas fa-folder text-2xl"></i>
+          <p class="text-xs">Archives</p>
+        </div>
+      </div>
 
 
 </ion-content>
